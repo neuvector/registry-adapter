@@ -1,15 +1,21 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/neuvector/neuvector/controller/api"
+	"github.com/neuvector/neuvector/share"
+	"github.com/neuvector/neuvector/share/cluster"
+	scanUtils "github.com/neuvector/neuvector/share/scan"
 	"github.com/neuvector/neuvector/share/utils"
 )
+
+const repoScanTimeout = time.Minute * 20
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "usage: scan [OPTIONS]\n")
@@ -24,14 +30,54 @@ func main() {
 
 	join := flag.String("j", "", "Controller join address")
 	joinPort := flag.Uint("join_port", 0, "Controller join port")
+	image := flag.String("image", "", "Test image path")
+	token := flag.String("token", "", "Test image token")
 
 	flag.Usage = usage
 	flag.Parse()
 
 	if *joinPort == 0 {
-		port := (uint)(api.DefaultControllerRESTAPIPort)
+		port := (uint)(cluster.DefaultControllerGRPCPort)
 		joinPort = &port
 	}
 
-	getControllerServiceClient(*join, (uint16)(*joinPort))
+	if *image != "" {
+		testImageScan(*join, *joinPort, *image, *token)
+	}
+}
+
+func testImageScan(join string, joinPort uint, image, token string) {
+	reg, repo, tag, err := scanUtils.ParseImageName(image)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err.Error()}).Error("Failed parse the image path")
+		return
+	}
+
+	req := &share.AdapterScanImageRequest{
+		Registry:   reg,
+		Repository: repo,
+		Tag:        tag,
+		Token:      token,
+	}
+
+	log.WithFields(log.Fields{"request": req}).Debug("Scan image request")
+
+	ctx, cancel := context.WithTimeout(context.Background(), repoScanTimeout)
+	defer cancel()
+
+	client, err := getControllerServiceClient(join, (uint16)(joinPort))
+	if err != nil {
+		log.WithFields(log.Fields{"error": err.Error()}).Error("Failed to initiate grpc call")
+		return
+	}
+
+	result, err := client.ScanImage(ctx, req)
+
+	if result == nil {
+		log.WithFields(log.Fields{"error": err}).Error("RPC request fail")
+	} else if result.Error != share.ScanErrorCode_ScanErrNone {
+		log.WithFields(log.Fields{"error": scanUtils.ScanErrorToStr(result.Error)}).Error("Failed to scan repository")
+	} else {
+		log.WithFields(log.Fields{"vulns": len(result.Vuls)}).Info("Scan repository finish")
+	}
 }
