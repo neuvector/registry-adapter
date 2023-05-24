@@ -13,6 +13,8 @@ import (
 	"github.com/neuvector/neuvector/share/cluster"
 	scanUtils "github.com/neuvector/neuvector/share/scan"
 	"github.com/neuvector/neuvector/share/utils"
+	"github.com/neuvector/registry-adapter/config"
+	"github.com/neuvector/registry-adapter/server"
 )
 
 const repoScanTimeout = time.Minute * 20
@@ -44,6 +46,8 @@ func main() {
 	if *image != "" {
 		testImageScan(*join, *joinPort, *image, *token)
 	}
+	serverConfig := config.ReadYAML("example.yaml")
+	server.InitializeServer(serverConfig)
 }
 
 func testImageScan(join string, joinPort uint, image, token string) {
@@ -65,7 +69,7 @@ func testImageScan(join string, joinPort uint, image, token string) {
 	ctx, cancel := context.WithTimeout(context.Background(), repoScanTimeout)
 	defer cancel()
 
-	client, err := getControllerServiceClient(join, (uint16)(joinPort))
+	client, err := server.GetControllerServiceClient(join, (uint16)(joinPort))
 	if err != nil {
 		log.WithFields(log.Fields{"error": err.Error()}).Error("Failed to initiate grpc call")
 		return

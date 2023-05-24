@@ -1,0 +1,15 @@
+#Required
+ControllerIP: 192.168.0.225
+#Required
+ControllerPort: 18400
+#Required with exactly one of the following types.
+Authorization:
+  AuthorizationType: Basic
+  UsernameVariable: username02 #Name of the environment variable containing username.
+  PasswordVariable: password1 #Name of the environment variable containing password.
+ExpirationTime: 60
+PruneTime: 60
+# AuthorizationType: API
+# APIKey: examplekey
+# AuthorizationType: Token
+# Token: exampletoken
