@@ -13,7 +13,7 @@ import (
 const controller string = "controller"
 
 func createControllerScanAdapterServiceWrapper(conn *grpc.ClientConn) cluster.Service {
-	return share.NewControllerScanServiceClient(conn)
+	return share.NewControllerScanAdapterServiceClient(conn)
 }
 
 func getControllerServiceClient(joinIP string, joinPort uint16) (share.ControllerScanAdapterServiceClient, error) {
