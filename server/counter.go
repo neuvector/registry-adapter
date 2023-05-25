@@ -7,22 +7,22 @@ type Counter struct {
 	count int
 }
 
-func (workload *Counter) GetNoLock() int {
-	return workload.count
+func (counter *Counter) GetNoLock() int {
+	return counter.count
 }
 
-func (workload *Counter) Get() int {
-	workload.RLock()
-	defer workload.RUnlock()
-	return workload.count
+func (counter *Counter) Get() int {
+	counter.RLock()
+	defer counter.RUnlock()
+	return counter.count
 }
 
-func (workload *Counter) Increment() {
-	workload.count = workload.count + 1
+func (counter *Counter) Increment() {
+	counter.count = counter.count + 1
 }
 
-func (workload *Counter) Decrement() {
-	workload.Lock()
-	workload.count = workload.count - 1
-	workload.Unlock()
+func (counter *Counter) Decrement() {
+	counter.Lock()
+	counter.count = counter.count - 1
+	counter.Unlock()
 }

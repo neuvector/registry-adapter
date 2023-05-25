@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -30,7 +31,6 @@ const dataCheckInterval = 1.0
 const scannerCheckInterval = 5.0
 const repoScanTimeout = time.Minute * 20
 
-var maxConcurrentJobs uint32
 var rpcTimeout = 1000
 var workloadID Counter
 var concurrentJobs Counter
@@ -54,7 +54,6 @@ var queueMap = QueueMap{Entries: make(map[int]ScanRequest)}
 
 func InitializeServer(config config.ServerConfig) {
 	serverConfig = config
-	maxConcurrentJobs = 1
 	log.SetLevel(log.DebugLevel)
 	expirationTime = serverConfig.ExpirationTime
 	pruneTime = serverConfig.PruneTime
@@ -62,12 +61,12 @@ func InitializeServer(config config.ServerConfig) {
 	concurrentJobs = Counter{count: 0}
 	go processQueueMap()
 	go pruneOldEntries()
-	go pollMaxConcurrent()
 	defer http.DefaultClient.CloseIdleConnections()
+	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	http.HandleFunc("/", unhandled)
-	http.HandleFunc(metadataEndpoint, metadata)
-	http.HandleFunc(scanEndpoint, scan)
-	http.HandleFunc(scanReportURL, scanResult)
+	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
+	http.HandleFunc(scanEndpoint, authenticateHarbor(scan))
+	http.HandleFunc(scanReportURL, authenticateHarbor(scanResult))
 	log.WithFields(log.Fields{}).Debug("Server Started")
 	http.ListenAndServe("0.0.0.0:8090", nil)
 }
@@ -79,6 +78,28 @@ func unhandled(w http.ResponseWriter, req *http.Request) {
 		log.WithFields(log.Fields{"endpoint": req.URL}).Warning("Unhandled HTTP Endpoint")
 		return
 	}
+}
+
+func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch authType := strings.ToLower(serverConfig.Auth.AuthorizationType); authType {
+		case "basic":
+			incUserName, incPass, ok := r.BasicAuth()
+			if ok {
+				username := os.Getenv(serverConfig.Auth.UsernameVaribale)
+				pass := os.Getenv(serverConfig.Auth.PasswordVariable)
+				if incUserName == username && incPass == pass {
+					log.Debug("Authentication successful")
+					function.ServeHTTP(w, r)
+					return
+				}
+				http.Error(w, "Incorrect username or password", http.StatusUnauthorized)
+				log.Warn("Incorrect username or password")
+			}
+		default:
+			log.WithFields(log.Fields{"auth type": authType}).Error("Unsupported authentication type")
+		}
+	})
 }
 
 func metadata(w http.ResponseWriter, req *http.Request) {
@@ -151,22 +172,36 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{}).Debug("End of scan request.")
 }
 
-//TODO: check idle/max scanners per job started.
 func processQueueMap() {
 	currentJob := 1
 	for {
 		time.Sleep(time.Second * time.Duration(dataCheckInterval))
-		concurrentJobs.Lock()
+
 		queueMap.Lock()
 		job, ok := queueMap.Entries[currentJob]
-		if uint32(concurrentJobs.GetNoLock()) < maxConcurrentJobs && ok {
-			go processScanTask(job)
-			concurrentJobs.Increment()
-			delete(queueMap.Entries, currentJob)
-			currentJob++
+		if ok {
+			concurrentJobs.Lock()
+			availableScanners, err := pollMaxConcurrent()
+			if err != nil {
+				queueMap.Unlock()
+				concurrentJobs.Unlock()
+				log.WithFields(log.Fields{"error": err}).Error("Error retrieving available scanners")
+				continue
+			}
+			if uint32(concurrentJobs.GetNoLock()) <= availableScanners {
+				go processScanTask(job)
+				concurrentJobs.Increment()
+				delete(queueMap.Entries, currentJob)
+				queueMap.Unlock()
+				currentJob++
+			} else {
+				queueMap.Unlock()
+				time.Sleep(time.Second * 30)
+			}
+			concurrentJobs.Unlock()
+		} else {
+			queueMap.Unlock()
 		}
-		queueMap.Unlock()
-		concurrentJobs.Unlock()
 	}
 }
 
@@ -199,7 +234,7 @@ func processScanTask(scanRequest ScanRequest) {
 
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
-	//TODO: Conversion/Translation of Results
+	//TODO: Finish conversion/translation of Results
 	result.Status = http.StatusOK
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
 	return result
@@ -209,41 +244,41 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	translatedVulns := make([]Vuln, len(controllerVulns))
 	for index, rawVuln := range controllerVulns {
 		translatedVuln := Vuln{
-			ID:               rawVuln.Name,
-			Pkg:              rawVuln.PackageName,
-			Version:          rawVuln.PackageVersion,
-			FixVersion:       rawVuln.FixedVersion,
-			Severity:         rawVuln.Severity,
-			Description:      rawVuln.Description,
-			Links:            []string{rawVuln.Link},
-			Layer:            &Layer{},
-			PreferredCVSS:    &CVSSDetails{},
+			ID:          rawVuln.Name,
+			Pkg:         rawVuln.PackageName,
+			Version:     rawVuln.PackageVersion,
+			FixVersion:  rawVuln.FixedVersion,
+			Severity:    rawVuln.Severity,
+			Description: rawVuln.Description,
+			Links:       []string{rawVuln.Link},
+			PreferredCVSS: &CVSSDetails{
+				ScoreV2:  rawVuln.GetScore(),
+				ScoreV3:  rawVuln.GetScoreV3(),
+				VectorV2: rawVuln.GetVectors(),
+				VectorV3: rawVuln.GetVectorsV3(),
+			},
 			CweIDs:           []string{},
 			VendorAttributes: map[string]interface{}{},
 		}
-
 		translatedVulns[index] = translatedVuln
 	}
 	return translatedVulns
 }
 
-func pollMaxConcurrent() {
-	//TODO: logic for maximum jobs
+func pollMaxConcurrent() (uint32, error) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("Error retrieving rpc client")
-		return
+		return 0, err
 	}
-	for {
-		time.Sleep(time.Second * time.Duration(scannerCheckInterval))
-		scanners, err := client.GetScanners(context.Background(), &share.RPCVoid{})
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Error retrieving scanners from controller")
-			return
-		}
-		maxConcurrentJobs = scanners.Scanners
-		log.WithFields(log.Fields{"scanners": scanners.Scanners, "idle scanners": scanners.IdleScanners, "max scanners": scanners.MaxScanners}).Debug("Scanners reported")
+
+	scanners, err := client.GetScanners(context.Background(), &share.RPCVoid{})
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Error retrieving scanners from controller")
+		return 0, err
 	}
+	log.WithFields(log.Fields{"scanners": scanners.Scanners, "idle scanners": scanners.IdleScanners, "max scanners available": scanners.MaxScanners}).Debug("Scanners reported")
+	return scanners.MaxScanners, nil
 }
 
 func generateExpirationTime() time.Time {

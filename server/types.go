@@ -32,10 +32,10 @@ type ScanReport struct {
 }
 
 type CVSSDetails struct {
-	ScoreV2  *float32 `json:"score_v2,omitempty"`
-	ScoreV3  *float32 `json:"score_v3,omitempty"`
-	VectorV2 string   `json:"vector_v2"`
-	VectorV3 string   `json:"vector_v3"`
+	ScoreV2  float32 `json:"score_v2,omitempty"`
+	ScoreV3  float32 `json:"score_v3,omitempty"`
+	VectorV2 string  `json:"vector_v2"`
+	VectorV3 string  `json:"vector_v3"`
 }
 
 type Layer struct {
@@ -51,7 +51,6 @@ type Vuln struct {
 	Severity         string                 `json:"severity"`
 	Description      string                 `json:"description"`
 	Links            []string               `json:"links"`
-	Layer            *Layer                 `json:"layer"` // Not defined by Scanners API
 	PreferredCVSS    *CVSSDetails           `json:"preferred_cvss,omitempty"`
 	CweIDs           []string               `json:"cwe_ids,omitempty"`
 	VendorAttributes map[string]interface{} `json:"vendor_attributes,omitempty"`
