@@ -14,29 +14,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const internalCertDir = "/etc/neuvector/certs/internal/"
-
-const internalCACert string = "ca.cert"
-const internalCert string = "cert.pem"
-const internalCertKey string = "cert.key"
-const internalCertCN string = "NeuVector"
-
 const scanReportURL = "/endpoint/api/v1/scan/"
 const scanEndpoint = "/endpoint/api/v1/scan"
 const metadataEndpoint = "/endpoint/api/v1/metadata"
 
 const reportSuffixURL = "/report"
-const refreshInterval = 60
 const dataCheckInterval = 1.0
-const scannerCheckInterval = 5.0
-const repoScanTimeout = time.Minute * 20
 
-var rpcTimeout = 1000
+const rpcTimeout = time.Minute * 20
+const expirationTime = time.Minute * 60
+const pruneTime = time.Minute * 5
+
 var workloadID Counter
 var concurrentJobs Counter
-var expirationTime int64
-var pruneTime int64
-var rpcclient share.ControllerScanAdapterServiceClient
 
 var serverConfig config.ServerConfig
 
@@ -52,16 +42,15 @@ var nvScanner = ScannerSpec{
 var reportCache = ReportData{ScanReports: make(map[string]ScanReport)}
 var queueMap = QueueMap{Entries: make(map[int]ScanRequest)}
 
-func InitializeServer(config config.ServerConfig) {
-	serverConfig = config
+//InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
+func InitializeServer(config *config.ServerConfig) {
+	serverConfig = *config
 	log.SetLevel(log.DebugLevel)
-	expirationTime = serverConfig.ExpirationTime
-	pruneTime = serverConfig.PruneTime
 	workloadID = Counter{count: 1}
 	concurrentJobs = Counter{count: 0}
+	defer http.DefaultClient.CloseIdleConnections()
 	go processQueueMap()
 	go pruneOldEntries()
-	defer http.DefaultClient.CloseIdleConnections()
 	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
@@ -71,6 +60,7 @@ func InitializeServer(config config.ServerConfig) {
 	http.ListenAndServe("0.0.0.0:8090", nil)
 }
 
+//unhandled is the default response for unhandled urls.
 func unhandled(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	if req.URL.Path != "/" {
@@ -80,6 +70,7 @@ func unhandled(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+//authenticateHarbor wraps other handlerfuncs with basic authentication.
 func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch authType := strings.ToLower(serverConfig.Auth.AuthorizationType); authType {
@@ -102,6 +93,7 @@ func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
+//metadata returns the basic metadata harbor requests regularly from the adapter.
 func metadata(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	log.WithFields(log.Fields{"request": req}).Info("Metadata request received")
@@ -135,6 +127,7 @@ func metadata(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+//scan translates incoming requests into ScanRequest and queues them for processing.
 func scan(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	scanRequest := ScanRequest{}
@@ -172,6 +165,7 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{}).Debug("End of scan request.")
 }
 
+//processQueueMap goes through the queueMap in first-in-first-out order if concurrent jobs are less than the maximum allowed jobs.
 func processQueueMap() {
 	currentJob := 1
 	for {
@@ -205,6 +199,8 @@ func processQueueMap() {
 	}
 }
 
+//processScanTask sends the ScanRequest to the controller, which creates tasks for the attached scanners.
+//Afterwards, the result is added to the saved scan reports.
 func processScanTask(scanRequest ScanRequest) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
@@ -218,7 +214,7 @@ func processScanTask(scanRequest ScanRequest) {
 		Token:      scanRequest.Registry.Authorization,
 		ScanLayers: true,
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), repoScanTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
 	result, err := client.ScanImage(ctx, &request)
 	if err != nil {
@@ -232,6 +228,7 @@ func processScanTask(scanRequest ScanRequest) {
 	reportCache.Unlock()
 }
 
+//convertRPCReportToScanReport converts the rpc results from the controller into a Harbor readable format.
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
 	//TODO: Finish conversion/translation of Results
@@ -240,6 +237,7 @@ func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	return result
 }
 
+//convertVulns changes the controller vuln results into a Harbor readable format.
 func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	translatedVulns := make([]Vuln, len(controllerVulns))
 	for index, rawVuln := range controllerVulns {
@@ -265,6 +263,7 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	return translatedVulns
 }
 
+//pollMaxConcurrent finds the max amount of available scanners by polling the controller.
 func pollMaxConcurrent() (uint32, error) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
@@ -281,15 +280,17 @@ func pollMaxConcurrent() (uint32, error) {
 	return scanners.MaxScanners, nil
 }
 
+//generateExpirationTime generates the timestamp that entries should be deleted after when they aren't retrieved.
 func generateExpirationTime() time.Time {
 	now := time.Now().UTC()
-	result := now.Add(time.Minute * time.Duration(expirationTime))
+	result := now.Add(expirationTime)
 	return result
 }
 
+//pruneOldEntries deletes entries that have passed their expiration timestamp.
 func pruneOldEntries() {
 	for {
-		time.Sleep(time.Duration(pruneTime) * time.Minute)
+		time.Sleep(pruneTime)
 		reportCache.Lock()
 		for key, value := range reportCache.ScanReports {
 			if value.ExpirationTime.Before(time.Now()) {
@@ -301,6 +302,7 @@ func pruneOldEntries() {
 	}
 }
 
+//mimestring generates the mimestring format
 func mimestring(mimetype string, subtype string, inparams map[string]string) string {
 	s := fmt.Sprintf("%s/%s", mimetype, subtype)
 	if len(inparams) == 0 {
@@ -313,6 +315,7 @@ func mimestring(mimetype string, subtype string, inparams map[string]string) str
 	return fmt.Sprintf("%s; %s", s, strings.Join(params, ";"))
 }
 
+//scanResult returns the scan report with the matching id when requested.
 func scanResult(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	id := getIDFromReportRequest(req.URL.String())
@@ -332,6 +335,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 				log.WithFields(log.Fields{"error": err}).Error("json encoder error")
 				w.WriteHeader(http.StatusInternalServerError)
 			}
+			delete(reportCache.ScanReports, id)
 		default:
 			w.Header().Add("Location", req.URL.String())
 			w.WriteHeader(val.Status)
@@ -345,6 +349,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 	reportCache.Unlock()
 }
 
+//getIDFromReportRequest separates the report ID from the URL.
 func getIDFromReportRequest(fullURL string) string {
 	splitURL := strings.Split(fullURL, scanReportURL)
 	result := splitURL[len(splitURL)-1]

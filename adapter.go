@@ -30,8 +30,9 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
-	join := flag.String("j", "", "Controller join address")
-	joinPort := flag.Uint("join_port", 0, "Controller join port")
+	yamlPath := flag.String("y", "", "yaml path")
+	join := flag.String("j", "", "Controller join address for use with image flag")
+	joinPort := flag.Uint("join_port", 0, "Controller join port for use with image flag")
 	image := flag.String("image", "", "Test image path")
 	token := flag.String("token", "", "Test image token")
 
@@ -46,7 +47,17 @@ func main() {
 	if *image != "" {
 		testImageScan(*join, *joinPort, *image, *token)
 	}
-	serverConfig := config.ReadYAML("example.yaml")
+	serverConfig, err := config.ReadYAML(*yamlPath)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Error loading YAML file")
+		return
+	}
+	err = serverConfig.LoadEnvironementVariables()
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Error retrieving controller port")
+		return
+	}
+
 	server.InitializeServer(serverConfig)
 }
 

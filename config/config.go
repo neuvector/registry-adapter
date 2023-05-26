@@ -2,7 +2,8 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
+	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 )
@@ -12,11 +13,11 @@ const AUTH_APIKEY = "api"
 const AUTH_TOKEN = "token"
 
 type ServerConfig struct {
-	Auth           Authorization `yaml:"Authorization"`
-	ControllerIP   string        `yaml:"ControllerIP"`
-	ControllerPort uint16        `yaml:"ControllerPort"`
-	ExpirationTime int64         `yaml:"ExpirationTime"`
-	PruneTime      int64         `yaml:"PruneTime"`
+	Auth                   Authorization `yaml:"Authorization"`
+	ControllerIPVariable   string        `yaml:"ControllerIPVariable"`
+	ControllerPortVariable string        `yaml:"ControllerPortVariable"`
+	ControllerIP           string
+	ControllerPort         uint16
 }
 
 type Authorization struct {
@@ -26,19 +27,26 @@ type Authorization struct {
 }
 
 //readYAML reads in the external YAML config file.
-func ReadYAML(path string) ServerConfig {
-	config := ServerConfig{}
+func ReadYAML(path string) (*ServerConfig, error) {
+	config := &ServerConfig{}
 	configFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Printf("config file read error: %v\n", err)
+		return nil, err
 	}
 	err = yaml.Unmarshal(configFile, &config)
 	if err != nil {
-		log.Fatalf("failed to unmarshal yaml file: %v\n", err)
+		return nil, err
 	}
-	return config
+	return config, nil
 }
 
-func LoadEnvVariables() {
-
+func (serverConfig *ServerConfig) LoadEnvironementVariables() error {
+	serverConfig.ControllerIP = os.Getenv(serverConfig.ControllerIPVariable)
+	port, err := strconv.ParseUint(os.Getenv(serverConfig.ControllerPortVariable), 10, 16)
+	port16 := uint16(port)
+	if err != nil {
+		return err
+	}
+	serverConfig.ControllerPort = port16
+	return nil
 }
