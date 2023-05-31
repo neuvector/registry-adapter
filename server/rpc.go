@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func createControllerScanAdapterServiceWrapper(conn *grpc.ClientConn) cluster.Se
 	return share.NewControllerScanAdapterServiceClient(conn)
 }
 
-func getControllerServiceClient(joinIP string, joinPort uint16) (share.ControllerScanAdapterServiceClient, error) {
+func GetControllerServiceClient(joinIP string, joinPort uint16) (share.ControllerScanAdapterServiceClient, error) {
 	if cluster.GetGRPCClientEndpoint(controller) == "" {
 		ep := fmt.Sprintf("%s:%v", joinIP, joinPort)
 		cluster.CreateGRPCClient(controller, ep, true, createControllerScanAdapterServiceWrapper)

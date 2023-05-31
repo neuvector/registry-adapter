@@ -1,0 +1,9 @@
+#Required Name of the environment variable containing controller join IP.
+ControllerIPVariable: join_ip
+#Required Name of the environment variable containing controller join port.
+ControllerPortVariable: join_port
+#Required currently only Basic auth is supported.
+Authorization:
+  AuthorizationType: Basic
+  UsernameVariable: username02 #Name of the environment variable containing username.
+  PasswordVariable: password1 #Name of the environment variable containing password.
