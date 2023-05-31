@@ -28,5 +28,6 @@ _testmain.go
 *.code-workspace
 *.bak
 
+/stage/*
 /registry-adapter
 /adapter
