@@ -13,6 +13,8 @@ import (
 	"github.com/neuvector/neuvector/share/cluster"
 	scanUtils "github.com/neuvector/neuvector/share/scan"
 	"github.com/neuvector/neuvector/share/utils"
+	"github.com/neuvector/registry-adapter/config"
+	"github.com/neuvector/registry-adapter/server"
 )
 
 const repoScanTimeout = time.Minute * 20
@@ -28,6 +30,8 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
+	yamlPath := flag.String("y", "", "yaml path")
+	proto := flag.String("proto", "https", "Server protocol")
 	join := flag.String("j", "", "Controller join address")
 	joinPort := flag.Uint("join_port", 0, "Controller join port")
 	image := flag.String("image", "", "Test image path")
@@ -43,7 +47,41 @@ func main() {
 
 	if *image != "" {
 		testImageScan(*join, *joinPort, *image, *token)
+		return
 	}
+
+	var serverConfig *config.ServerConfig
+	if *yamlPath != "" {
+		var err error
+		serverConfig, err = config.ReadYAML(*yamlPath)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Error loading YAML file")
+			return
+		}
+	} else {
+		serverConfig = &config.ServerConfig{
+			Auth: config.Authorization{
+				AuthorizationType: "basic",
+				UsernameVariable:  "harbor-auth-username",
+				PasswordVariable:  "harbor-auth-password",
+			},
+			ControllerIPVariable: "CTRL_SERVER_IP",
+		}
+	}
+
+	if *join != "" {
+		serverConfig.ControllerIP = *join
+		serverConfig.ControllerPort = uint16(*joinPort)
+		serverConfig.ServerProto = *proto
+	} else {
+		err := serverConfig.LoadEnvironementVariables()
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Error retrieving controller port")
+			return
+		}
+	}
+
+	server.InitializeServer(serverConfig)
 }
 
 func testImageScan(join string, joinPort uint, image, token string) {
@@ -65,7 +103,7 @@ func testImageScan(join string, joinPort uint, image, token string) {
 	ctx, cancel := context.WithTimeout(context.Background(), repoScanTimeout)
 	defer cancel()
 
-	client, err := getControllerServiceClient(join, (uint16)(joinPort))
+	client, err := server.GetControllerServiceClient(join, (uint16)(joinPort))
 	if err != nil {
 		log.WithFields(log.Fields{"error": err.Error()}).Error("Failed to initiate grpc call")
 		return
