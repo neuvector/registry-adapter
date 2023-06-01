@@ -19,7 +19,8 @@ import (
 const scanReportURL = "/endpoint/api/v1/scan/"
 const scanEndpoint = "/endpoint/api/v1/scan"
 const metadataEndpoint = "/endpoint/api/v1/metadata"
-const adapterPort = "9443"
+const adapterHttpsPort = "9443"
+const adapterHttpPort = "8090"
 const certFile = "/etc/neuvector/certs/ssl-cert.pem"
 const keyFile = "/etc/neuvector/certs/ssl-cert.key"
 
@@ -70,14 +71,13 @@ func InitializeServer(config *config.ServerConfig) {
 		if serverConfig.ServerProto == "https" {
 			log.Debug("Start https")
 
-			addr := fmt.Sprintf(":%s", adapterPort)
 			tlsconfig := &tls.Config{
 				MinVersion:               tls.VersionTLS11,
 				PreferServerCipherSuites: true,
 				CipherSuites:             utils.GetSupportedTLSCipherSuites(),
 			}
 			server := &http.Server{
-				Addr:      addr,
+				Addr:      fmt.Sprintf(":%s", adapterHttpsPort),
 				TLSConfig: tlsconfig,
 				// ReadTimeout:  time.Duration(5) * time.Second,
 				// WriteTimeout: time.Duration(35) * time.Second,
@@ -86,7 +86,7 @@ func InitializeServer(config *config.ServerConfig) {
 			err = server.ListenAndServeTLS(certFile, keyFile)
 		} else {
 			log.Debug("Start http")
-			http.ListenAndServe("0.0.0.0:8090", nil)
+			http.ListenAndServe(fmt.Sprintf(":%s", adapterHttpPort), nil)
 		}
 
 		if err != nil {

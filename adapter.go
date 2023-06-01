@@ -30,10 +30,11 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
-	yamlPath := flag.String("y", "", "yaml path")
+	// when run in container, values are read from the environment variables
 	proto := flag.String("proto", "https", "Server protocol")
 	join := flag.String("j", "", "Controller join address")
 	joinPort := flag.Uint("join_port", 0, "Controller join port")
+
 	image := flag.String("image", "", "Test image path")
 	token := flag.String("token", "", "Test image token")
 
@@ -50,29 +51,15 @@ func main() {
 		return
 	}
 
-	var serverConfig *config.ServerConfig
-	if *yamlPath != "" {
-		var err error
-		serverConfig, err = config.ReadYAML(*yamlPath)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error("Error loading YAML file")
-			return
-		}
-	} else {
-		serverConfig = &config.ServerConfig{
-			Auth: config.Authorization{
-				AuthorizationType: "basic",
-				UsernameVariable:  "harbor-auth-username",
-				PasswordVariable:  "harbor-auth-password",
-			},
-			ControllerIPVariable: "CTRL_SERVER_IP",
-		}
-	}
+	var serverConfig config.ServerConfig
 
 	if *join != "" {
 		serverConfig.ControllerIP = *join
 		serverConfig.ControllerPort = uint16(*joinPort)
 		serverConfig.ServerProto = *proto
+		serverConfig.Auth.AuthorizationType = config.AUTH_BASIC
+		serverConfig.Auth.UsernameVariable = config.EnvHarborAuthUsername
+		serverConfig.Auth.PasswordVariable = config.EnvHarborAuthPassword
 	} else {
 		err := serverConfig.LoadEnvironementVariables()
 		if err != nil {
@@ -81,7 +68,7 @@ func main() {
 		}
 	}
 
-	server.InitializeServer(serverConfig)
+	server.InitializeServer(&serverConfig)
 }
 
 func testImageScan(join string, joinPort uint, image, token string) {
