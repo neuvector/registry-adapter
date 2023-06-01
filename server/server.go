@@ -17,6 +17,9 @@ import (
 const scanReportURL = "/endpoint/api/v1/scan/"
 const scanEndpoint = "/endpoint/api/v1/scan"
 const metadataEndpoint = "/endpoint/api/v1/metadata"
+const adapterPort = "9443"
+const certFile = "/etc/neuvector/certs/ssl-cert.pem"
+const keyFile = "/etc/neuvector/certs/ssl-cert.key"
 
 const reportSuffixURL = "/report"
 const dataCheckInterval = 1.0
@@ -44,30 +47,53 @@ var queueMap = QueueMap{Entries: make(map[int]ScanRequest)}
 
 //InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
 func InitializeServer(config *config.ServerConfig) {
+	// addr := fmt.Sprintf(":%s", adapterPort)
+	// tlsconfig := &tls.Config{
+	// 	MinVersion:               tls.VersionTLS11,
+	// 	PreferServerCipherSuites: true,
+	// 	CipherSuites:             utils.GetSupportedTLSCipherSuites(),
+	// }
+	// server := &http.Server{
+	// 	Addr:      addr,
+	// 	TLSConfig: tlsconfig,
+	// 	// ReadTimeout:  time.Duration(5) * time.Second,
+	// 	// WriteTimeout: time.Duration(35) * time.Second,
+	// 	TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0), // disable http/2
+	// }
 	serverConfig = *config
 	log.SetLevel(log.DebugLevel)
 	workloadID = Counter{count: 1}
 	concurrentJobs = Counter{count: 0}
 	defer http.DefaultClient.CloseIdleConnections()
-	go processQueueMap()
-	go pruneOldEntries()
 	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
 	http.HandleFunc(scanEndpoint, authenticateHarbor(scan))
 	http.HandleFunc(scanReportURL, authenticateHarbor(scanResult))
 	log.WithFields(log.Fields{}).Debug("Server Started")
+
+	go processQueueMap()
+	go pruneOldEntries()
 	http.ListenAndServe("0.0.0.0:8090", nil)
+	// for {
+	// 	log.Debug("Start TLS")
+	// 	if err := server.ListenAndServeTLS(certFile, keyFile); err != nil {
+	// 		if err != nil {
+	// 			log.WithFields(log.Fields{"error": err}).Error("Error starting https server")
+	// 			return
+	// 		}
+	// 	} else {
+	// 		break
+	// 	}
+
+	// }
 }
 
 //unhandled is the default response for unhandled urls.
 func unhandled(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
-	if req.URL.Path != "/" {
-		http.NotFound(w, req)
-		log.WithFields(log.Fields{"endpoint": req.URL}).Warning("Unhandled HTTP Endpoint")
-		return
-	}
+	http.NotFound(w, req)
+	log.WithFields(log.Fields{"url": req.URL}).Debug("Unhandled HTTP Endpoint")
 }
 
 //authenticateHarbor wraps other handlerfuncs with basic authentication.
