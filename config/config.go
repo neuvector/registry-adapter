@@ -28,8 +28,8 @@ type ServerConfig struct {
 
 type Authorization struct {
 	AuthorizationType string `yaml:"AuthorizationType"`
-	UsernameVariable  string
-	PasswordVariable  string
+	UsernameVariable  string `yaml:"UsernameVariable"`
+	PasswordVariable  string `yaml:"PasswordVariable"`
 }
 
 //readYAML reads in the external YAML config file.

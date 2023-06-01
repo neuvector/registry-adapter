@@ -96,7 +96,6 @@ func InitializeServer(config *config.ServerConfig) {
 			break
 		}
 	}
-
 }
 
 //unhandled is the default response for unhandled urls.
@@ -110,8 +109,6 @@ func unhandled(w http.ResponseWriter, req *http.Request) {
 
 //authenticateHarbor wraps other handlerfuncs with basic authentication.
 func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
-	log.Info()
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch authType := strings.ToLower(serverConfig.Auth.AuthorizationType); authType {
 		case "basic":
