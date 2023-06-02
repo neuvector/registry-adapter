@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/neuvector/neuvector/share"
+	"github.com/neuvector/neuvector/share/utils"
 	"github.com/neuvector/registry-adapter/config"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,6 +19,10 @@ import (
 const scanReportURL = "/endpoint/api/v1/scan/"
 const scanEndpoint = "/endpoint/api/v1/scan"
 const metadataEndpoint = "/endpoint/api/v1/metadata"
+const adapterHttpsPort = "9443"
+const adapterHttpPort = "8090"
+const certFile = "/etc/neuvector/certs/ssl-cert.pem"
+const keyFile = "/etc/neuvector/certs/ssl-cert.key"
 
 const reportSuffixURL = "/report"
 const dataCheckInterval = 1.0
@@ -49,25 +55,56 @@ func InitializeServer(config *config.ServerConfig) {
 	workloadID = Counter{count: 1}
 	concurrentJobs = Counter{count: 0}
 	defer http.DefaultClient.CloseIdleConnections()
+	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
+
 	go processQueueMap()
 	go pruneOldEntries()
-	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
+
+	// Start REST server
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
 	http.HandleFunc(scanEndpoint, authenticateHarbor(scan))
 	http.HandleFunc(scanReportURL, authenticateHarbor(scanResult))
-	log.WithFields(log.Fields{}).Debug("Server Started")
-	http.ListenAndServe("0.0.0.0:8090", nil)
+
+	for {
+		var err error
+		if serverConfig.ServerProto == "https" {
+			log.Debug("Start https")
+
+			tlsconfig := &tls.Config{
+				MinVersion:               tls.VersionTLS11,
+				PreferServerCipherSuites: true,
+				CipherSuites:             utils.GetSupportedTLSCipherSuites(),
+			}
+			server := &http.Server{
+				Addr:      fmt.Sprintf(":%s", adapterHttpsPort),
+				TLSConfig: tlsconfig,
+				// ReadTimeout:  time.Duration(5) * time.Second,
+				// WriteTimeout: time.Duration(35) * time.Second,
+				TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0), // disable http/2
+			}
+			err = server.ListenAndServeTLS(certFile, keyFile)
+		} else {
+			log.Debug("Start http")
+			http.ListenAndServe(fmt.Sprintf(":%s", adapterHttpPort), nil)
+		}
+
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Error starting server")
+			time.Sleep(time.Second * 5)
+		} else {
+			break
+		}
+	}
 }
 
 //unhandled is the default response for unhandled urls.
 func unhandled(w http.ResponseWriter, req *http.Request) {
+	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
-	if req.URL.Path != "/" {
-		http.NotFound(w, req)
-		log.WithFields(log.Fields{"endpoint": req.URL}).Warning("Unhandled HTTP Endpoint")
-		return
-	}
+
+	http.NotFound(w, req)
+	log.WithFields(log.Fields{"endpoint": req.URL}).Warning("Unhandled HTTP Endpoint")
 }
 
 //authenticateHarbor wraps other handlerfuncs with basic authentication.
@@ -77,7 +114,7 @@ func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
 		case "basic":
 			incUserName, incPass, ok := r.BasicAuth()
 			if ok {
-				username := os.Getenv(serverConfig.Auth.UsernameVaribale)
+				username := os.Getenv(serverConfig.Auth.UsernameVariable)
 				pass := os.Getenv(serverConfig.Auth.PasswordVariable)
 				if incUserName == username && incPass == pass {
 					log.Debug("Authentication successful")
@@ -95,8 +132,9 @@ func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
 
 //metadata returns the basic metadata harbor requests regularly from the adapter.
 func metadata(w http.ResponseWriter, req *http.Request) {
+	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
-	log.WithFields(log.Fields{"request": req}).Info("Metadata request received")
+
 	properties := map[string]string{
 		"harbor.scanner-adapter/scanner-type": "os-package-vulnerability",
 	}
@@ -129,7 +167,9 @@ func metadata(w http.ResponseWriter, req *http.Request) {
 
 //scan translates incoming requests into ScanRequest and queues them for processing.
 func scan(w http.ResponseWriter, req *http.Request) {
+	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
+
 	scanRequest := ScanRequest{}
 	err := json.NewDecoder(req.Body).Decode(&scanRequest)
 	if err != nil {
@@ -317,7 +357,9 @@ func mimestring(mimetype string, subtype string, inparams map[string]string) str
 
 //scanResult returns the scan report with the matching id when requested.
 func scanResult(w http.ResponseWriter, req *http.Request) {
+	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
+
 	id := getIDFromReportRequest(req.URL.String())
 	id = strings.Split(id, "/")[0]
 	reportCache.Lock()
