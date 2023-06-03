@@ -18,8 +18,9 @@ const scanReportURL = "/endpoint/api/v1/scan/"
 const scanEndpoint = "/endpoint/api/v1/scan"
 const metadataEndpoint = "/endpoint/api/v1/metadata"
 const adapterPort = "9443"
-const certFile = "/etc/neuvector/certs/ssl-cert.pem"
-const keyFile = "/etc/neuvector/certs/ssl-cert.key"
+
+const certFile = "/etc/neuvector/certs/test/neuvector_adapter.crt"
+const keyFile = "/etc/neuvector/certs/test/ssl-cert.key"
 
 const reportSuffixURL = "/report"
 const dataCheckInterval = 1.0
@@ -47,19 +48,7 @@ var queueMap = QueueMap{Entries: make(map[int]ScanRequest)}
 
 //InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
 func InitializeServer(config *config.ServerConfig) {
-	// addr := fmt.Sprintf(":%s", adapterPort)
-	// tlsconfig := &tls.Config{
-	// 	MinVersion:               tls.VersionTLS11,
-	// 	PreferServerCipherSuites: true,
-	// 	CipherSuites:             utils.GetSupportedTLSCipherSuites(),
-	// }
-	// server := &http.Server{
-	// 	Addr:      addr,
-	// 	TLSConfig: tlsconfig,
-	// 	// ReadTimeout:  time.Duration(5) * time.Second,
-	// 	// WriteTimeout: time.Duration(35) * time.Second,
-	// 	TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0), // disable http/2
-	// }
+	addr := fmt.Sprintf(":%s", adapterPort)
 	serverConfig = *config
 	log.SetLevel(log.DebugLevel)
 	workloadID = Counter{count: 1}
@@ -74,19 +63,18 @@ func InitializeServer(config *config.ServerConfig) {
 
 	go processQueueMap()
 	go pruneOldEntries()
-	http.ListenAndServe("0.0.0.0:8090", nil)
-	// for {
-	// 	log.Debug("Start TLS")
-	// 	if err := server.ListenAndServeTLS(certFile, keyFile); err != nil {
-	// 		if err != nil {
-	// 			log.WithFields(log.Fields{"error": err}).Error("Error starting https server")
-	// 			return
-	// 		}
-	// 	} else {
-	// 		break
-	// 	}
+	for {
+		log.Debug("Start TLS")
+		if err := http.ListenAndServeTLS(addr, certFile, keyFile, nil); err != nil {
+			if err != nil {
+				log.WithFields(log.Fields{"error": err}).Error("Error starting https server")
+				return
+			}
+		} else {
+			break
+		}
 
-	// }
+	}
 }
 
 //unhandled is the default response for unhandled urls.
