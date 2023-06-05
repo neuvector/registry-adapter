@@ -7,11 +7,11 @@ type ScanRequestQueue struct {
 	queue []ScanRequest
 }
 
-func (scanRequestQueue *ScanRequestQueue) enqueue(newRequest ScanRequest) {
+func (scanRequestQueue *ScanRequestQueue) Enqueue(newRequest ScanRequest) {
 	scanRequestQueue.queue = append(scanRequestQueue.queue, newRequest)
 }
 
-func (scanRequestQueue *ScanRequestQueue) dequeue(newRequest ScanRequest) ScanRequest {
+func (scanRequestQueue *ScanRequestQueue) Dequeue() ScanRequest {
 	current := scanRequestQueue.queue[0]
 	if len(scanRequestQueue.queue) == 1 {
 		scanRequestQueue.queue = []ScanRequest{}
@@ -19,4 +19,8 @@ func (scanRequestQueue *ScanRequestQueue) dequeue(newRequest ScanRequest) ScanRe
 	}
 	scanRequestQueue.queue = scanRequestQueue.queue[1:]
 	return current
+}
+
+func (scanRequestQueue *ScanRequestQueue) Length() int {
+	return len(scanRequestQueue.queue)
 }

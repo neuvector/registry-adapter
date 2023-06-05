@@ -46,7 +46,7 @@ var nvScanner = ScannerSpec{
 }
 
 var reportCache = ReportData{ScanReports: make(map[string]ScanReport)}
-var queueMap = QueueMap{Entries: make(map[int]ScanRequest)}
+var scanRequestQueue = ScanRequestQueue{}
 
 //InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
 func InitializeServer(config *config.ServerConfig) {
@@ -56,15 +56,12 @@ func InitializeServer(config *config.ServerConfig) {
 	concurrentJobs = Counter{count: 0}
 	defer http.DefaultClient.CloseIdleConnections()
 	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
-
-	go processQueueMap()
-	go pruneOldEntries()
-
-	// Start REST server
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
 	http.HandleFunc(scanEndpoint, authenticateHarbor(scan))
 	http.HandleFunc(scanReportURL, authenticateHarbor(scanResult))
+	go processQueue()
+	go pruneOldEntries()
 
 	for {
 		var err error
@@ -184,12 +181,12 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 
 	workloadID.Lock()
-	queueMap.Lock()
+	scanRequestQueue.Lock()
 	scanId := ScanRequestReturn{ID: fmt.Sprintf("%v", workloadID.GetNoLock())}
 	scanRequest.WorkloadID = scanId.ID
-	queueMap.Entries[workloadID.GetNoLock()] = scanRequest
+	scanRequestQueue.Enqueue(scanRequest)
 	workloadID.Increment()
-	queueMap.Unlock()
+	scanRequestQueue.Unlock()
 	workloadID.Unlock()
 
 	reportCache.Lock()
@@ -205,36 +202,33 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{}).Debug("End of scan request.")
 }
 
-//processQueueMap goes through the queueMap in first-in-first-out order if concurrent jobs are less than the maximum allowed jobs.
-func processQueueMap() {
-	currentJob := 1
+//processQueue goes through the queue in first-in-first-out order if concurrent jobs are less than the maximum allowed jobs.
+func processQueue() {
 	for {
 		time.Sleep(time.Second * time.Duration(dataCheckInterval))
 
-		queueMap.Lock()
-		job, ok := queueMap.Entries[currentJob]
-		if ok {
+		scanRequestQueue.Lock()
+		if scanRequestQueue.Length() > 0 {
 			concurrentJobs.Lock()
 			availableScanners, err := pollMaxConcurrent()
 			if err != nil {
-				queueMap.Unlock()
+				scanRequestQueue.Unlock()
 				concurrentJobs.Unlock()
 				log.WithFields(log.Fields{"error": err}).Error("Error retrieving available scanners")
 				continue
 			}
 			if uint32(concurrentJobs.GetNoLock()) <= availableScanners {
+				job := scanRequestQueue.Dequeue()
 				go processScanTask(job)
 				concurrentJobs.Increment()
-				delete(queueMap.Entries, currentJob)
-				queueMap.Unlock()
-				currentJob++
+				scanRequestQueue.Unlock()
 			} else {
-				queueMap.Unlock()
+				scanRequestQueue.Unlock()
 				time.Sleep(time.Second * 30)
 			}
 			concurrentJobs.Unlock()
 		} else {
-			queueMap.Unlock()
+			scanRequestQueue.Unlock()
 		}
 	}
 }
@@ -264,6 +258,7 @@ func processScanTask(scanRequest ScanRequest) {
 	concurrentJobs.Decrement()
 
 	reportCache.Lock()
+	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID}).Debug("Scan sent to controller")
 	reportCache.ScanReports[scanRequest.WorkloadID] = convertRPCReportToScanReport(result)
 	reportCache.Unlock()
 }
@@ -367,7 +362,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 		log.WithFields(log.Fields{"id": id}).Debug("Entry found for scan report")
 		switch status := reportCache.ScanReports[id].Status; status {
 		case http.StatusFound:
-			log.WithFields(log.Fields{"id": id}).Debug("Result not found for scan report")
+			log.WithFields(log.Fields{"id": id}).Debug("Result not ready yet for scan report")
 			w.Header().Add("Location", req.URL.String())
 			w.Header().Add("Refresh-After", "60")
 			w.WriteHeader(http.StatusFound)
@@ -383,7 +378,6 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(val.Status)
 		}
 	} else {
-		log.WithFields(log.Fields{"id": id}).Debug("Result not found for scan report (2)")
 		w.Header().Add("Location", req.URL.String())
 		w.Header().Add("Refresh-After", "60")
 		w.WriteHeader(302)
