@@ -30,6 +30,8 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
+	log.WithFields(log.Fields{"version": Version}).Info("START")
+
 	// when run in container, values are read from the environment variables
 	proto := flag.String("proto", "https", "Server protocol")
 	join := flag.String("j", "", "Controller join address")
