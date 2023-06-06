@@ -9,7 +9,7 @@ STAGE_DIR = stage
 copy_adpt:
 	mkdir -p ${STAGE_DIR}/usr/local/bin/
 	#
-	cp adapter ${STAGE_DIR}/usr/local/bin/
+	cp registry-adapter/adapter ${STAGE_DIR}/usr/local/bin/
 
 stage_init:
 	rm -rf ${STAGE_DIR}; mkdir -p ${STAGE_DIR}
