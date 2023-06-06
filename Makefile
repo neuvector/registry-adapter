@@ -18,7 +18,7 @@ stage_adpt: stage_init copy_adpt
 
 adapter_image: stage_adpt
 	docker pull neuvector/adapter_base:${BASE_IMAGE_TAG}
-	docker build --build-arg NV_TAG=$(NV_TAG) --build-arg BASE_IMAGE_TAG=${BASE_IMAGE_TAG} -t neuvector/registry-adapter -f Dockerfile .
+	docker build --build-arg NV_TAG=$(NV_TAG) --build-arg BASE_IMAGE_TAG=${BASE_IMAGE_TAG} -t neuvector/registry-adapter -f registry-adapter/build/Dockerfile .
 
 binary:
 	@echo "Making $@ ..."
