@@ -1811,6 +1811,7 @@ type RESTSystemConfig struct {
 	ModeAutoM2PDuration       int64                     `json:"mode_auto_m2p_duration"`
 	ScannerAutoscale          RESTSystemConfigAutoscale `json:"scanner_autoscale"`
 	NoTelemetryReport         bool                      `json:"no_telemetry_report"`
+	CspType                   string                    `json:"csp_type"`
 }
 
 type RESTSystemConfigData struct {
@@ -2156,14 +2157,15 @@ type RESTScanReportData struct {
 }
 
 type RESTScanReport struct {
-	Vuls    []*RESTVulnerability `json:"vulnerabilities"`
-	Modules []*RESTScanModule    `json:"modules,omitempty"`
-	Checks  []*RESTBenchItem     `json:"checks,omitempty"`
-	Secrets []*RESTScanSecret    `json:"secrets,omitempty"`
-	SetIDs  []*RESTScanSetIdPerm `json:"setid_perms,omitempty"`
-	Envs    []string             `json:"envs,omitempty"`
-	Labels  map[string]string    `json:"labels,omitempty"`
-	Cmds    []string             `json:"cmds,omitempty"`
+	Vuls      []*RESTVulnerability `json:"vulnerabilities"`
+	Modules   []*RESTScanModule    `json:"modules,omitempty"`
+	Checks    []*RESTBenchItem     `json:"checks,omitempty"`
+	Secrets   []*RESTScanSecret    `json:"secrets,omitempty"`
+	SetIDs    []*RESTScanSetIdPerm `json:"setid_perms,omitempty"`
+	Envs      []string             `json:"envs,omitempty"`
+	Labels    map[string]string    `json:"labels,omitempty"`
+	Cmds      []string             `json:"cmds,omitempty"`
+	Verifiers []string             `json:"verifiers,omitempty"`
 }
 
 type RESTScanLayer struct {
@@ -3116,10 +3118,11 @@ type RESTAdmCatOptions struct {
 }
 
 type RESTAdmRuleTypeOptions struct {
-	DenyOptions      *RESTAdmCatOptions      `json:"deny_options"`
-	ExceptionOptions *RESTAdmCatOptions      `json:"exception_options"`
-	PspCollection    []*RESTAdmRuleCriterion `json:"psp_collection,omitempty"`
-	PssCollections   map[string][]string     `json:"pss_collections,omitempty"`
+	DenyOptions       *RESTAdmCatOptions      `json:"deny_options"`
+	ExceptionOptions  *RESTAdmCatOptions      `json:"exception_options"`
+	PspCollection     []*RESTAdmRuleCriterion `json:"psp_collection,omitempty"`
+	PssCollections    map[string][]string     `json:"pss_collections,omitempty"`
+	SigstoreVerifiers []string                `json:"sigstore_verifiers,omitempty"`
 }
 
 type RESTAdmissionState struct {
@@ -3417,6 +3420,7 @@ type RESTAdminCriteriaTemplate struct {
 
 const (
 	ApikeyExpireNever      string = "never"
+	ApikeyExpireOneHour    string = "onehour"
 	ApikeyExpireOneDay     string = "oneday"
 	ApikeyExpireOneMonth   string = "onemonth"
 	ApikeyExpireOneYear    string = "oneyear"
@@ -3472,4 +3476,60 @@ type RESTSelfApikeyData struct {
 	Apikey        *RESTApikey                      `json:"apikey"`
 	GlobalPermits []*RESTRolePermission            `json:"global_permissions,omitempty"`
 	DomainPermits map[string][]*RESTRolePermission `json:"domain_permissions,omitempty"` // domain -> permissions
+}
+
+type REST_SigstoreRootOfTrust_GET struct {
+	Name           string                  `json:"name"`
+	IsPrivate      bool                    `json:"is_private"`
+	RekorPublicKey string                  `json:"rekor_public_key,omitempty"`
+	RootCert       string                  `json:"root_cert,omitempty"`
+	SCTPublicKey   string                  `json:"sct_public_key,omitempty"`
+	Verifiers      []REST_SigstoreVerifier `json:"verifiers,omitempty"`
+	CfgType        string                  `json:"cfg_type"`
+	Comment        string                  `json:"comment"`
+}
+
+type REST_SigstoreRootOfTrust_POST struct {
+	Name           string `json:"name"`
+	IsPrivate      bool   `json:"is_private"`
+	RekorPublicKey string `json:"rekor_public_key,omitempty"`
+	RootCert       string `json:"root_cert,omitempty"`
+	SCTPublicKey   string `json:"sct_public_key,omitempty"`
+	Comment        string `json:"comment"`
+}
+
+type REST_SigstoreRootOfTrust_PATCH struct {
+	RekorPublicKey *string `json:"rekor_public_key,omitempty"`
+	RootCert       *string `json:"root_cert,omitempty"`
+	SCTPublicKey   *string `json:"sct_public_key,omitempty"`
+	Comment        *string `json:"comment,omitempty"`
+}
+
+type REST_SigstoreVerifier struct {
+	Name         string `json:"name"`
+	VerifierType string `json:"verifier_type"`
+	IgnoreTLog   bool   `json:"ignore_tlog"`
+	IgnoreSCT    bool   `json:"ignore_sct"`
+	PublicKey    string `json:"public_key"`
+	CertIssuer   string `json:"cert_issuer"`
+	CertSubject  string `json:"cert_subject"`
+	Comment      string `json:"comment"`
+}
+
+type REST_SigstoreVerifier_PATCH struct {
+	VerifierType *string `json:"verifier_type,omitempty"`
+	IgnoreTLog   *bool   `json:"ignore_tlog,omitempty"`
+	IgnoreSCT    *bool   `json:"ignore_sct,omitempty"`
+	PublicKey    *string `json:"public_key,omitempty"`
+	CertIssuer   *string `json:"cert_issuer,omitempty"`
+	CertSubject  *string `json:"cert_subject,omitempty"`
+	Comment      *string `json:"comment,omitempty"`
+}
+
+type REST_SigstoreRootOfTrustCollection struct {
+	RootsOfTrust []REST_SigstoreRootOfTrust_GET `json:"roots_of_trust"`
+}
+
+type REST_SigstoreVerifierCollection struct {
+	Verifiers []REST_SigstoreVerifier `json:"verifiers"`
 }

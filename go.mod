@@ -42,7 +42,7 @@ replace (
 require (
 	github.com/aws/aws-sdk-go v1.42.36 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/neuvector/neuvector v0.0.0-20230519011952-cc0a840874f3
+	github.com/neuvector/neuvector v0.0.0-20230614200210-b4675e056d91
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.8.2 // indirect
 	google.golang.org/grpc v1.40.0

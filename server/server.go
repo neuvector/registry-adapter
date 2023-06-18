@@ -40,9 +40,9 @@ var MimeOCI = "application/vnd.oci.image.manifest.v1+json"
 var MimeDockerIM = "application/vnd.docker.distribution.manifest.v2+json"
 var MimeSecurityVulnReport = "application/vnd.security.vulnerability.report; version=1.1"
 var nvScanner = ScannerSpec{
-	Name:    "neuvector",
-	Vendor:  "neuvector_vendor",
-	Version: "33.5",
+	Name:    "NeuVector",
+	Vendor:  "NeuVector",
+	Version: "",
 }
 
 var reportCache = ReportData{ScanReports: make(map[string]ScanReport)}
@@ -55,7 +55,12 @@ func InitializeServer(config *config.ServerConfig) {
 	workloadID = Counter{count: 1}
 	concurrentJobs = Counter{count: 0}
 	defer http.DefaultClient.CloseIdleConnections()
-	GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
+	_, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Error retrieving rpc client")
+	}
+	time.Sleep(time.Second * 3)
+	pollMaxConcurrent()
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
 	http.HandleFunc(scanEndpoint, authenticateHarbor(scan))
@@ -83,7 +88,7 @@ func InitializeServer(config *config.ServerConfig) {
 			err = server.ListenAndServeTLS(certFile, keyFile)
 		} else {
 			log.Debug("Start http")
-			http.ListenAndServe(fmt.Sprintf(":%s", adapterHttpPort), nil)
+			err = http.ListenAndServe(fmt.Sprintf(":%s", adapterHttpPort), nil)
 		}
 
 		if err != nil {
@@ -252,6 +257,10 @@ func processScanTask(scanRequest ScanRequest) {
 	defer cancel()
 	result, err := client.ScanImage(ctx, &request)
 	if err != nil {
+		reportCache.Lock()
+		report := reportCache.ScanReports[scanRequest.WorkloadID]
+		report.Status = http.StatusInternalServerError
+		reportCache.Unlock()
 		log.WithFields(log.Fields{"error": err}).Error("Error sending scan request")
 		return
 	}
@@ -311,7 +320,8 @@ func pollMaxConcurrent() (uint32, error) {
 		log.WithFields(log.Fields{"error": err}).Error("Error retrieving scanners from controller")
 		return 0, err
 	}
-	log.WithFields(log.Fields{"scanners": scanners.Scanners, "idle scanners": scanners.IdleScanners, "max scanners available": scanners.MaxScanners}).Debug("Scanners reported")
+	nvScanner.Version = scanners.ScannerVersion
+	log.WithFields(log.Fields{"scanners": scanners.Scanners, "idle scanners": scanners.IdleScanners, "max scanners available": scanners.MaxScanners, "scanner version": nvScanner.Version}).Debug("Scanners reported")
 	return scanners.MaxScanners, nil
 }
 

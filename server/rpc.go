@@ -19,7 +19,10 @@ func createControllerScanAdapterServiceWrapper(conn *grpc.ClientConn) cluster.Se
 func GetControllerServiceClient(joinIP string, joinPort uint16) (share.ControllerScanAdapterServiceClient, error) {
 	if cluster.GetGRPCClientEndpoint(controller) == "" {
 		ep := fmt.Sprintf("%s:%v", joinIP, joinPort)
-		cluster.CreateGRPCClient(controller, ep, true, createControllerScanAdapterServiceWrapper)
+		err := cluster.CreateGRPCClient(controller, ep, true, createControllerScanAdapterServiceWrapper)
+		if err != nil {
+			return nil, err
+		}
 	}
 	c, err := cluster.GetGRPCClient(controller, nil, nil)
 	if err == nil {
