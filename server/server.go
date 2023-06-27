@@ -28,7 +28,7 @@ const reportSuffixURL = "/report"
 const dataCheckInterval = 1.0
 
 const rpcTimeout = time.Minute * 20
-const expirationTime = time.Minute * 60
+const expirationTime = time.Minute * 25
 const pruneTime = time.Minute * 5
 
 var workloadID Counter
@@ -243,6 +243,10 @@ func processQueue() {
 func processScanTask(scanRequest ScanRequest) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
+		reportCache.Lock()
+		report := reportCache.ScanReports[scanRequest.WorkloadID]
+		report.Status = http.StatusInternalServerError
+		reportCache.Unlock()
 		log.WithFields(log.Fields{"error": err}).Error("Error retrieving rpc client")
 		return
 	}
@@ -267,7 +271,7 @@ func processScanTask(scanRequest ScanRequest) {
 	concurrentJobs.Decrement()
 
 	reportCache.Lock()
-	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID}).Debug("Scan sent to controller")
+	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
 	reportCache.ScanReports[scanRequest.WorkloadID] = convertRPCReportToScanReport(result)
 	reportCache.Unlock()
 }
@@ -382,6 +386,11 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 				log.WithFields(log.Fields{"error": err}).Error("json encoder error")
 				w.WriteHeader(http.StatusInternalServerError)
 			}
+			log.WithFields(log.Fields{"id": id}).Debug("Scan report sent to Harbor")
+			delete(reportCache.ScanReports, id)
+		case http.StatusInternalServerError:
+			log.WithFields(log.Fields{"id": id}).Debug("returned http 500 for workload id")
+			http.Error(w, "NV Internal Server Error", http.StatusInternalServerError)
 			delete(reportCache.ScanReports, id)
 		default:
 			w.Header().Add("Location", req.URL.String())
@@ -389,8 +398,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.Header().Add("Location", req.URL.String())
-		w.Header().Add("Refresh-After", "60")
-		w.WriteHeader(302)
+		w.WriteHeader(http.StatusNotFound)
 	}
 	reportCache.Unlock()
 }
