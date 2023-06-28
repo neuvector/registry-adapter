@@ -29,7 +29,7 @@ const dataCheckInterval = 1.0
 
 const rpcTimeout = time.Minute * 20
 const expirationTime = time.Minute * 25
-const pruneTime = time.Minute * 5
+const pruneTime = time.Minute * 60
 
 var workloadID Counter
 var concurrentJobs Counter
@@ -57,10 +57,13 @@ func InitializeServer(config *config.ServerConfig) {
 	defer http.DefaultClient.CloseIdleConnections()
 	_, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Error retrieving rpc client")
+		log.WithFields(log.Fields{"error": err}).Error("Error establishing grpc connection to controller")
+		return
 	}
-	time.Sleep(time.Second * 3)
-	pollMaxConcurrent()
+	for nvScanner.Version == "" {
+		time.Sleep(time.Second * 3)
+		pollMaxConcurrent()
+	}
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
 	http.HandleFunc(scanEndpoint, authenticateHarbor(scan))
@@ -195,7 +198,8 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	workloadID.Unlock()
 
 	reportCache.Lock()
-	reportCache.ScanReports[scanId.ID] = ScanReport{Status: http.StatusFound, ExpirationTime: generateExpirationTime()}
+	expirationTime := generateExpirationTime()
+	reportCache.ScanReports[scanId.ID] = ScanReport{Status: http.StatusFound, ExpirationTime: expirationTime}
 	reportCache.Unlock()
 
 	err = json.NewEncoder(w).Encode(scanId)
@@ -246,8 +250,10 @@ func processScanTask(scanRequest ScanRequest) {
 		reportCache.Lock()
 		report := reportCache.ScanReports[scanRequest.WorkloadID]
 		report.Status = http.StatusInternalServerError
+		reportCache.ScanReports[scanRequest.WorkloadID] = report
 		reportCache.Unlock()
-		log.WithFields(log.Fields{"error": err}).Error("Error retrieving rpc client")
+		log.WithFields(log.Fields{"error": err}).Error("Error establishing grpc connection to controller")
+		concurrentJobs.Decrement()
 		return
 	}
 	request := share.AdapterScanImageRequest{
@@ -259,19 +265,20 @@ func processScanTask(scanRequest ScanRequest) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
+	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
 	result, err := client.ScanImage(ctx, &request)
 	if err != nil {
 		reportCache.Lock()
 		report := reportCache.ScanReports[scanRequest.WorkloadID]
 		report.Status = http.StatusInternalServerError
+		reportCache.ScanReports[scanRequest.WorkloadID] = report
 		reportCache.Unlock()
 		log.WithFields(log.Fields{"error": err}).Error("Error sending scan request")
+		concurrentJobs.Decrement()
 		return
 	}
 	concurrentJobs.Decrement()
-
 	reportCache.Lock()
-	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
 	reportCache.ScanReports[scanRequest.WorkloadID] = convertRPCReportToScanReport(result)
 	reportCache.Unlock()
 }
@@ -279,7 +286,6 @@ func processScanTask(scanRequest ScanRequest) {
 //convertRPCReportToScanReport converts the rpc results from the controller into a Harbor readable format.
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
-	//TODO: Finish conversion/translation of Results
 	result.Status = http.StatusOK
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
 	return result
@@ -315,7 +321,7 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 func pollMaxConcurrent() (uint32, error) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("Error retrieving rpc client")
+		log.WithFields(log.Fields{"error": err}).Error("Error establishing grpc connection to controller")
 		return 0, err
 	}
 
@@ -390,7 +396,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 			delete(reportCache.ScanReports, id)
 		case http.StatusInternalServerError:
 			log.WithFields(log.Fields{"id": id}).Debug("returned http 500 for workload id")
-			http.Error(w, "NV Internal Server Error", http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
 			delete(reportCache.ScanReports, id)
 		default:
 			w.Header().Add("Location", req.URL.String())
