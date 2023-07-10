@@ -184,7 +184,6 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	}
 	scanRequest.Authorization = req.Header.Get("Authorization")
 
-	log.WithFields(log.Fields{"auth": scanRequest.Authorization, "registry": scanRequest.Registry, "artifact": scanRequest.Artifact}).Debug("Scan request received")
 	//Add to resultmap with wait http code
 	w.WriteHeader(http.StatusAccepted)
 
@@ -193,13 +192,15 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	scanId := ScanRequestReturn{ID: fmt.Sprintf("%v", workloadID.GetNoLock())}
 	scanRequest.WorkloadID = scanId.ID
 	scanRequestQueue.Enqueue(scanRequest)
+	log.WithFields(log.Fields{"workloadid": scanId, "auth": scanRequest.Authorization, "registry": scanRequest.Registry, "artifact": scanRequest.Artifact}).Debug("Scan request received")
 	workloadID.Increment()
 	scanRequestQueue.Unlock()
 	workloadID.Unlock()
 
 	reportCache.Lock()
 	expirationTime := generateExpirationTime()
-	reportCache.ScanReports[scanId.ID] = ScanReport{Status: http.StatusFound, ExpirationTime: expirationTime}
+	ScanReport := ScanReport{Status: http.StatusFound, ExpirationTime: expirationTime}
+	reportCache.ScanReports[scanId.ID] = ScanReport
 	reportCache.Unlock()
 
 	err = json.NewEncoder(w).Encode(scanId)
@@ -350,7 +351,7 @@ func pruneOldEntries() {
 		for key, value := range reportCache.ScanReports {
 			if value.ExpirationTime.Before(time.Now()) {
 				delete(reportCache.ScanReports, key)
-				log.WithFields(log.Fields{"key": key, "expires": value.ExpirationTime, "now": time.Now()}).Debug("Deleted entry due to expiration time")
+				log.WithFields(log.Fields{"workloadid": key, "expires": value.ExpirationTime, "now": time.Now()}).Debug("Deleted entry due to expiration time")
 			}
 		}
 		reportCache.Unlock()
@@ -404,6 +405,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.Header().Add("Location", req.URL.String())
+		log.WithFields(log.Fields{"id": id}).Debug("Entry not found for scan report")
 		w.WriteHeader(http.StatusNotFound)
 	}
 	reportCache.Unlock()
