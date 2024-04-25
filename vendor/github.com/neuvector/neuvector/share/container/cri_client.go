@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 	"unsafe"
@@ -193,7 +195,8 @@ func criGetImageMeta(conn *grpc.ClientConn, ctx context.Context, name string) (*
 	type criImageInfo struct {
 		Info struct {
 			ImageSpec struct {
-				Author string `json:"author"`
+				Author    string     `json:"author"`
+				CreatedAt time.Time  `json:"created"`
 				Config struct {
 					Enrtrypoint []string          `json:"Entrypoint"`
 					Labels      map[string]string `json:"Labels"`
@@ -226,6 +229,7 @@ func criGetImageMeta(conn *grpc.ClientConn, ctx context.Context, name string) (*
 		}
 
 		meta.Author = res.Info.ImageSpec.Author
+		meta.CreatedAt = res.Info.ImageSpec.CreatedAt
 		if res.Info.ImageSpec.Config.Labels != nil {
 			meta.Labels = res.Info.ImageSpec.Config.Labels
 		}
@@ -237,6 +241,9 @@ func criGetImageMeta(conn *grpc.ClientConn, ctx context.Context, name string) (*
 }
 
 func criGetContainerSocketPath(conn *grpc.ClientConn, ctx context.Context, id, endpoint string) (string, error) {
+	if strings.HasPrefix(endpoint, "/proc/1/root") {
+		return strings.TrimPrefix(endpoint, "/proc/1/root"), nil
+	}
 	resp, err := criContainerStatus(conn, ctx, id)
 	if err == nil {
 		endpoint = strings.TrimPrefix(endpoint, "unix://")
@@ -248,5 +255,72 @@ func criGetContainerSocketPath(conn *grpc.ClientConn, ctx context.Context, id, e
 		}
 	}
 	log.WithFields(log.Fields{"error": err, "id": id, "endpoint": endpoint}).Error("Failed to get mounting container socket")
+	return "", err
+}
+
+func criGetSelfID(conn *grpc.ClientConn, ctx context.Context, rid string) (string, error) {
+	var podname string
+	if dat, err := os.ReadFile("/etc/hostname"); err == nil {
+		podname = strings.TrimSpace(string(dat))
+	}
+
+	resp_containers, err := criListContainers(conn, ctx, true);
+	if err == nil && resp_containers != nil {
+		for _, c := range resp_containers.Containers {
+			cid := c.GetId()
+			// from id or sandboxID
+			if rid != "" {
+				if rid == cid || rid == c.GetPodSandboxId() {
+					return cid, nil
+				}
+			}
+
+			// from pod name
+			if podname != "" {
+				if labels := c.GetLabels(); labels != nil {
+					if pod, ok := labels["io.kubernetes.pod.name"]; ok && pod == podname {
+						// log.WithFields(log.Fields{"id": cid, "podname": podname}).Debug()
+						return cid, nil
+					}
+				}
+			}
+		}
+	}
+	log.WithFields(log.Fields{"podname": podname, "rid": rid}).Debug() // not found
+	return rid, err
+}
+
+func criGetImageFsInfo(conn *grpc.ClientConn, ctx context.Context) (*criRT.ImageFsInfoResponse, error) {
+	if bCriApiV1Alpha2 {
+		list, err := pb.NewImageServiceClient(conn).ImageFsInfo(ctx, &pb.ImageFsInfoRequest{})
+		return (*criRT.ImageFsInfoResponse)(unsafe.Pointer(list)), err
+	}
+	return criRT.NewImageServiceClient(conn).ImageFsInfo(ctx, &criRT.ImageFsInfoRequest{})
+}
+
+func criGetStorageDevice(conn *grpc.ClientConn, ctx context.Context) (string, error) {
+	res, err := criGetImageFsInfo(conn, ctx)
+	if err == nil {
+		for _, usage := range res.GetImageFilesystems() {
+			if fsid := usage.GetFsId(); fsid != nil {
+					dev := strings.TrimSuffix(filepath.Base(fsid.GetMountpoint()), "-images")
+					if dev == "docker" { // find the driver
+						if entries, err := os.ReadDir((filepath.Join("/proc/1/root", fsid.GetMountpoint(), "image"))); err == nil {
+							dev = "overlay2"  // default
+							for _, dir := range entries {
+								dev = dir.Name()
+								// log.WithFields(log.Fields{"dev": dev}).Debug()
+								switch dev {
+								case "overlay", "overlay2", "overlayFS", "overlayfs", "overlayFs", "aufs", "btrfs":
+									return dev, nil
+								}
+							}
+						}
+					}
+					log.WithFields(log.Fields{"dev": dev}).Debug("not found")
+					return dev, nil
+			}
+		}
+	}
 	return "", err
 }

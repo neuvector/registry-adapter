@@ -57,15 +57,15 @@ const (
 	//         (If the user's global role is 'none', it cannot be boosted on global role)
 
 	// Effective permissions for domain admin/reader roles. Even for the reserved admin/reader roles assigned to domain, they cannot access controller/enforcer objects(PERM_NV_RESOURCE)
-	PERMS_DOMAIN_READ = PERM_RUNTIME_SCAN_BASIC | PERM_REG_SCAN | PERM_NETWORK_POLICY_BASIC | PERM_SYSTEM_POLICY_BASIC | PERM_GROUP_BASIC | PERM_WORKLOAD_BASIC |
+	PERMS_DOMAIN_READ = PERM_RUNTIME_SCAN_BASIC | PERM_REG_SCAN | PERM_NETWORK_POLICY_BASIC | PERM_SYSTEM_POLICY_BASIC | PERM_GROUP_BASIC | PERM_WORKLOAD_BASIC | PERM_INFRA_BASIC |
 		PERM_COMPLIANCE_BASIC | PERM_AUTHORIZATION | PERM_SYSTEM_CONFIG | PERM_AUDIT_EVENTS | PERM_SECURITY_EVENTS_BASIC | PERM_EVENTS // all read permissions a domain admin could have eventually
 	PERMS_DOMAIN_WRITE = PERM_RUNTIME_SCAN_BASIC | PERM_REG_SCAN | PERM_NETWORK_POLICY_BASIC | PERM_SYSTEM_POLICY_BASIC | PERM_GROUP_BASIC | PERM_WORKLOAD_BASIC |
 		PERM_COMPLIANCE_BASIC | PERM_AUTHORIZATION // all write permissions a domain admin could have eventually
 	PERMS_DOMAIN = PERMS_DOMAIN_READ | PERMS_DOMAIN_WRITE // sum of all permissions that are supporedt in domain
 
 	// customer-configurable permissions: (PERM_NV_RESOURCE is non-customer-configurable permission)
-	PERMS_GLOBAL_CONFIGURABLE_READ  = PERM_ADM_CONTROL | PERM_AUTHENTICATION | PERM_CLOUD | PERM_INFRA_BASIC | PERM_VULNERABILITY | PERMS_DOMAIN_READ                                        // sum of all configurable(non-hidden) read permissions
-	PERMS_GLOBAL_CONFIGURABLE_WRITE = PERM_ADM_CONTROL | PERM_AUTHENTICATION | PERM_CLOUD | PERM_INFRA_BASIC | PERM_VULNERABILITY | PERMS_DOMAIN_WRITE | PERM_SYSTEM_CONFIG | PERM_CICD_SCAN // sum of all configurable(non-hidden) write permissions
+	PERMS_GLOBAL_CONFIGURABLE_READ  = PERM_ADM_CONTROL | PERM_AUTHENTICATION | /*PERM_CLOUD |*/ PERM_INFRA_BASIC | PERM_VULNERABILITY | PERMS_DOMAIN_READ                                        // sum of all configurable(non-hidden) read permissions
+	PERMS_GLOBAL_CONFIGURABLE_WRITE = PERM_ADM_CONTROL | PERM_AUTHENTICATION | /*PERM_CLOUD |*/ PERM_INFRA_BASIC | PERM_VULNERABILITY | PERMS_DOMAIN_WRITE | PERM_SYSTEM_CONFIG | PERM_CICD_SCAN // sum of all configurable(non-hidden) write permissions
 
 	// Effective permissions for reserved fedAdmin/fedReader/admin/reader roles on global domain, only they have PERM_NV_RESOURCE permission
 	PERMS_CLUSTER_READ  = PERM_NV_RESOURCE | PERMS_GLOBAL_CONFIGURABLE_READ
@@ -204,7 +204,7 @@ func (o *CLUSVulnerabilityProfile) GetDomain(f GetAccessObjectFunc) ([]string, [
 }
 
 func (o *CLUSDomain) GetDomain(f GetAccessObjectFunc) ([]string, []string) {
-	return nil, nil
+	return []string{o.Name}, nil
 }
 
 func (o *CLUSSigstoreRootOfTrust) GetDomain(f GetAccessObjectFunc) ([]string, []string) {
@@ -574,4 +574,8 @@ func (o *CLUSApikey) GetDomain(f GetAccessObjectFunc) ([]string, []string) {
 		domains = nil
 	}
 	return domains, nil
+}
+
+func (r *CLUSRemoteRepository) GetDomain(f GetAccessObjectFunc) ([]string, []string) {
+	return nil, nil
 }

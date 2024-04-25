@@ -1,56 +1,47 @@
 package scan
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
 	"sort"
+	"sync"
 
+	"gopkg.in/yaml.v3"
+
+	"github.com/hashicorp/go-version"
 	"github.com/neuvector/neuvector/controller/api"
-	"github.com/neuvector/neuvector/share/utils"
+	"github.com/neuvector/neuvector/share"
+	"github.com/neuvector/neuvector/share/global"
+	log "github.com/sirupsen/logrus"
 )
 
-var complianceMetas []api.RESTBenchMeta
-var complianceMetaMap map[string]api.RESTBenchMeta
+var (
+	dstPrefix                     = "/usr/local/bin/scripts/cis_yamls/"
+	kube160                       = "cis-1.6.0"
+	kube123                       = "cis-1.23"
+	kube124                       = "cis-1.24"
+	kube180                       = "cis-1.8.0"
+	rh140                         = "rh-1.4.0"
+	gke140                        = "gke-1.4.0"
+	aks140                        = "aks-1.4.0"
+	eks140                        = "eks-1.4.0"
+	defaultCISVersion             = "cis-1.8.0"
+	catchDescription              = regexp.MustCompile(`^(.*?) \([^)]*\)$`)
+	complianceMetas               []api.RESTBenchMeta
+	complianceMetaMap             = make(map[string]api.RESTBenchMeta)
+	imageBenchMetas               []api.RESTBenchMeta
+	imageBenchMetaMap             = make(map[string]api.RESTBenchMeta)
+	once                          sync.Once
+	backup_cis_items              = make(map[string]api.RESTBenchCheck)
+	backup_docker_image_cis_items = make(map[string]api.RESTBenchCheck)
+	backup_complianceSets         = make(map[string]map[string]bool)
+	cisVersion                    string
+	remediationFolder             string
+)
 
-func GetComplianceMeta() ([]api.RESTBenchMeta, map[string]api.RESTBenchMeta) {
-	if complianceMetas == nil || complianceMetaMap == nil {
-		complianceMetaMap = make(map[string]api.RESTBenchMeta)
-
-		var all []api.RESTBenchMeta
-
-		for _, item := range cis_items {
-			all = append(all, api.RESTBenchMeta{RESTBenchCheck: item})
-		}
-		for _, item := range docker_image_cis_items {
-			all = append(all, api.RESTBenchMeta{RESTBenchCheck: item})
-		}
-
-		for i, _ := range all {
-			item := &all[i]
-			item.Tags = make([]string, 0)
-			if compliancePCI.Contains(item.TestNum) {
-				item.Tags = append(item.Tags, api.ComplianceTemplatePCI)
-			}
-			if complianceGDPR.Contains(item.TestNum) {
-				item.Tags = append(item.Tags, api.ComplianceTemplateGDPR)
-			}
-			if complianceHIPAA.Contains(item.TestNum) {
-				item.Tags = append(item.Tags, api.ComplianceTemplateHIPAA)
-			}
-			if complianceNIST.Contains(item.TestNum) {
-				item.Tags = append(item.Tags, api.ComplianceTemplateNIST)
-			}
-
-			sort.Strings(item.Tags)
-			complianceMetaMap[item.TestNum] = *item
-		}
-
-		sort.Slice(all, func(i, j int) bool { return all[i].TestNum < all[j].TestNum })
-		complianceMetas = all
-	}
-
-	return complianceMetas, complianceMetaMap
-}
-
-var complianceHIPAA utils.Set = utils.NewSet(
+var complianceHIPAA []string = []string{
 	// trusted user
 	"D.1.1.2",
 	// audit
@@ -103,9 +94,9 @@ var complianceHIPAA utils.Set = utils.NewSet(
 	"K.4.2.1", "K.4.2.2", "K.4.2.3", "K.4.2.4", "K.4.2.6",
 	// cert
 	"K.4.2.10", "K.4.2.11", "K.4.2.12", "K.4.2.13",
-)
+}
 
-var complianceNIST utils.Set = utils.NewSet(
+var complianceNIST []string = []string{
 	// trusted user
 	"D.1.1.2",
 	// audit
@@ -162,9 +153,9 @@ var complianceNIST utils.Set = utils.NewSet(
 	"K.4.2.1", "K.4.2.2", "K.4.2.3", "K.4.2.4", "K.4.2.6",
 	// cert
 	"K.4.2.10", "K.4.2.11", "K.4.2.12", "K.4.2.13",
-)
+}
 
-var compliancePCI utils.Set = utils.NewSet(
+var compliancePCI []string = []string{
 	// trusted user
 	"D.1.1.2",
 
@@ -210,9 +201,9 @@ var compliancePCI utils.Set = utils.NewSet(
 	"K.4.2.1", "K.4.2.2", "K.4.2.3", "K.4.2.4", "K.4.2.6",
 	// cert
 	"K.4.2.10", "K.4.2.11", "K.4.2.12", "K.4.2.13",
-)
+}
 
-var complianceGDPR utils.Set = utils.NewSet(
+var complianceGDPR []string = []string{
 	// trusted user
 	"D.1.1.2",
 	// audit
@@ -257,7 +248,7 @@ var complianceGDPR utils.Set = utils.NewSet(
 	"K.4.2.1", "K.4.2.2", "K.4.2.3", "K.4.2.4", "K.4.2.6",
 	// cert
 	"K.4.2.10", "K.4.2.11", "K.4.2.12", "K.4.2.13",
-)
+}
 
 var docker_image_cis_items = map[string]api.RESTBenchCheck{
 	"I.4.1": api.RESTBenchCheck{
@@ -2338,4 +2329,238 @@ var cis_items = map[string]api.RESTBenchCheck{
 		Description: "Ensure that the Kubelet only makes use of Strong Cryptographic Ciphers",
 		Remediation: "If using a Kubelet config file, edit the file to set TLSCipherSuites: to TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 ,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 ,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256 or to a subset of these values. If using executable arguments, edit the kubelet service file /etc/systemd/system/kubelet.service.d/10-kubeadm.conf on each worker node and set the --tls-cipher-suites parameter as follows, or to a subset of these values. --tls-cipher- suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM _SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM _SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM _SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256 Based on your system, restart the kubelet service. For example:  systemctl daemon-reload systemctl restart kubelet.service",
 	},
+}
+
+// Map to record each complicance, inorder to update and iterate it easier.
+var complianceSets = map[string]map[string]bool{
+	api.ComplianceTemplateHIPAA: TransformArrayToMap(complianceHIPAA),
+	api.ComplianceTemplateNIST:  TransformArrayToMap(complianceNIST),
+	api.ComplianceTemplatePCI:   TransformArrayToMap(compliancePCI),
+	api.ComplianceTemplateGDPR:  TransformArrayToMap(complianceGDPR),
+}
+
+type CISCheck struct {
+	ID          string   `yaml:"id"`
+	Description string   `yaml:"description"`
+	Type        string   `yaml:"type"`
+	Category    string   `yaml:"category"`
+	Scored      bool     `yaml:"scored"`
+	Profile     string   `yaml:"profile"`
+	Automated   bool     `yaml:"automated"`
+	Tags        []string `yaml:"tags"`
+	Remediation string   `yaml:"remediation"`
+}
+
+type Group struct {
+	CISChecks []CISCheck `yaml:"checks"`
+}
+
+type CISBenchmarkConfig struct {
+	Groups []Group `yaml:"groups"`
+}
+
+func PrepareBackup() {
+	for key, value := range cis_items {
+		backup_cis_items[key] = value
+	}
+
+	for key, value := range docker_image_cis_items {
+		backup_docker_image_cis_items[key] = value
+	}
+
+	backup_complianceSets = map[string]map[string]bool{
+		api.ComplianceTemplateHIPAA: TransformArrayToMap(complianceHIPAA),
+		api.ComplianceTemplateNIST:  TransformArrayToMap(complianceNIST),
+		api.ComplianceTemplatePCI:   TransformArrayToMap(compliancePCI),
+		api.ComplianceTemplateGDPR:  TransformArrayToMap(complianceGDPR),
+	}
+}
+
+func InitComplianceMeta(platform, flavor string) ([]api.RESTBenchMeta, map[string]api.RESTBenchMeta) {
+	// Ensuring initialization happens only once
+	once.Do(func() {
+		// For fast rollback to original setting when fail
+		PrepareBackup()
+		// Check the current k8s version, then read the correct folder
+		GetCISFolder(platform, flavor)
+		GetK8sCISMeta(remediationFolder, cis_items, complianceSets)
+		PrepareBenchMeta(cis_items, &complianceMetas, complianceMetaMap, complianceSets)
+	})
+
+	return complianceMetas, complianceMetaMap
+}
+
+func GetComplianceMeta() ([]api.RESTBenchMeta, map[string]api.RESTBenchMeta) {
+
+	if complianceMetas == nil || complianceMetaMap == nil {
+		// if this is still nil, wait for the InitComplianceMeta
+		// scanUtils.InitComplianceMeta() is called in controller\controller.go before cache/rest call GetComplianceMeta => we can assume the platform / flavor is correct at this point
+		return InitComplianceMeta("", "")
+	}
+	return complianceMetas, complianceMetaMap
+}
+
+func InitImageBenchMeta() ([]api.RESTBenchMeta, map[string]api.RESTBenchMeta) {
+	// Ensuring initialization happens only once
+	once.Do(func() {
+		PrepareBenchMeta(docker_image_cis_items, &imageBenchMetas, imageBenchMetaMap, complianceSets)
+	})
+
+	return imageBenchMetas, imageBenchMetaMap
+}
+
+func GetImageBenchMeta() ([]api.RESTBenchMeta, map[string]api.RESTBenchMeta) {
+
+	if imageBenchMetas == nil || imageBenchMetaMap == nil {
+		// if this is still nil, wait for the InitComplianceMeta
+		return InitImageBenchMeta()
+	}
+	return imageBenchMetas, imageBenchMetaMap
+}
+
+func PrepareBenchMeta(items map[string]api.RESTBenchCheck, metas *[]api.RESTBenchMeta, metaMap map[string]api.RESTBenchMeta, benchComplianceSets map[string]map[string]bool) {
+	for _, item := range items {
+		*metas = append(*metas, api.RESTBenchMeta{RESTBenchCheck: item})
+	}
+
+	for i, _ := range *metas {
+		item := &(*metas)[i]
+		item.Tags = make([]string, 0)
+
+		// Iterate the compliance set to append the tag if this testitem in the complicance
+		for compliance, _ := range benchComplianceSets {
+			if _, exists := benchComplianceSets[compliance][item.TestNum]; exists {
+				item.Tags = append(item.Tags, compliance)
+			}
+		}
+
+		sort.Strings(item.Tags)
+		metaMap[item.TestNum] = *item
+	}
+
+	sort.Slice(*metas, func(i, j int) bool { return (*metas)[i].TestNum < (*metas)[j].TestNum })
+}
+
+func GetCISFolder(platform, flavor string) {
+	if global.ORCH != nil {
+		k8sVer, ocVer := global.ORCH.GetVersion(false, false)
+		if platform == share.PlatformKubernetes && flavor == share.FlavorGKE {
+			kVer, err := version.NewVersion(k8sVer)
+			if err != nil {
+				cisVersion = gke140
+			} else if kVer.Compare(version.Must(version.NewVersion("1.23"))) >= 0 {
+				cisVersion = gke140
+			} else {
+				cisVersion = defaultCISVersion
+			}
+		} else if platform == share.PlatformKubernetes && flavor == share.FlavorAKS {
+			// Currently support AKS-1.4.0 only
+			cisVersion = aks140
+		} else if platform == share.PlatformKubernetes && flavor == share.FlavorEKS {
+			// Currently support EKS-1.4.0 only
+			cisVersion = eks140
+		} else if platform == share.PlatformKubernetes && flavor == share.FlavorOpenShift {
+			ocVer, err := version.NewVersion(ocVer)
+			if err != nil {
+				cisVersion = rh140
+			} else if ocVer.Compare(version.Must(version.NewVersion("4.6"))) >= 0 {
+				cisVersion = rh140
+			} else {
+				cisVersion = defaultCISVersion
+			}
+		} else {
+			kVer, err := version.NewVersion(k8sVer)
+			if err != nil {
+				cisVersion = kube180
+			} else if kVer.Compare(version.Must(version.NewVersion("1.27"))) >= 0 {
+				cisVersion = kube180
+			} else if kVer.Compare(version.Must(version.NewVersion("1.24"))) >= 0 {
+				cisVersion = kube124
+			} else if kVer.Compare(version.Must(version.NewVersion("1.23"))) >= 0 {
+				cisVersion = kube123
+			} else if kVer.Compare(version.Must(version.NewVersion("1.16"))) >= 0 {
+				cisVersion = kube160
+			} else {
+				cisVersion = defaultCISVersion
+			}
+		}
+	} else {
+		cisVersion = defaultCISVersion
+	}
+
+	remediationFolder = fmt.Sprintf("%s%s/", dstPrefix, cisVersion)
+}
+
+func processCISBenchmarkYAML(path string, cis_bench_items map[string]api.RESTBenchCheck, benchComplianceSets map[string]map[string]bool) error {
+	fileContent, err := os.ReadFile(path)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Error reading file")
+		return err
+	}
+
+	var cisBenchmarkConfig CISBenchmarkConfig
+	err = yaml.Unmarshal(fileContent, &cisBenchmarkConfig)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error("Error unmarshalling YAML file")
+		return err
+	}
+
+	for _, group := range cisBenchmarkConfig.Groups {
+		for _, check := range group.CISChecks {
+			cis_id := fmt.Sprintf("K.%s", check.ID)
+			cis_bench_items[cis_id] = api.RESTBenchCheck{
+				TestNum:     cis_id,
+				Type:        check.Type,
+				Category:    check.Category,
+				Scored:      check.Scored,
+				Profile:     check.Profile,
+				Automated:   check.Automated,
+				Description: catchDescription.ReplaceAllString(check.Description, "$1"),
+				Remediation: check.Remediation,
+			}
+
+			envolvedCompliance := TransformArrayToMap(check.Tags)
+			for compliance := range benchComplianceSets {
+				// Update the compliance
+				// if cis_id affect the compliance, make sure it in the compliance.
+				// else, make sure the cis_id is not in the compliance.
+				if _, exists := envolvedCompliance[compliance]; exists {
+					benchComplianceSets[compliance][cis_id] = true
+				} else {
+					delete(benchComplianceSets[compliance], cis_id)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func GetK8sCISMeta(remediationFolder string, cis_bench_items map[string]api.RESTBenchCheck, benchComplianceSets map[string]map[string]bool) {
+	// Read every yaml under the folder, then dynamically update the cis_bench_items and benchComplianceSets
+	err := filepath.Walk(remediationFolder, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Error encountered while walking through the path")
+			return err
+		}
+
+		if !info.IsDir() && filepath.Ext(path) == ".yaml" {
+			return processCISBenchmarkYAML(path, cis_bench_items, benchComplianceSets)
+		}
+		return nil
+	})
+
+	// if Failed at walk, stay with original value
+	if err != nil {
+		cis_bench_items = backup_cis_items
+		benchComplianceSets = backup_complianceSets
+	}
+}
+
+// Transform the array as set, implement with built-in map
+func TransformArrayToMap(array []string) map[string]bool {
+	arrayItemMap := make(map[string]bool)
+	for _, arrrayItem := range array {
+		arrayItemMap[arrrayItem] = true
+	}
+	return arrayItemMap
 }

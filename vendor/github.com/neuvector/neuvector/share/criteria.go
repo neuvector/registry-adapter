@@ -50,6 +50,7 @@ const (
 	CriteriaKeyCustomPath          string = "customPath"
 	CriteriaKeySaBindRiskyRole     string = "saBindRiskyRole"
 	CriteriaKeyImageVerifiers      string = "imageVerifiers"
+	CriteriaKeyAnnotations         string = "annotations"
 )
 
 const (
@@ -75,11 +76,14 @@ const (
 	CriteriaOpContainsAny         string = "containsAny"
 	CriteriaOpNotContainsAny      string = "notContainsAny"
 	CriteriaOpContainsOtherThan   string = "containsOtherThan"
-	CriteriaOpRegexContainsAny    string = "regexContainsAny"
-	CriteriaOpRegexNotContainsAny string = "!regexContainsAny"
+	CriteriaOpRegexContainsAny    string = "regexContainsAnyEx"
+	CriteriaOpRegexNotContainsAny string = "!regexContainsAnyEx"
 	CriteriaOpExist               string = "exist"
 	CriteriaOpNotExist            string = "notExist"
 	CriteriaOpContainsTagAny      string = "containsTagAny"
+
+	CriteriaOpRegex_Deprecated    string = "regexContainsAny"  // notice: it's the same as CriteriaOpRegex since 5.3.2
+	CriteriaOpNotRegex_Deprecated string = "!regexContainsAny" // notice: it's the same as CriteriaOpNotRegex since 5.3.2
 )
 
 const (
@@ -170,7 +174,9 @@ func IsGroupMember(group *CLUSGroup, workload *CLUSWorkload, domain *CLUSDomain)
 }
 
 // For criteria of same type, apply 'or' if there is at least one positive match;
-//                            apply 'and' if all are negative match;
+//
+//	apply 'and' if all are negative match;
+//
 // For different criteria type, apply 'and'
 func IsWorkloadSelected(workload *CLUSWorkload, selector []CLUSCriteriaEntry, domain *CLUSDomain) bool {
 	var ret, positive bool
