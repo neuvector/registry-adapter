@@ -11,10 +11,11 @@ const CompactCVEDBName = "cvedb.compact"
 const RegularCVEDBName = "cvedb.regular"
 const CVEDatabaseFolder = "/etc/neuvector/db/"
 
-const ProfileFolder string = "/var/neuvector/profile/"
-const ProfileMemoryFileFmt string = ProfileFolder + "%smemory.prof"
-const ProfileGoroutineFileFmt string = ProfileFolder + "%sgoroutine.prof"
-const ProfileCPUFileFmt string = ProfileFolder + "%scpu.prof"
+const ProfileFolder string = "/var/nv_debug/profile"
+const SnaphotFolder string = "/var/nv_debug/snapshot"
+const ProfileMemoryFileFmt string = "%smemory.prof"
+const ProfileGoroutineFileFmt string = "%sgoroutine.prof"
+const ProfileCPUFileFmt string = "%scpu.prof"
 
 const CustomScriptFailedPrefix string = "Failed to run the custom check"
 
@@ -29,7 +30,6 @@ const (
 
 const UnusedGroupAgingDefault uint8 = 24 //aging time in Hour
 const UnusedGroupAgingMax uint8 = 168    //aging time in Hour,24*7
-
 const (
 	PolicyModeLearn       string = "Discover"
 	PolicyModeEvaluate    string = "Monitor"
@@ -79,6 +79,9 @@ const DomainDelimiter string = "."
 const (
 	PlatformDocker     = "Docker"
 	PlatformAmazonECS  = "Amazon-ECS"
+	PlatformAmazonEKS  = "Amazon-EKS"
+	PlatformAzureAKS   = "Azure-AKS"
+	PlatformGoogleGKE  = "Google-GKE"
 	PlatformKubernetes = "Kubernetes"
 	PlatformRancher    = "Rancher"
 	PlatformAliyun     = "Aliyun"
@@ -89,6 +92,8 @@ const (
 	FlavorRancher   = "Rancher"
 	FlavorIKE       = "IKE"
 	FlavorGKE       = "GKE"
+	FlavorAKS 	   	= "AKS"
+	FlavorEKS 	   	= "EKS"
 
 	NetworkFlannel   = "Flannel"
 	NetworkCalico    = "Calico"
@@ -157,13 +162,14 @@ const (
 )
 
 const (
-	EventCondTypeName        string = "name"
-	EventCondTypeCVEName     string = "cve-name"
-	EventCondTypeCVEHigh     string = "cve-high"
-	EventCondTypeCVEMedium   string = "cve-medium"
-	EventCondTypeLevel       string = "level"
-	EventCondTypeProc        string = "process"
-	EventCondTypeBenchNumber string = "number"
+	EventCondTypeName           string = "name"
+	EventCondTypeCVEName        string = "cve-name"
+	EventCondTypeCVEHigh        string = "cve-high"
+	EventCondTypeCVEMedium      string = "cve-medium"
+	EventCondTypeCVEHighWithFix string = "cve-high-with-fix"
+	EventCondTypeLevel          string = "level"
+	EventCondTypeProc           string = "process"
+	EventCondTypeBenchNumber    string = "number"
 )
 
 const (

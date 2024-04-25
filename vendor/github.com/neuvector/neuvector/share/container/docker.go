@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -21,12 +20,14 @@ import (
 	"github.com/neuvector/neuvector/share/utils"
 )
 
-const defaultDockerSocket string = "unix:///var/run/docker.sock"
+const defaultDockerSocket string = "/var/run/docker.sock"
+const defaultDockerShimSocket string = "/var/run/dockershim.sock"
 
 type dockerDriver struct {
 	sys          *system.SystemTools
 	endpoint     string
 	endpointHost string
+	selfID       string
 	evCallback   EventCallback
 	client       *dockerclient.DockerClient
 	version      *dockerclient.Version
@@ -40,7 +41,6 @@ func _connect(endpoint string) (*dockerclient.DockerClient, *dockerclient.Versio
 	var err error
 
 	log.WithFields(log.Fields{"endpoint": endpoint}).Info("Connecting to docker")
-
 	client, err = dockerclient.NewDockerClientTimeout(
 		endpoint, nil, clientConnectTimeout, nil)
 	if err != nil {
@@ -68,6 +68,10 @@ func _connect(endpoint string) (*dockerclient.DockerClient, *dockerclient.Versio
 }
 
 func getContainerSocketPath(client *dockerclient.DockerClient, id, endpoint string) (string, error) {
+	if strings.HasPrefix(endpoint, "/proc/1/root") {
+		return strings.TrimPrefix(endpoint, "/proc/1/root"), nil
+	}
+
 	info, err := client.InspectContainer(id)
 	if err == nil {
 		endpoint = strings.TrimPrefix(endpoint, "unix://")
@@ -77,7 +81,7 @@ func getContainerSocketPath(client *dockerclient.DockerClient, id, endpoint stri
 			}
 		}
 	}
-	log.WithFields(log.Fields{"error": err, "id": id, "endpoint": endpoint}).Error("Failed to get mounting container socket")
+	log.WithFields(log.Fields{"error": err, "endpoint": endpoint}).Error("Failed to get mounting container socket")
 	return "", err
 }
 
@@ -88,20 +92,18 @@ func dockerConnect(endpoint string, sys *system.SystemTools) (Runtime, error) {
 	}
 
 	sockPath := endpoint
-	if id, _, err := sys.GetSelfContainerID(); err == nil {
-		sockPath, err = getContainerSocketPath(client, id, endpoint)
+	id, _, err := sys.GetSelfContainerID()	// ref, not reliable
+	sockPath, err = getContainerSocketPath(client, id, endpoint)
+	if err == nil {
+		log.WithFields(log.Fields{"selfID": id, "sockPath": sockPath}).Info()
 	}
 
-	driver := dockerDriver{sys: sys, endpoint: endpoint, endpointHost: sockPath, client: client, version: ver, info: info}
+
+	driver := dockerDriver{sys: sys, endpoint: endpoint, endpointHost: sockPath, client: client,
+		                   version: ver, info: info, selfID: id,}
 	driver.rtProcMap = utils.NewSet("runc", "docker-runc", "docker", "docker-runc-current",
 	         "docker-containerd-shim-current", "containerd-shim-runc-v1", "containerd-shim-runc-v2", "containerd", "containerd-shim")
-	name, _ := os.Readlink("/proc/1/exe")
-	if name == "/usr/local/bin/monitor" || strings.HasPrefix(name, "/usr/bin/python") { // when pid mode != host, 'pythohn' is for allinone
-		driver.pidHost = false
-	} else {
-		driver.pidHost = true
-	}
-
+	driver.pidHost = IsPidHost()
 	return &driver, nil
 }
 
@@ -113,11 +115,11 @@ func (d *dockerDriver) reConnect() error {
 	// the original socket has been recreated and its mounted path was also lost.
 	endpoint := d.endpoint
 	if d.endpointHost != "" { // use the host
-		endpoint = "unix://" + filepath.Join("/proc/1/root", d.endpointHost)
+		endpoint = filepath.Join("/proc/1/root", d.endpointHost)
+		endpoint, _ = justifyRuntimeSocketFile(endpoint)
 	}
 
 	log.WithFields(log.Fields{"endpoint": endpoint}).Info("Reconnecting ...")
-
 	client, err := dockerclient.NewDockerClientTimeout(
 		endpoint, nil, clientConnectTimeout, nil)
 	if err != nil {
@@ -163,6 +165,10 @@ func (d *dockerDriver) GetHost() (*share.CLUSHost, error) {
 	}
 
 	return &host, nil
+}
+
+func (d *dockerDriver) GetSelfID() string {
+	return d.selfID
 }
 
 func (d *dockerDriver) GetDevice(id string) (*share.CLUSDevice, *ContainerMetaExtra, error) {
@@ -238,6 +244,7 @@ func (d *dockerDriver) GetContainer(id string) (*ContainerMetaExtra, error) {
 
 	if info, err := d.client.InspectImage(meta.ImageID); err == nil {
 		meta.Author = info.Author
+		meta.ImgCreateAt = info.Created
 	}
 
 	meta.isChild, _ = d.GetParent(meta, nil)
@@ -317,12 +324,26 @@ func (d *dockerDriver) GetImage(name string) (*ImageMeta, error) {
 			repo = name[:i]
 		}
 
-		// get the first digest
+		// repo=index.docker.io/library/redis
+		// redis@sha256:6c9f9cb9a250b12c15a92d8042a44f4557c .....
+		// it is matched at by its last element
+		lastElement := repo
+		if tokens := strings.Split(repo, "/"); len(tokens) > 0 {
+			lastElement = tokens[len(tokens)-1]
+		}
+
+		// get the first completely matched repo
 		for _, str := range info.RepoDigests {
 			if i := strings.Index(str, "@"); i > 0 {
-				if str[:i] == repo {
+				if str[:i] == repo { // fully-matched
 					meta.Digest = str[i+1:]
 					break
+				}
+			}
+
+			if i := strings.Index(str, "@"); i > 0 {
+				if str[:i] == lastElement { // keep the record
+					meta.Digest = str[i+1:]
 				}
 			}
 		}
