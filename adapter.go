@@ -29,7 +29,7 @@ func usage() {
 
 func main() {
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
 	log.WithFields(log.Fields{"version": Version}).Info("START")
@@ -44,6 +44,19 @@ func main() {
 
 	flag.Usage = usage
 	flag.Parse()
+
+	ll := log.InfoLevel
+	logLevel := os.Getenv("LOG_LEVEL")
+
+	if logLevel != "" {
+		var err error
+		ll, err = log.ParseLevel(logLevel)
+		if err != nil {
+			log.Error("failed to load log level")
+		} else {
+			log.SetLevel(ll)
+		}
+	}
 
 	// Reload internal certs
 
@@ -111,6 +124,8 @@ func main() {
 			return
 		}
 	}
+
+	serverConfig.LogLevel = ll
 
 	server.InitializeServer(&serverConfig)
 }
