@@ -30,6 +30,8 @@ const dataCheckInterval = 1.0
 const rpcTimeout = time.Minute * 20
 const expirationTime = time.Minute * 25
 const pruneTime = time.Minute * 60
+const reportCheckTime = "10"
+const concurrentJobLimitDelay = time.Second * 30
 
 var workloadID Counter
 var concurrentJobs Counter
@@ -234,7 +236,8 @@ func processQueue() {
 				scanRequestQueue.Unlock()
 			} else {
 				scanRequestQueue.Unlock()
-				time.Sleep(time.Second * 30)
+				log.Debug("Concurrent job limit reached, waiting to resume")
+				time.Sleep(concurrentJobLimitDelay)
 			}
 			concurrentJobs.Unlock()
 		} else {
@@ -268,6 +271,7 @@ func processScanTask(scanRequest ScanRequest) {
 	defer cancel()
 	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
 	result, err := client.ScanImage(ctx, &request)
+	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan report returned by controller")
 	if err != nil {
 		reportCache.Lock()
 		report := reportCache.ScanReports[scanRequest.WorkloadID]
@@ -385,7 +389,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 		case http.StatusFound:
 			log.WithFields(log.Fields{"id": id}).Debug("Result not ready yet for scan report")
 			w.Header().Add("Location", req.URL.String())
-			w.Header().Add("Refresh-After", "60")
+			w.Header().Add("Refresh-After", reportCheckTime)
 			w.WriteHeader(http.StatusFound)
 		case http.StatusOK:
 			err := json.NewEncoder(w).Encode(val)
