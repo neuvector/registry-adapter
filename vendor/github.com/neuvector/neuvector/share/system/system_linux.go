@@ -12,7 +12,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"os"
@@ -119,6 +118,10 @@ func (s *SystemTools) GetSystemInfo() *sysinfo.SysInfo {
 	return &s.info
 }
 
+func (s *SystemTools) GetProcDir() string {
+	return s.procDir
+}
+
 func (s *SystemTools) CallNetNamespaceFunc(pid int, cb NSCallback, params interface{}) error {
 	// Lock the OS Thread so we don't accidentally switch namespaces
 	runtime.LockOSThread()
@@ -208,7 +211,7 @@ func (s *SystemTools) GetHostname(pid int) string {
 	var hostname string
 
 	s.CallNamespaceFunc(pid, []string{namespace.NSUTS}, func(params interface{}) {
-		if data, err := ioutil.ReadFile("/proc/sys/kernel/hostname"); err != nil {
+		if data, err := os.ReadFile("/proc/sys/kernel/hostname"); err != nil {
 			log.WithFields(log.Fields{"error": err}).Error("Failed to read hostname")
 		} else {
 			hostname = strings.TrimSpace(string(data))
@@ -288,7 +291,7 @@ func (s *SystemTools) GetGlobalAddrs(device_only bool) map[string][]net.IPNet {
 
 func (s *SystemTools) GetLocalProcessStatus(pid int) string {
 	filename := fmt.Sprintf("/proc/%v/stat", pid)
-	dat, err := ioutil.ReadFile(filename)
+	dat, err := os.ReadFile(filename)
 	if err != nil {
 		return ""
 	}
@@ -493,7 +496,7 @@ func (s *SystemTools) NsRunScript(pid int, scripts string) ([]byte, error) {
 	randBytes := make([]byte, 16)
 	rand.Read(randBytes)
 	filename := filepath.Join(os.TempDir(), hex.EncodeToString(randBytes))
-	if err := ioutil.WriteFile(filename, []byte(scripts), 0644); err != nil {
+	if err := os.WriteFile(filename, []byte(scripts), 0644); err != nil {
 		return nil, err
 	}
 	defer os.Remove(filename)
@@ -554,7 +557,7 @@ func (s *SystemTools) GetProcessName(pid int) (string, int, error) {
 	var name string
 	var ppid int
 	filename := s.ContainerProcFilePath(pid, "/status")
-	dat, err := ioutil.ReadFile(filename)
+	dat, err := os.ReadFile(filename)
 	if err != nil {
 		return "", 0, err
 	}
@@ -628,7 +631,7 @@ func (s *SystemTools) ReadContainerFile(filePath string, pid, start, length int)
 	wholePath := s.ContainerFilePath(pid, filePath)
 
 	if start == 0 && length == 0 {
-		return ioutil.ReadFile(wholePath)
+		return os.ReadFile(wholePath)
 	}
 
 	f, err := os.Open(wholePath)
@@ -710,14 +713,6 @@ func (s *SystemTools) IsOpenshift() (bool, error) {
 	}
 
 	return false, nil
-}
-
-func (s *SystemTools) KillCommandSubtree(pgid int, info string) {
-	if err := syscall.Kill(-pgid, syscall.SIGKILL); err != nil {
-		log.WithFields(log.Fields{"pgid": pgid, "error": err}).Debug("TOOLP: can not signal")
-	} else {
-		log.WithFields(log.Fields{"pgid": pgid}).Debug("TOOLP:")
-	}
 }
 
 //return true if file size over limit
