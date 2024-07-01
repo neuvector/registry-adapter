@@ -11,6 +11,8 @@ import (
 
 	"github.com/neuvector/neuvector/share"
 	"github.com/neuvector/neuvector/share/cluster"
+	"github.com/neuvector/neuvector/share/healthz"
+	"github.com/neuvector/neuvector/share/migration"
 	scanUtils "github.com/neuvector/neuvector/share/scan"
 	"github.com/neuvector/neuvector/share/utils"
 	"github.com/neuvector/registry-adapter/config"
@@ -42,6 +44,46 @@ func main() {
 
 	flag.Usage = usage
 	flag.Parse()
+
+	// Reload internal certs
+
+	var internalCertControllerCancel context.CancelFunc
+	var ctx context.Context
+	var err error
+
+	if os.Getenv("AUTO_INTERNAL_CERT") != "" {
+
+		log.Info("start initializing k8s internal secret controller and wait for internal secret creation if it's not created")
+
+		go func() {
+			if err := healthz.StartHealthzServer(); err != nil {
+				log.WithError(err).Warn("failed to start healthz server")
+			}
+		}()
+
+		ctx, internalCertControllerCancel = context.WithCancel(context.Background())
+		defer internalCertControllerCancel()
+		// Initialize secrets.  Most of services are not running at this moment, so skip their reload functions.
+		err = migration.InitializeInternalSecretController(ctx, []func([]byte, []byte, []byte) error{
+			// Reload grpc client
+			func(cacert []byte, cert []byte, key []byte) error {
+				log.Info("Reloading gRPC servers/clients")
+				if err := cluster.ReloadInternalCert(); err != nil {
+					return fmt.Errorf("failed to reload gRPC's certificate: %w", err)
+				}
+				return nil
+			},
+		})
+		if err != nil {
+			log.WithError(err).Error("failed to initialize internal secret controller")
+			os.Exit(-2)
+		}
+		log.Info("internal certificate is initialized")
+	}
+	err = cluster.ReloadInternalCert()
+	if err != nil {
+		log.WithError(err).Fatal("failed to reload internal certificate")
+	}
 
 	if *joinPort == 0 {
 		port := (uint)(cluster.DefaultControllerGRPCPort)

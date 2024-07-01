@@ -13,22 +13,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const internalCertDir = "/etc/neuvector/certs/internal/"
+const InternalCertDir = "/etc/neuvector/certs/internal/"
 
-const internalCACert string = "ca.cert"
-const internalCert string = "cert.pem"
-const internalCertKey string = "cert.key"
-const internalCertCN string = "NeuVector"
+const InternalCACert string = "ca.cert"
+const InternalCert string = "cert.pem"
+const InternalCertKey string = "cert.key"
+const InternalCertCN string = "NeuVector"
 
 // --
 
 const DefaultControllerGRPCPort = 18400
 const DefaultAgentGRPCPort = 18401
 const DefaultScannerGRPCPort = 18402
+const DefaultMigrationGRPCPort = 18500
 
 const DefaultDataCenter string = "neuvector"
 
-var errPutCAS error = errors.New("CAS put error")
+var ErrPutCAS error = errors.New("CAS put error")
 var errSizeTooBig error = errors.New("size too big")
 
 const putRetryTimes int = 2
@@ -497,12 +498,12 @@ func putBinary(key string, value []byte) error {
 
 func putRev(key string, value []byte, rev uint64) error {
 	err := driver.PutRev(key, value, rev)
-	if err != nil && err != errPutCAS {
+	if err != nil && err != ErrPutCAS {
 		for i := 0; i < putRetryTimes; i++ {
 			time.Sleep(putRetryInterval)
 			log.WithFields(log.Fields{"retry": i}).Debug(err)
 			err = driver.PutRev(key, value, rev)
-			if err == nil || err == errPutCAS {
+			if err == nil || err == ErrPutCAS {
 				break
 			}
 		}
@@ -610,17 +611,17 @@ func PutIfNotExist(key string, value []byte, logKeyOnly bool) error {
 		}
 
 		err = driver.PutIfNotExist(key, value)
-		if err != nil && err != errPutCAS {
+		if err != nil && err != ErrPutCAS {
 			for i := 0; i < putRetryTimes; i++ {
 				time.Sleep(putRetryInterval)
 				log.WithFields(log.Fields{"retry": i}).Debug(err)
 				err = driver.PutIfNotExist(key, value)
-				if err == nil || err == errPutCAS {
+				if err == nil || err == ErrPutCAS {
 					break
 				}
 			}
 		}
-		if err == errPutCAS {
+		if err == ErrPutCAS {
 			// no error but key is already existed, ignore the update.
 			// Suppress log.
 			// log.WithFields(log.Fields{"key": key}).Debug("Put key CAS error")
@@ -1054,6 +1055,14 @@ func FillClusterAddrs(cfg *ClusterConfig, sys *system.SystemTools) error {
 				return errors.New("Node should either bootstrap a cluster or join a cluster")
 		*/
 	}
+}
+
+func Reload(cc *ClusterConfig) error {
+	config := cc
+	if cc == nil {
+		config = &clusterCfg
+	}
+	return driver.Reload(config)
 }
 
 var curLogLevel log.Level = log.InfoLevel

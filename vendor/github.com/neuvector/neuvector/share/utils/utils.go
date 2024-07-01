@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"archive/zip"
 	"bytes"
 	"compress/gzip"
 	"crypto/aes"
@@ -18,7 +19,6 @@ import (
 	"hash/crc32"
 	"hash/fnv"
 	"io"
-	"io/ioutil"
 	"math/big"
 	mathrand "math/rand"
 	"net"
@@ -202,7 +202,7 @@ func GunzipBytes(buf []byte) []byte {
 		return nil
 	}
 	defer r.Close()
-	uzb, _ := ioutil.ReadAll(r)
+	uzb, _ := io.ReadAll(r)
 	return uzb
 }
 
@@ -250,6 +250,44 @@ func CompareSliceWithoutOrder(a, b interface{}) bool {
 
 // ---
 
+func parseQuery(query string) (map[string][]string, error) {
+	var err error
+	m := make(map[string][]string)
+
+	for query != "" {
+		key := query
+		if i := strings.IndexAny(key, ";&"); i >= 0 {
+			key, query = key[:i], key[i+1:]
+		} else {
+			query = ""
+		}
+		if key == "" {
+			continue
+		}
+		value := ""
+		if i := strings.Index(key, "="); i >= 0 {
+			key, value = key[:i], key[i+1:]
+		}
+		key, err1 := url.QueryUnescape(key)
+		if err1 != nil {
+			if err == nil {
+				err = err1
+			}
+			continue
+		}
+		value, err1 = url.QueryUnescape(value)
+		if err1 != nil {
+			if err == nil {
+				err = err1
+			}
+			continue
+		}
+		m[key] = append(m[key], value)
+	}
+
+	return m, err
+}
+
 type EnvironParser struct {
 	kvPairs     map[string]string
 	platformEnv map[string][]string
@@ -272,7 +310,7 @@ func NewEnvironParser(envs []string) *EnvironParser {
 				switch k {
 				case share.ENV_PLATFORM_INFO:
 					// platform=aliyun;if-eth0=local;if-eth1=global
-					p.platformEnv, _ = url.ParseQuery(v)
+					p.platformEnv, _ = parseQuery(v)
 				case share.ENV_SYSTEM_GROUPS:
 					// NV_SYSTEM_GROUPS=ucp-*;calico-*
 					p.sysGroups = make([]*regexp.Regexp, 0)
@@ -474,6 +512,15 @@ func GetPortRangeLink(ipproto uint8, port uint16, portR uint16) string {
 			return fmt.Sprintf("%s", getPortRangeStr(port, portR))
 		}
 	}
+}
+
+func IsHostRelated(addr *share.CLUSWorkloadAddr) bool {
+	if strings.HasPrefix(addr.WlID, share.CLUSLearnedHostPrefix) {
+		return true
+	} else if addr.NatPortApp != nil && len(addr.NatPortApp) > 0 {
+		return true
+	}
+	return false
 }
 
 func GetCommonPorts(ports1 string, ports2 string) string {
@@ -857,6 +904,8 @@ func (f *LogFormatter) Format(entry *log.Entry) ([]byte, error) {
 
 // encrypt/decrypt
 
+// When using `nmap -sV --script ssl-enum-ciphers` to check cipher suites, ECDHE will not be detected.
+// This is because of a golang issue fixed in 1.20: https://github.com/golang/go/issues/49126
 func GetSupportedTLSCipherSuites() []uint16 {
 	return []uint16{
 		tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
@@ -1012,25 +1061,32 @@ func EncryptSensitive(data string, key []byte) string {
 	return encrypted
 }
 
-func DecryptUserToken(encrypted string) string {
+func DecryptUserToken(encrypted string, key []byte) string {
 	if encrypted == "" {
 		return ""
 	}
 
 	encrypted = strings.ReplaceAll(encrypted, "_", "/")
-	token, _ := DecryptFromRawStdBase64(getPasswordSymKey(), encrypted)
+	if key == nil {
+		key = getPasswordSymKey()
+	}
+	token, _ := DecryptFromRawStdBase64(key, encrypted)
 	return token
 }
 
 // User token cannot have / in it and cannot have - as the first char.
-func EncryptUserToken(token string) string {
+func EncryptUserToken(token string, key []byte) string {
 	if token == "" {
 		return ""
 	}
 
+	if key == nil {
+		key = getPasswordSymKey()
+	}
+
 	// Std base64 encoding has + and /, instead of - and _ (url encoding)
 	// token can be part of kv key, so we replace / with _
-	encrypted, _ := EncryptToRawStdBase64(getPasswordSymKey(), []byte(token))
+	encrypted, _ := EncryptToRawStdBase64(key, []byte(token))
 	encrypted = strings.ReplaceAll(encrypted, "/", "_")
 	return encrypted
 }
@@ -1257,7 +1313,7 @@ func IsExecutable(info os.FileInfo, path string) bool {
 	return false
 }
 
-///////
+// /////
 const hashByteRange int64 = 1024
 
 func FileHashCrc32(path string, size int64) uint32 {
@@ -1302,7 +1358,7 @@ func DisplayBytes(num int64) string {
 	return fmt.Sprintf("%d Bytes", num)
 }
 
-////
+// //
 var regCrdName *regexp.Regexp = regexp.MustCompile(`^([0-9a-z])([0-9a-z-.])*([0-9a-z])$`)
 var regDns1122 *regexp.Regexp = regexp.MustCompile(`^[a-z0-9.-]{1}$`)
 var regDns1122start *regexp.Regexp = regexp.MustCompile(`^[a-z0-9]{1}$`)
@@ -1340,4 +1396,66 @@ func RandomString(length int) string {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+func CompressToZipFile(source, targetFile string) error {
+	if _, err := os.Stat(filepath.Dir(targetFile)); os.IsNotExist(err) {
+		if err = os.MkdirAll(filepath.Dir(targetFile), 0775); err != nil {
+			log.WithFields(log.Fields{"error": err}).Error("Failed to create profile folder")
+			return err
+		}
+	}
+
+	// create a zip file and zip.Writer
+	f, err := os.Create(targetFile)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	writer := zip.NewWriter(f)
+	defer writer.Close()
+
+	// go through all the files of the source
+	return filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// create a local file header
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+
+		// set compression
+		header.Method = zip.Deflate
+
+		// set relative path of a file as the header name
+		header.Name, err = filepath.Rel(filepath.Dir(source), path)
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			header.Name += "/"
+		}
+
+		// create writer for the file header and save content of the file
+		headerWriter, err := writer.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		f, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		_, err = io.Copy(headerWriter, f)
+		return err
+	})
 }

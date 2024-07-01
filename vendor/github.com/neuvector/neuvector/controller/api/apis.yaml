@@ -4,8 +4,8 @@ swagger: '2.0'
 #                              API Information                                 #
 ################################################################################
 info:
-  description: Secure Docker and Kubernetes based container deployments with the NeuVector run-time security solution. Access to and support for this API requires the appropriate NeuVector license. Contact support@neuvector.com with any questions.
-  version: '5.2'
+  description: Secure Docker and Kubernetes based container deployments with the NeuVector run-time security solution.
+  version: '5.3.1'
   title: NeuVector API
   contact:
     email: support@neuvector.com
@@ -13,7 +13,7 @@ schemes:
   - https
 externalDocs:
   description: Find out more about NeuVector
-  url: 'https://neuvector.com'
+  url: 'https://www.suse.com/products/neuvector/'
 
 ################################################################################
 #                                   Tags                                       #
@@ -83,13 +83,11 @@ paths:
       tags:
         - Admission
       summary: Get a list of admission options
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -100,13 +98,12 @@ paths:
       tags:
         - Admission
       summary: Show an admission rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -121,11 +118,10 @@ paths:
       tags:
         - Admission
       summary: Delete an admission rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -139,13 +135,12 @@ paths:
       tags:
         - Admission
       summary: Add admission control rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Admission rule data
@@ -161,13 +156,12 @@ paths:
       tags:
         - Admission
       summary: Update admission rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Admission rule data
@@ -182,13 +176,12 @@ paths:
       tags:
         - Admission
       summary: Promote admission control rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Admission control rule data
@@ -203,13 +196,12 @@ paths:
       tags:
         - Admission
       summary: Get a list of admission rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -227,11 +219,10 @@ paths:
       tags:
         - Admission
       summary: Delete all admission rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -248,13 +239,11 @@ paths:
       tags:
         - Admission
       summary: Get admission state
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -268,13 +257,12 @@ paths:
       tags:
         - Admission
       summary: Update admission state
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Admission config state data
@@ -293,13 +281,11 @@ paths:
       tags:
         - Admission
       summary: Get admission control statistics
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -310,13 +296,12 @@ paths:
       tags:
         - Admission
       summary: Test admission control rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Admission rule data
@@ -357,11 +342,9 @@ paths:
       tags:
         - Authentication
       summary: Keep login session alive
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       responses:
         '200':
           description: Success
@@ -369,11 +352,9 @@ paths:
       tags:
         - Authentication
       summary: Logout current logged in user
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       responses:
         '200':
           description: Success
@@ -386,13 +367,12 @@ paths:
       tags:
         - Authentication
       summary: Authenticate to specified server
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: server
           description: Name of the specified server
@@ -412,13 +392,12 @@ paths:
       tags:
         - Compliance
       summary: Docker bench
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -433,11 +412,10 @@ paths:
       tags:
         - Compliance
       summary: Docker bench run
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -451,13 +429,12 @@ paths:
       tags:
         - Compliance
       summary: Kubernetes bench
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -472,11 +449,10 @@ paths:
       tags:
         - Compliance
       summary: Kubernetes bench run
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -490,13 +466,11 @@ paths:
       tags:
         - Compliance
       summary: Get compliance profile list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -507,13 +481,12 @@ paths:
       tags:
         - Compliance
       summary: Get compliance profile detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Profile name
@@ -528,13 +501,12 @@ paths:
       tags:
         - Compliance
       summary: Configure compliance profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Compliance profile name
@@ -554,13 +526,12 @@ paths:
       tags:
         - Compliance
       summary: Configure compliance profile entry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Compliance profile name
@@ -584,11 +555,10 @@ paths:
       tags:
         - Compliance
       summary: Delete compliance profile entry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Compliance profile name
@@ -602,18 +572,68 @@ paths:
       responses:
         '200':
           description: Success
-  /v1/controller:
-    get:
+  /v1/file/compliance/profile:
+    post:
       tags:
-        - Controller
-      summary: Get a list of controllers
-      produces:
+        - File
+      summary: Export compliance profile as a yaml format. The exported yaml file can be imported by CRD or REST API to update the compliance profile.
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
         - application/json
       parameters:
         - in: header
           name: X-Auth-Token
           required: true
           type: string
+        - in: body
+          name: body
+          description: Names of profiles to export
+          schema:
+            $ref: '#/definitions/RESTCompProfilesExport'
+      responses:
+        '200':
+          description: Success. Get a yaml file.
+  /v1/file/compliance/profile/config:
+    post:
+      tags:
+        - compliance profile. The payload body is the content of the compliance profile yaml file.
+      summary: import compliance profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - 'application/json'
+        - 'text/plain; charset=utf-8'
+      parameters:
+        - in: header
+          name: X-Auth-Token
+          required: true
+          type: string
+        - in: header
+          name: X-Transaction-ID
+          required: false
+          type: string
+        - in: body
+          name: body
+          description: compliance profile yaml file
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+  /v1/controller:
+    get:
+      tags:
+        - Controller
+      summary: Get a list of controllers
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
       responses:
         '200':
           description: Success
@@ -624,13 +644,12 @@ paths:
       tags:
         - Controller
       summary: Show controller
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Controller ID
@@ -645,13 +664,12 @@ paths:
       tags:
         - Controller
       summary: Update controller
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Controller ID
@@ -671,13 +689,12 @@ paths:
       tags:
         - Controller
       summary: Controller get system statistics
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Controller ID
@@ -693,13 +710,12 @@ paths:
       tags:
         - Controller
       summary: Controller get configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Controller ID
@@ -715,13 +731,11 @@ paths:
       tags:
         - Compliance
       summary: Get custom check scripts of all groups
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -732,13 +746,12 @@ paths:
       tags:
         - Compliance
       summary: GET custom check scripts of the specified group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: group
           description: Script config name
@@ -753,13 +766,12 @@ paths:
       tags:
         - Compliance
       summary: Update custom check scripts of the specified group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: group
           description: Script config name
@@ -779,13 +791,11 @@ paths:
       tags:
         - DLP
       summary: Get DLP sensors
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -795,13 +805,12 @@ paths:
       tags:
         - DLP
       summary: Create DLP sensor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Sensor data
@@ -816,13 +825,12 @@ paths:
       tags:
         - DLP
       summary: Get DLP sensor detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Sensor name
@@ -837,13 +845,12 @@ paths:
       tags:
         - DLP
       summary: Configure DLP sensor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Sensor name
@@ -862,11 +869,10 @@ paths:
       tags:
         - DLP
       summary: Delete DLP sensor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Sensor name
@@ -880,13 +886,11 @@ paths:
       tags:
         - DLP
       summary: Get DLP group list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -897,13 +901,12 @@ paths:
       tags:
         - DLP
       summary: Get DLP group detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: DLP group name
@@ -918,13 +921,12 @@ paths:
       tags:
         - DLP
       summary: Configure DLP group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: DLP group name
@@ -944,13 +946,11 @@ paths:
       tags:
         - DLP
       summary: Get all DLP rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -961,13 +961,12 @@ paths:
       tags:
         - DLP
       summary: Get DLP rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: DLP rule name
@@ -983,13 +982,11 @@ paths:
       tags:
         - Namespace
       summary: Get Namespace list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -999,13 +996,12 @@ paths:
       tags:
         - Namespace
       summary: Configure Namespace setting
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Namespace update data
@@ -1020,13 +1016,12 @@ paths:
       tags:
         - Namespace
       summary: Update namespace
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: namespace name
@@ -1046,13 +1041,11 @@ paths:
       tags:
         - Enforcer
       summary: Get a list of enforcers
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1063,13 +1056,12 @@ paths:
       tags:
         - Enforcer
       summary: Show enforcer
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Enforcer ID
@@ -1084,13 +1076,12 @@ paths:
       tags:
         - Enforcer
       summary: Update enforcer
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Enforcer ID
@@ -1110,13 +1101,12 @@ paths:
       tags:
         - Enforcer
       summary: Get enforcer statistics
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Enforcer ID
@@ -1132,13 +1122,12 @@ paths:
       tags:
         - Enforcer
       summary: Enforcer get configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Enforcer ID
@@ -1165,13 +1154,12 @@ paths:
       tags:
         - EULA
       summary: Accept EULA agreement
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: EULA data
@@ -1186,13 +1174,12 @@ paths:
       tags:
         - File
       summary: Export admission control configuration as a yaml format. The exported yaml file can be imported by CRD or REST API to update the admission control settings.
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -1215,14 +1202,13 @@ paths:
         - File
       description: Importing admission config. The payload body is the content of the admission config yaml file.
       summary: import admission config
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - 'application/json'
         - 'text/plain; charset=utf-8'
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: header
           name: X-Transaction-ID
           required: false
@@ -1241,13 +1227,11 @@ paths:
       tags:
         - File
       summary: Download a configure file
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success. Get a configure file.
@@ -1255,13 +1239,12 @@ paths:
       tags:
         - File
       summary: Upload configure file
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - multipart/form-data
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: header
           name: X-Transaction-ID
           required: false
@@ -1278,13 +1261,12 @@ paths:
       tags:
         - File
       summary: Export DLP configuration as a yaml format
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -1307,6 +1289,57 @@ paths:
         - File
       description: Importing DLP config. The payload body is the content of the DLP config yaml file.
       summary: import DLP config
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - 'application/json'
+        - 'text/plain; charset=utf-8'
+      parameters:
+        - in: header
+          name: X-Transaction-ID
+          required: false
+          type: string
+        - in: body
+          name: body
+          description: DLP config yaml file
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+  /v1/file/vulnerability/profile:
+    post:
+      tags:
+        - File
+      summary: Export vulnerability profile as a yaml format. The exported yaml file can be imported by CRD or REST API to update the compliance profile.
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: header
+          name: X-Auth-Token
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Names of profiles to export
+          schema:
+            $ref: '#/definitions/RESTVulnProfilesExport'
+      responses:
+        '200':
+          description: Success. Get a yaml file.
+  /v1/file/vulnerability/profile/config:
+    post:
+      tags:
+        - compliance profile. The payload body is the content of the vulnerability profile yaml file.
+      summary: import compliance profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - 'application/json'
         - 'text/plain; charset=utf-8'
@@ -1321,7 +1354,7 @@ paths:
           type: string
         - in: body
           name: body
-          description: DLP config yaml file
+          description: compliance profile yaml file
           required: true
           schema:
             type: string
@@ -1333,13 +1366,12 @@ paths:
       tags:
         - File
       summary: Export waf configuration as a yaml format
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -1362,14 +1394,13 @@ paths:
         - File
       description: Importing waf config. The payload body is the content of the waf config yaml file.
       summary: import waf config
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - 'application/json'
         - 'text/plain; charset=utf-8'
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: header
           name: X-Transaction-ID
           required: false
@@ -1388,13 +1419,12 @@ paths:
       tags:
         - File
       summary: (Obsolete, please use POST method.) Export the yaml format configuration file ( used for CRD or group policy ).
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Configuration data
@@ -1408,13 +1438,12 @@ paths:
       tags:
         - File
       summary: Export configuration as the yaml format ( used for CRD or group policy )
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Configuration data
@@ -1429,13 +1458,11 @@ paths:
       tags:
         - File
       summary: Get import status
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1446,14 +1473,13 @@ paths:
         - File
       description: Importing group policy. The payload body is the content of the group policy yaml file.
       summary: import group policy
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - 'application/json'
         - 'text/plain; charset=utf-8'
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: header
           name: X-Transaction-ID
           required: false
@@ -1479,13 +1505,12 @@ paths:
       tags:
         - File Monitor
       summary: Get a list of file monitors
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -1504,13 +1529,12 @@ paths:
       tags:
         - File Monitor
       summary: Show file monitor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: File monitor name
@@ -1525,13 +1549,12 @@ paths:
       tags:
         - File Monitor
       summary: Update file monitor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: File monitor name
@@ -1551,13 +1574,12 @@ paths:
       tags:
         - Group
       summary: Get a list of groups
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -1575,13 +1597,12 @@ paths:
       tags:
         - Group
       summary: Create group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Group data
@@ -1600,13 +1621,12 @@ paths:
       tags:
         - Group
       summary: Show group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Group name
@@ -1621,13 +1641,12 @@ paths:
       tags:
         - Group
       summary: Update group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Group name
@@ -1646,11 +1665,10 @@ paths:
       tags:
         - Group
       summary: Delete group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Group name
@@ -1664,13 +1682,11 @@ paths:
       tags:
         - Host
       summary: Get a list of hosts
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1681,13 +1697,12 @@ paths:
       tags:
         - Host
       summary: Show host
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -1703,13 +1718,12 @@ paths:
       tags:
         - Host
       summary: Show host compliance report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -1725,13 +1739,11 @@ paths:
       tags:
         - Log
       summary: Get activity list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1742,13 +1754,11 @@ paths:
       tags:
         - Log
       summary: Get a list of audits
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1759,13 +1769,11 @@ paths:
       tags:
         - Log
       summary: Get a list of events
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1776,13 +1784,11 @@ paths:
       tags:
         - Log
       summary: Get a list of incidents
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1793,13 +1799,11 @@ paths:
       tags:
         - Log
       summary: Get a list of threats
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1810,13 +1814,12 @@ paths:
       tags:
         - Log
       summary: Show threat
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Threat ID
@@ -1832,13 +1835,11 @@ paths:
       tags:
         - Log
       summary: Get a list of violations
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1849,13 +1850,11 @@ paths:
       tags:
         - Log
       summary: Get violation workloads
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1866,13 +1865,11 @@ paths:
       tags:
         - Log
       summary: Get security event list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1883,13 +1880,11 @@ paths:
       tags:
         - User
       summary: Get password profile list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -1900,13 +1895,12 @@ paths:
       tags:
         - User
       summary: Get password profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Password profile name
@@ -1921,13 +1915,12 @@ paths:
       tags:
         - User
       summary: Configure password profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Password profile name
@@ -1947,13 +1940,12 @@ paths:
       tags:
         - Policy
       summary: Get a list of policy rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -1971,13 +1963,12 @@ paths:
       tags:
         - Policy
       summary: Policy rule action
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Policy rule action data
@@ -1999,11 +1990,10 @@ paths:
       tags:
         - Policy
       summary: Delete all policy rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -2020,13 +2010,12 @@ paths:
       tags:
         - Policy
       summary: Show policy rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -2050,13 +2039,12 @@ paths:
       tags:
         - Policy
       summary: Update policy rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -2076,11 +2064,10 @@ paths:
       tags:
         - Policy
       summary: Delete policy rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -2095,13 +2082,12 @@ paths:
       tags:
         - Policy
       summary: Promote policy
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Policy promote data
@@ -2116,13 +2102,12 @@ paths:
       tags:
         - Process
       summary: Get a list of process profiles
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -2141,13 +2126,12 @@ paths:
       tags:
         - Process
       summary: Get a process profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Process profile name
@@ -2162,13 +2146,12 @@ paths:
       tags:
         - Process
       summary: Update a process profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Process profile name
@@ -2188,13 +2171,12 @@ paths:
       tags:
         - Process
       summary: Get a process rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: uuid
           description: Process rule uuid
@@ -2210,13 +2192,12 @@ paths:
       tags:
         - Response Rule
       summary: Get a list of response rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -2234,13 +2215,12 @@ paths:
       tags:
         - Response Rule
       summary: Update response rule action
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Response rule action data
@@ -2254,11 +2234,10 @@ paths:
       tags:
         - Response Rule
       summary: Delete all response rules
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -2275,13 +2254,12 @@ paths:
       tags:
         - Response Rule
       summary: Get a response rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -2296,13 +2274,12 @@ paths:
       tags:
         - Response Rule
       summary: Update a response rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -2321,11 +2298,10 @@ paths:
       tags:
         - Response Rule
       summary: Delete a response rule
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Rule ID
@@ -2339,13 +2315,12 @@ paths:
       tags:
         - Response Rule
       summary: Get response rule workload
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Workload rules ID
@@ -2361,13 +2336,11 @@ paths:
       tags:
         - Scan
       summary: Get scanner list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -2378,13 +2351,11 @@ paths:
       tags:
         - Scan
       summary: Get scan configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -2394,13 +2365,12 @@ paths:
       tags:
         - Scan
       summary: Update scan configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Scan configure data
@@ -2415,13 +2385,12 @@ paths:
       tags:
         - Scan
       summary: Get host scan report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -2436,13 +2405,12 @@ paths:
       tags:
         - Scan
       summary: Start host scan
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Host ID
@@ -2456,13 +2424,11 @@ paths:
       tags:
         - Scan
       summary: Get scan image summary
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -2473,13 +2439,12 @@ paths:
       tags:
         - Scan
       summary: Get image scan report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Image id
@@ -2495,13 +2460,11 @@ paths:
       tags:
         - Scan
       summary: Show scan platform summary
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -2512,13 +2475,11 @@ paths:
       tags:
         - Scan
       summary: Show scan platform report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -2528,11 +2489,9 @@ paths:
       tags:
         - Scan
       summary: Request scan platform
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       responses:
         '200':
           description: Success
@@ -2541,13 +2500,12 @@ paths:
       tags:
         - Scan
       summary: Get a list of registries
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -2565,13 +2523,12 @@ paths:
       tags:
         - Scan
       summary: Create a registry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Registry data
@@ -2581,18 +2538,37 @@ paths:
       responses:
         '200':
           description: Success
+  /v2/scan/registry:
+    post:
+      tags:
+        - Scan
+      summary: Create a registry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Registry data
+          required: true
+          schema:
+            $ref: '#/definitions/RESTRegistryConfigDataV2'
+      responses:
+        '200':
+          description: Success
   /v1/scan/registry/{name}:
     get:
       tags:
         - Scan
       summary: Show registry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2607,13 +2583,12 @@ paths:
       tags:
         - Scan
       summary: Update registry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2632,11 +2607,10 @@ paths:
       tags:
         - Scan
       summary: Delete registry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2645,18 +2619,42 @@ paths:
       responses:
         '200':
           description: Success
+  /v2/scan/registry/{name}:
+    patch:
+      tags:
+        - Scan
+      summary: Update registry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: name
+          description: Name of the registry
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Registry data
+          required: true
+          schema:
+            $ref: '#/definitions/RESTRegistryConfigDataV2'
+      responses:
+        '200':
+          description: Success
   /v1/scan/registry/{name}/images:
     get:
       tags:
         - Scan
       summary: Show registry image summary
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2672,13 +2670,12 @@ paths:
       tags:
         - Scan
       summary: Get registry image scan report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2699,13 +2696,12 @@ paths:
       tags:
         - Scan
       summary: Show registry layers report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2726,11 +2722,10 @@ paths:
       tags:
         - Scan
       summary: Start a registry scan
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2743,11 +2738,10 @@ paths:
       tags:
         - Scan
       summary: Stop registry scan
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the registry
@@ -2761,15 +2755,14 @@ paths:
       tags:
         - Scan
       summary: Scan repository
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Repository data
@@ -2786,30 +2779,69 @@ paths:
       tags:
         - Scan
       summary: Scan status
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/RESTScanStatusData'
+  /v1/scan/cache_stat/{id}:
+    get:
+      tags:
+        - Scan
+      summary: Get scanner cache statistic data
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
+        - in: path
+          name: id
+          description: Scanner ID
           required: true
           type: string
       responses:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanStatusData'
+            $ref: '#/definitions/RESTScanCacheStat'
+  /v1/scan/cache_data/{id}:
+    get:
+      tags:
+        - Scan
+      summary: Get scanner cache index data
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: Scanner ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/RESTScanCacheData'
   /v1/scan/workload/{id}:
     get:
       tags:
         - Scan
       summary: Get container scan report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Workload ID
@@ -2824,16 +2856,231 @@ paths:
       tags:
         - Scan
       summary: Start container scan
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Workload ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+  /v1/scan/sigstore/root_of_trust:
+    get:
+      tags:
+        - Scan
+      summary: Get all sigstore roots of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/REST_SigstoreRootOfTrustCollection'
+    post:
+      tags:
+        - Scan
+      summary: Create new sigstore root of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Root of Trust Data
+          required: true
+          schema:
+            $ref: '#/definitions/REST_SigstoreRootOfTrust_POST'
+      responses:
+        '200':
+          description: Success
+  /v1/scan/sigstore/root_of_trust/{root_name}:
+    get:
+      tags:
+        - Scan
+      summary: Get single sigstore root of trust by name
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/REST_SigstoreRootOfTrust_GET'
+    patch:
+      tags:
+        - Scan
+      summary: Update single sigstore root of trust by name
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Root of Trust Data
+          required: true
+          schema:
+            $ref: '#/definitions/REST_SigstoreRootOfTrust_PATCH'
+      responses:
+        '200':
+          description: Success
+    delete:
+      tags:
+        - Scan
+      summary: Delete single sigstore root of trust by name
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+  /v1/scan/sigstore/root_of_trust/{root_name}/verifier:
+    get:
+      tags:
+        - Scan
+      summary: Get all sigstore verifiers for given sigstore root of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/REST_SigstoreVerifierCollection'
+    post:
+      tags:
+        - Scan
+      summary: Create new sigstore verifier for given sigstore root of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Root of Trust Data
+          required: true
+          schema:
+            $ref: '#/definitions/REST_SigstoreVerifier'
+      responses:
+        '200':
+          description: Success
+  /v1/scan/sigstore/root_of_trust/{root_name}/verifier/{verifier_name}:
+    get:
+      tags:
+        - Scan
+      summary: Get sigstore verifier by name under given sigstore root of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+        - in: path
+          name: verifier_name
+          description: Verifier Name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/REST_SigstoreVerifier'
+    patch:
+      tags:
+        - Scan
+      summary: Update sigstore verifier by name under given sigstore root of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+        - in: path
+          name: verifier_name
+          description: Verifier Name
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Verifier patch data
+          required: true
+          schema:
+            $ref: '#/definitions/REST_SigstoreVerifier_PATCH'
+      responses:
+        '200':
+          description: Success
+    delete:
+      tags:
+        - Scan
+      summary: Delete sigstore verifier by name under given sigstore root of trust
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      parameters:
+        - in: path
+          name: root_name
+          description: Root Of Trust Name
+          required: true
+          type: string
+        - in: path
+          name: verifier_name
+          description: Verifier Name
           required: true
           type: string
       responses:
@@ -2844,13 +3091,11 @@ paths:
       tags:
         - Server
       summary: Get a list of servers
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -2860,13 +3105,12 @@ paths:
       tags:
         - Server
       summary: Create server
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Server data
@@ -2881,13 +3125,12 @@ paths:
       tags:
         - Server
       summary: Show server
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the server
@@ -2902,13 +3145,12 @@ paths:
       tags:
         - Server
       summary: Update server
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the server
@@ -2927,11 +3169,10 @@ paths:
       tags:
         - Server
       summary: Delete the server
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the server
@@ -2945,13 +3186,12 @@ paths:
       tags:
         - Server
       summary: Update server role groups
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Server name
@@ -2976,13 +3216,12 @@ paths:
       tags:
         - Server
       summary: Show server user list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the server
@@ -2998,13 +3237,11 @@ paths:
       tags:
         - Service
       summary: Get a list of services
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -3014,13 +3251,12 @@ paths:
       tags:
         - Service
       summary: Create service
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Service data
@@ -3035,13 +3271,12 @@ paths:
       tags:
         - Service
       summary: Show service
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Service name
@@ -3057,13 +3292,12 @@ paths:
       tags:
         - Service
       summary: Configure service
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Service configure data
@@ -3078,13 +3312,12 @@ paths:
       tags:
         - Service
       summary: Configure services in batch
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Service configure data
@@ -3099,13 +3332,12 @@ paths:
       tags:
         - Service
       summary: Configure services in batch
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Service configure data
@@ -3120,13 +3352,12 @@ paths:
       tags:
         - Sniffer
       summary: Get a list of sniffers
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: f_workload
           required: true
@@ -3141,13 +3372,12 @@ paths:
       tags:
         - Sniffer
       summary: Sniffer start
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: f_workload
           required: true
@@ -3167,13 +3397,12 @@ paths:
       tags:
         - Sniffer
       summary: Show sniffer
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Sniffer ID
@@ -3188,11 +3417,10 @@ paths:
       tags:
         - Sniffer
       summary: Delete sniffer
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Sniffer ID
@@ -3206,11 +3434,10 @@ paths:
       tags:
         - Sniffer
       summary: Stop sniffer
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Sniffer ID
@@ -3224,11 +3451,10 @@ paths:
       tags:
         - Sniffer
       summary: Sniffer get a pcap file
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Sniffer ID
@@ -3242,13 +3468,11 @@ paths:
       tags:
         - System
       summary: System summary
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -3259,13 +3483,12 @@ paths:
       tags:
         - System
       summary: System get configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -3283,13 +3506,12 @@ paths:
       tags:
         - System
       summary: System configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: System configure data
@@ -3304,13 +3526,12 @@ paths:
       tags:
         - System
       summary: Get system configuration (starting from 5.0, rest client should call this api.)
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -3324,18 +3545,36 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/RESTSystemConfigDataV2'
+    patch:
+      tags:
+        - System
+      summary: System configure (starting from 5.0, rest client should call this api.)
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: System configure data
+          required: true
+          schema:
+            $ref: '#/definitions/RESTSystemConfigConfigDataV2'
+      responses:
+        '200':
+          description: Success
   /v1/system/config/webhook:
     post:
       tags:
         - System
       summary: Create system webhook
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: System configure data
@@ -3350,13 +3589,12 @@ paths:
       tags:
         - System
       summary: Configure system webhook
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: System webhook name
@@ -3383,11 +3621,10 @@ paths:
       tags:
         - System
       summary: Delete system webhook
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: System webhook name
@@ -3409,13 +3646,12 @@ paths:
       tags:
         - System
       summary: System request
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: System request data
@@ -3430,13 +3666,11 @@ paths:
       tags:
         - System
       summary: Show license
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -3446,11 +3680,9 @@ paths:
       tags:
         - System
       summary: Delete license
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       responses:
         '200':
           description: Success
@@ -3459,13 +3691,12 @@ paths:
       tags:
         - System
       summary: License update
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: License key
@@ -3480,13 +3711,11 @@ paths:
       tags:
         - User
       summary: Gets a list of users
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -3496,13 +3725,12 @@ paths:
       tags:
         - User
       summary: Creates a user
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: User information
@@ -3517,13 +3745,12 @@ paths:
       tags:
         - User
       summary: Gets a user
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: fullname
           description: User name
@@ -3538,13 +3765,12 @@ paths:
       tags:
         - User
       summary: Update user
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: fullname
           description: User name
@@ -3567,11 +3793,10 @@ paths:
       tags:
         - User
       summary: Delete user
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: fullname
           description: User name
@@ -3585,13 +3810,12 @@ paths:
       tags:
         - User
       summary: Configure user login
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: fullname
           description: User name
@@ -3611,13 +3835,12 @@ paths:
       tags:
         - User
       summary: For CLI to modify one role
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: fullname
           description: User name
@@ -3642,13 +3865,11 @@ paths:
       tags:
         - User
       summary: Get role list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -3658,13 +3879,12 @@ paths:
       tags:
         - User
       summary: Creates a role
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Role information
@@ -3679,13 +3899,12 @@ paths:
       tags:
         - User
       summary: Get role details
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: User role name
@@ -3700,13 +3919,12 @@ paths:
       tags:
         - User
       summary: Config a user role
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: User role name
@@ -3725,11 +3943,10 @@ paths:
       tags:
         - User
       summary: Delete a user role
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: User role name
@@ -3743,13 +3960,11 @@ paths:
       tags:
         - Vulnerability
       summary: Get vulnerability profile list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -3760,13 +3975,12 @@ paths:
       tags:
         - Vulnerability
       summary: Get vulnerability profile detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Profile name
@@ -3781,13 +3995,12 @@ paths:
       tags:
         - Vulnerability
       summary: Configure vulnerability profile
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Vulnerability profile name
@@ -3807,11 +4020,10 @@ paths:
       tags:
         - Vulnerability
       summary: Create the vulnerability profile entry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Name of the vulnerability profile entry
@@ -3831,13 +4043,12 @@ paths:
       tags:
         - Vulnerability
       summary: Configure vulnerability profile entry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Vulnerability profile name
@@ -3862,11 +4073,10 @@ paths:
       tags:
         - Vulnerability
       summary: Delete vulnerability profile entry
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: Vulnerability profile name
@@ -3886,13 +4096,12 @@ paths:
       tags:
         - WAF Rule
       summary: Get waf rule list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -3909,13 +4118,12 @@ paths:
       tags:
         - WAF Rule
       summary: Create waf sensor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Sensor data
@@ -3925,18 +4133,17 @@ paths:
       responses:
         '200':
           description: Success
-  /v1/waf/sersor/{name}:
+  /v1/waf/sensor/{name}:
     get:
       tags:
         - WAF Rule
       summary: Get waf sensor detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: waf sensor name
@@ -3951,13 +4158,12 @@ paths:
       tags:
         - WAF Rule
       summary: Update a waf sensor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: waf sensor name
@@ -3976,11 +4182,10 @@ paths:
       tags:
         - WAF Rule
       summary: Delete a waf sensor
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: waf sensor name
@@ -3994,13 +4199,12 @@ paths:
       tags:
         - WAF Rule
       summary: Get waf group list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: query
           name: scope
           type: string
@@ -4018,13 +4222,12 @@ paths:
       tags:
         - WAF Rule
       summary: Get waf group detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: waf group name
@@ -4039,13 +4242,12 @@ paths:
       tags:
         - WAF Rule
       summary: Update a waf group
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: waf group name
@@ -4065,13 +4267,11 @@ paths:
       tags:
         - WAF Rule
       summary: Get waf rule list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -4082,13 +4282,12 @@ paths:
       tags:
         - WAF Rule
       summary: Get waf rule detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: name
           description: waf rule name
@@ -4104,13 +4303,11 @@ paths:
       tags:
         - Container
       summary: Get container list
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -4121,13 +4318,11 @@ paths:
       tags:
         - Container
       summary: Get container list (starting from 5.0, rest client should call this api.)
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -4138,13 +4333,12 @@ paths:
       tags:
         - Container
       summary: Get container detail
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Workload ID
@@ -4159,13 +4353,12 @@ paths:
       tags:
         - Container
       summary: Update Container
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Container ID
@@ -4185,13 +4378,12 @@ paths:
       tags:
         - Container
       summary: Get container detail (starting from 5.0, rest client should call this api.)
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Workload ID
@@ -4207,13 +4399,12 @@ paths:
       tags:
         - Container
       summary: get container stats
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Container ID
@@ -4229,13 +4420,12 @@ paths:
       tags:
         - Container
       summary: Get a container configure
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: container ID
@@ -4251,13 +4441,12 @@ paths:
       tags:
         - Container
       summary: Get a container process
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Container ID
@@ -4277,13 +4466,12 @@ paths:
       tags:
         - Container
       summary: Get a container process history
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Container ID
@@ -4299,13 +4487,12 @@ paths:
       tags:
         - Container
       summary: Get a container compliance report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Container ID
@@ -4321,13 +4508,12 @@ paths:
       tags:
         - Container
       summary: Container request
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: id
           description: Container ID
@@ -4347,11 +4533,9 @@ paths:
       tags:
         - File
       summary: Export support config tarball in gz format
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       responses:
         '200':
           description: Success. Get a tarball gz file.
@@ -4368,13 +4552,11 @@ paths:
       tags:
         - Apikey
       summary: Gets a list of apikeys
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
-      parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
       responses:
         '200':
           description: Success
@@ -4384,19 +4566,18 @@ paths:
       tags:
         - Apikey
       summary: Creates an apikey
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       consumes:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: body
           name: body
           description: Apikey information
           required: true
           schema:
-            $ref: '#/definitions/RESTApikeyCreation'
+            $ref: '#/definitions/RESTApikeyCreationData'
       responses:
         '200':
           description: Success
@@ -4407,13 +4588,12 @@ paths:
       tags:
         - Apikey
       summary: Gets an apikey
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       produces:
         - application/json
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: accesskey
           description: Apikey access key
@@ -4428,11 +4608,10 @@ paths:
       tags:
         - Apikey
       summary: Delete apikey
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
       parameters:
-        - in: header
-          name: X-Auth-Token
-          required: true
-          type: string
         - in: path
           name: accesskey
           description: Apikey access key
@@ -4441,6 +4620,82 @@ paths:
       responses:
         '200':
           description: Success
+  /v1/system/config/remote_repository:
+    post:
+      tags:
+        - Remote Repository
+      summary: Create a remote repository.
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Initial Configuration
+          required: true
+          schema:
+            $ref: '#/definitions/RESTRemoteRepository'
+      responses:
+        '200':
+          description: Created the remote repository.
+  /v1/system/config/remote_repository/{alias}:
+    patch:
+      tags:
+        - Remote Repository
+      summary: Update a remote repository.
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: alias
+          description: The alias of the remote repository to update.
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Configuration fields to update
+          required: true
+          schema:
+            $ref: '#/definitions/RESTRemoteRepositoryConfigData'
+      responses:
+        '200':
+          description: Updated the remote repository.
+    delete:
+      tags:
+        - Remote Export Repository
+      summary: Delete a remote repository.
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: alias
+          description: The alias of the remote repository to update.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Deleted the remote repository.
+
+################################################################################
+#                                 Security Definitions                         #
+################################################################################
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-Auth-Apikey
+  TokenAuth:
+    type: apiKey
+    in: header
+    name: X-Auth-Token
 
 ################################################################################
 #                                 Definitions                                  #
@@ -4516,6 +4771,9 @@ definitions:
       workload_service:
         type: string
         example: ""
+      image:
+        type: string
+        example: "alpine:3.16.1"
       image_id:
         type: string
         example: d572b7ee3511b21a2b78b8915bc03c5786ad01949704c1418624224c4cae2c5f
@@ -4585,6 +4843,35 @@ definitions:
         items:
           type: string
           example: ""
+      package_ver:
+        type: string
+      fixed_ver:
+        type: string
+      score:
+        type: number
+        format: float32
+        example: 7.3
+      score_v3:
+        type: number
+        format: float32
+        example: 7.3
+      vectors:
+        type: string
+      vectors_v3:
+        type: string
+      link:
+        type: string
+      description:
+        type: string
+      pub_date:
+        type: string
+      last_mod_date:
+        type: string
+      image_layer_digest:
+        type: string
+        example: "sha256:08614570918e6832c44397cc7bce8037f07a8e2b87aec19d57a3da5eff274c7b"
+      cmds:
+        type: string
   Event:
     type: object
     required:
@@ -4715,15 +5002,12 @@ definitions:
         example: admin
       role_domains:
         type: object
-        properties:
-          role:
+        description: Object key is role and value is array of domains
+        additionalProperties:
+          type: array
+          items:
             type: string
-            example: admin
-          domains:
-            type: array
-            items:
-              type: string
-            example: ["domain1", "domain2"]
+          example: ["domain1", "domain2"]
   Incident:
     type: object
     required:
@@ -4957,6 +5241,42 @@ definitions:
           type: integer
           format: uint32
           example: 12
+      remote_export_options:
+        $ref: '#/definitions/RESTRemoteExportOptions'
+  RESTAdmCtrlTestRuleInfo:
+    type: object
+    required:
+      - container_image
+      - id
+      - disabled
+      - type
+      - mode
+      - rule_details
+      - rule_cfg_type
+    properties:
+      container_image:
+        type: string
+        description: the tested container image in the pod
+      id:
+        type: integer
+        format: uint32
+        example: 10001
+      disabled:
+        type: boolean
+        example: false
+      type:
+        type: string
+        enum: [allow, deny]
+      mode:
+        type: string
+        description: per-rule mode
+        enum: ["monitor","protect",""]
+      rule_details:
+        type: string
+        example: "It matches deny rule id 1000 with criteria: (allow privilege escalation = true)"
+      rule_cfg_type:
+        type: string
+        enum: [federal, ground, user_created]
   RESTAdmCtrlRulesTestResult:
     type: object
     required:
@@ -4964,6 +5284,7 @@ definitions:
       - name
       - kind
       - message
+      - matched_rules
       - allowed
     properties:
       index:
@@ -4977,7 +5298,11 @@ definitions:
         example: Deployment
       message:
         type: string
-        example: "Assessment Creation of Kubernetes Deployment resource (iperfserver) is denied because of deny rule id 1000 with criteria: (allow privilege escalation = true) [Notice: the requested image(s) are not scanned: quay.io/nvlab/iperf]"
+        example: "<Assessment> Creation of Kubernetes Deployment is allowed [Notice: the requested image(s) are not scanned: quay.io/nvlab/iperf]."
+      matched_rules:
+        type: array
+        items:
+          $ref: '#/definitions/RESTAdmCtrlTestRuleInfo'
       allowed:
         type: boolean
         example: false
@@ -4989,6 +5314,9 @@ definitions:
         items:
           type: string
         example: ["user", "userGroups"]
+      global_mode:
+        type: string
+        enum: ["monitor","protect", ""]
       results:
         type: array
         items:
@@ -5026,6 +5354,7 @@ definitions:
       - cfg_type
       - rule_type
       - rule_mode
+      - containers
     properties:
       id:
         type: integer
@@ -5056,6 +5385,11 @@ definitions:
       rule_mode:
         type: string
         enum: ["", monitor, protect]
+      containers:
+        type: array
+        items:
+          type: string
+        enum: [containers, init_containers, ephemeral_containers]
   RESTAdmissionRuleConfig:
     type: object
     required:
@@ -5063,6 +5397,7 @@ definitions:
       - category
       - cfg_type
       - rule_type
+      - containers
     properties:
       id:
         type: integer
@@ -5095,6 +5430,11 @@ definitions:
       rule_mode:
         type: string
         enum: ["", monitor, protect]
+      containers:
+        type: array
+        items:
+          type: string
+        enum: [containers, init_containers, ephemeral_containers]
   RESTAdmissionRuleConfigData:
     type: object
     required:
@@ -5488,6 +5828,10 @@ definitions:
         type: string
         format: password
         example: mypassword
+      new_password:
+        type: string
+        description: need to specify when server responds the user needs to change password
+        example: mynewpassword
   RESTAuthToken:
     type: object
     required:
@@ -5878,6 +6222,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RESTComplianceProfileEntry'
+      cfg_type:
+        type: string
+        enum: [user_created, ground]
   RESTComplianceProfileConfig:
     type: object
     required:
@@ -5937,6 +6284,16 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RESTComplianceProfile'
+  RESTCompProfilesExport:
+    type: object
+    properties:
+      names:
+        type: array
+        items:
+          type: string
+          example: ["default"]
+      remote_export_options:
+        $ref: '#/definitions/RESTRemoteExportOptions'
   RESTController:
     type: object
     required:
@@ -6125,6 +6482,12 @@ definitions:
       group:
         type: string
         example: containers
+      enabled:
+        type: boolean
+        example: false
+      writable:
+        type: boolean
+        example: false
       scripts:
         type: array
         items:
@@ -6326,6 +6689,8 @@ definitions:
         items:
           type: string
         example: [""]
+      remote_export_options:
+        $ref: '#/definitions/RESTRemoteExportOptions'
   RESTDlpSensorsData:
     type: object
     required:
@@ -6668,6 +7033,10 @@ definitions:
       - platform_role
       - cfg_type
       - baseline_profile
+      - monitor_metric
+      - group_sess_cur
+      - group_sess_rate
+      - group_band_width
     properties:
       name:
         type: string
@@ -6711,6 +7080,21 @@ definitions:
       baseline_profile:
         type: string
         example: ""
+      monitor_metric:
+        type: boolean
+        example: false
+      group_sess_cur:
+        type: integer
+        format: uint32
+        example: 1
+      group_sess_rate:
+        type: integer
+        format: uint32
+        example: 1
+      group_band_width:
+        type: integer
+        format: uint32
+        example: 1
       cap_change_mode:
         type: boolean
         example: false
@@ -6736,6 +7120,10 @@ definitions:
       - platform_role
       - cap_change_mode
       - cfg_type
+      - monitor_metric
+      - group_sess_cur
+      - group_sess_rate
+      - group_band_width
       - criteria
       - members
       - policy_rules
@@ -6773,6 +7161,21 @@ definitions:
       cfg_type:
         type: string
         enum: [learned, user_created, ground, federal]
+      monitor_metric:
+        type: boolean
+        example: false
+      group_sess_cur:
+        type: integer
+        format: uint32
+        example: 1
+      group_sess_rate:
+        type: integer
+        format: uint32
+        example: 1
+      group_band_width:
+        type: integer
+        format: uint32
+        example: 1
       criteria:
         type: array
         items:
@@ -6834,6 +7237,8 @@ definitions:
       policy_mode:
         type: string
         example: Monitor
+      remote_export_options:
+        $ref: '#/definitions/RESTRemoteExportOptions'
   RESTHost:
     type: object
     required:
@@ -7355,8 +7760,8 @@ definitions:
         items:
           type: integer
           format: uint32
-          example:
-            - 1234
+        example:
+          - 1234
   RESTPolicyRuleConfig:
     type: object
     required:
@@ -7634,10 +8039,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RESTProcessProfileEntryConfig'
-      process_replace_list:
-        type: array
-        items:
-          $ref: '#/definitions/RESTProcessProfileEntryConfig'
   RESTProcessProfileConfigData:
     type: object
     required:
@@ -7772,6 +8173,9 @@ definitions:
       ibm_cloud_account:
         type: string
         example: ""
+      ignore_proxy:
+        type: boolean
+        example: false
   RESTRegistryConfigData:
     type: object
     required:
@@ -7799,6 +8203,7 @@ definitions:
       - result
       - scanned_timestamp
       - scanned_at
+      - created_at
       - base_os
       - scanner_version
     properties:
@@ -7867,6 +8272,10 @@ definitions:
         type: string
         format: date-time
         example: 2018-01-21T19:00:53Z
+      created_at:
+        type: string
+        format: date-time
+        example: 2018-01-21T19:00:53Z
       base_os:
         type: string
         example: ubuntu:16.04
@@ -7886,6 +8295,105 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RESTRegistryImageSummary'
+  RESTRegistryConfigAuth:
+    type: object
+    properties:
+      username:
+        type: string
+        example: myusername
+      password:
+        type: string
+        format: password
+        example: mypassword
+      auth_token:
+        type: string
+        example: ""
+      auth_with_token:
+        type: boolean
+        example: true
+      aws_key:
+        $ref: '#/definitions/RESTAWSAccountKeyConfig'
+      gcr_key:
+        $ref: '#/definitions/RESTGCRKeyConfig'
+  RESTRegistryConfigScan:
+    type: object
+    properties:
+      rescan_after_db_update:
+        type: boolean
+        example: false
+      scan_layers:
+        type: boolean
+        example: false
+      repo_limit:
+        type: integer
+        example: 1
+      tag_limit:
+        type: integer
+        example: 1
+      schedule:
+        $ref: '#/definitions/RESTScanSchedule'
+      ignore_proxy:
+        type: boolean
+        example: false
+  RESTRegistryConfigIntegrations:
+    type: object
+    properties:
+      jfrog_mode:
+        type: string
+        example: ""
+      jfrog_aql:
+        type: boolean
+        example: false
+      gitlab_external_url:
+        type: string
+        example: ""
+      gitlab_private_token:
+        type: string
+        example: ""
+      ibm_cloud_token_url:
+        type: string
+        example: ""
+      ibm_cloud_account:
+        type: string
+        example: ""
+  RESTRegistryConfigV2:
+    type: object
+    required:
+      - name
+      - registry_type
+    properties:
+      name:
+        type: string
+        example: myregistry
+      registry_type:
+        type: string
+        example: docker
+      registry:
+        type: string
+        example: https://registry.hub.docker.com/
+      domains:
+        type: array
+        items:
+          type: string
+          example: ""
+      filters:
+        type: array
+        items:
+          type: string
+          example: neuvector/*:*
+      auth:
+        $ref: '#/definitions/RESTRegistryConfigAuth'
+      scan:
+        $ref: '#/definitions/RESTRegistryConfigScan'
+      integrations:
+        $ref: '#/definitions/RESTRegistryConfigIntegrations'
+  RESTRegistryConfigDataV2:
+    type: object
+    required:
+      - config
+    properties:
+      config:
+        $ref: '#/definitions/RESTRegistryConfigV2'
   RESTProxy:
     type: object
     required:
@@ -7974,9 +8482,15 @@ definitions:
       single_cve_per_syslog:
         type: boolean
         example: true
+      syslog_cve_in_layers:
+        type: boolean
+        example: true
       syslog_server_cert:
         type: string
         example: E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF
+      output_event_to_logs:
+        type: boolean
+        example: true
   RESTSystemConfigAuthCfgV2:
     type: object
     properties:
@@ -8041,7 +8555,7 @@ definitions:
         type: boolean
         example: false
       no_telemetry_report:
-        type: string
+        type: boolean
         example: false
   RESTPwdProfile:
     type: object
@@ -8339,6 +8853,9 @@ definitions:
         type: string
         format: date-time
         example: 2018-06-20T19:00:53Z
+      ignore_proxy:
+        type: boolean
+        example: false
   RESTRegistrySummaryData:
     type: object
     required:
@@ -8642,6 +9159,7 @@ definitions:
       - result
       - scanned_timestamp
       - scanned_at
+      - created_at
       - base_os
       - scanner_version
       - cvedb_create_time
@@ -8672,6 +9190,9 @@ definitions:
         format: int64
         example: 1593130227
       scanned_at:
+        type: string
+        example: 2020-06-26T00:10:27Z
+      created_at:
         type: string
         example: 2020-06-26T00:10:27Z
       base_os:
@@ -8998,6 +9519,7 @@ definitions:
       - size
       - author
       - base_os
+      - created_at
       - cvedb_version
       - cvedb_create_time
       - layers
@@ -9034,6 +9556,10 @@ definitions:
       base_os:
         type: string
         example: ubuntu:16.04
+      created_at:
+        type: string
+        format: date-time
+        example: 2018-01-21T19:00:53Z
       cvedb_version:
         type: string
         example: "1.00"
@@ -9321,6 +9847,77 @@ definitions:
     properties:
       status:
         $ref: '#/definitions/RESTScanStatus'
+  RESTScanCacheStat:
+    type: object
+    required:
+      - record_count
+      - record_total_size
+      - cache_misses
+      - cache_hits
+    properties:
+      record_count:
+        type: integer
+        format: uint64
+        example: 0
+      record_total_size:
+        type: integer
+        format: uint64
+        example: 0
+      cache_misses:
+        type: integer
+        format: uint64
+        example: 0
+      cache_hits:
+        type: integer
+        format: uint64
+        example: 0
+  RESTScanCacheData:
+    type: object
+    required:
+      - cache_records
+      - record_total_size
+      - cache_misses
+      - cache_hits
+    properties:
+      cache_records:
+        type: array
+        items:
+          $ref: '#/definitions/RESTScanCacheRecord'
+      record_total_size:
+        type: integer
+        format: uint64
+        example: 0
+      cache_misses:
+        type: integer
+        format: uint64
+        example: 0
+      cache_hits:
+        type: integer
+        format: uint64
+        example: 0
+  RESTScanCacheRecord:
+    type: object
+    required:
+      - layer_id
+      - size
+      - reference_count
+      - last_referred
+    properties:
+      layer_id:
+        type: string
+        example: ""
+      size:
+        type: integer
+        format: uint64
+        example: 0
+      reference_count:
+        type: integer
+        format: uint32
+        example: 0
+      last_referred:
+        type: string
+        format: date-time
+        example: "2022-03-17T17:31:55.832768041Z"
   RESTSecurityData:
     type: object
     required:
@@ -9348,6 +9945,7 @@ definitions:
       - port
       - ssl
       - base_dn
+      - group_dn
       - bind_dn
       - group_member_attr
       - username_attr
@@ -9368,6 +9966,9 @@ definitions:
         type: boolean
         example: false
       base_dn:
+        type: string
+        example: dc=example,dc=org
+      group_dn:
         type: string
         example: dc=example,dc=org
       bind_dn:
@@ -9556,6 +10157,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RESTX509CertInfo'
+      slo_enabled:
+        type: boolean
+        example: true
+      slo_url:
+        type: string
+        example: https://dev.oktapreview.com/app/examplesamlapp_1/exjlpo0/slo/saml
+      signing_cert:
+        type: string
+        example: E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF
   RESTServer:
     type: object
     required:
@@ -9609,6 +10219,9 @@ definitions:
         type: boolean
         example: true
       base_dn:
+        type: string
+        example: dc=win,dc=nv,dc=com
+      group_dn:
         type: string
         example: dc=win,dc=nv,dc=com
       bind_dn:
@@ -9689,6 +10302,18 @@ definitions:
         items:
           type: string
         example: ["E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF", "E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF"]
+      slo_enabled:
+        type: boolean
+        example: true
+      slo_url:
+        type: string
+        example: https://dev.oktapreview.com/app/examplesamlapp_1/exjlpo0/slo/saml
+      signing_cert:
+        type: string
+        example: E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF
+      signing_key:
+        type: string
+        example: E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF
   RESTServerConfig:
     type: object
     required:
@@ -10022,6 +10647,8 @@ definitions:
       - syslog_categories
       - syslog_in_json
       - single_cve_per_syslog
+      - syslog_cve_in_layers
+      - output_event_to_logs
       - auth_order
       - auth_by_platform
       - rancher_ep
@@ -10085,9 +10712,15 @@ definitions:
       single_cve_per_syslog:
         type: boolean
         example: false
+      syslog_cve_in_layers:
+        type: boolean
+        example: false
       syslog_server_cert:
         type: string
         example: E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF
+      output_event_to_logs:
+        type: boolean
+        example: true
       auth_order:
         type: array
         items:
@@ -10352,7 +10985,9 @@ definitions:
       - syslog_categories
       - syslog_in_json
       - single_cve_per_syslog
+      - syslog_cve_in_layers
       - syslog_server_cert
+      - output_event_to_logs
     properties:
       syslog_ip:
         type: string
@@ -10382,9 +11017,15 @@ definitions:
       single_cve_per_syslog:
         type: boolean
         example: false
+      syslog_cve_in_layers:
+        type: boolean
+        example: false
       syslog_server_cert:
         type: string
         example: ""
+      output_event_to_logs:
+        type: boolean
+        example: true
   RESTSystemConfigV2:
     type: object
     required:
@@ -10437,7 +11078,6 @@ definitions:
         $ref: '#/definitions/RESTFedSystemConfig'
   RESTSystemConfigConfig:
     type: object
-    description: only for POST(v1/system/config)
     properties:
       new_service_policy_mode:
         type: string
@@ -10478,6 +11118,12 @@ definitions:
         type: string
         example: E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF
       single_cve_per_syslog:
+        type: boolean
+        example: true
+      syslog_cve_in_layers:
+        type: boolean
+        example: true
+      output_event_to_logs:
         type: boolean
         example: true
       auth_order:
@@ -10537,13 +11183,16 @@ definitions:
       no_telemetry_report:
         type: boolean
         example: false
+      remote_repositories:
+        type: array
+        items:
+          $ref: '#/definitions/RESTRemoteRepository'
   RESTSystemConfigConfigV2:
     type: object
-    description: only for POST(v2/system/config)
     properties:
       svc_cfg:
         $ref: '#/definitions/RESTSystemConfigSvcCfgV2'
-      svslog_cfg:
+      syslog_cfg:
         $ref: '#/definitions/RESTSystemConfigSyslogCfgV2'
       auth_cfg:
         $ref: '#/definitions/RESTSystemConfigAuthCfgV2'
@@ -10557,6 +11206,10 @@ definitions:
         $ref: '#/definitions/RESTSystemConfigIBMSAVCfg2'
       scanner_autoscale_cfg:
         $ref: '#/definitions/RESTSystemConfigAutoscaleConfig'
+      remote_repositories:
+        type: array
+        items:
+          $ref: '#/definitions/RESTRemoteRepository'
       misc_cfg:
         $ref: '#/definitions/RESTSystemConfigMiscCfgV2'
   RESTFedSystemConfigConfig:
@@ -10568,9 +11221,20 @@ definitions:
           $ref: '#/definitions/RESTWebhook'
   RESTSystemConfigConfigData:
     type: object
+    description: it leverages RESTSystemConfigConfigData in apis.go
     properties:
       config:
         $ref: '#/definitions/RESTSystemConfigConfig'
+      fed_config:
+        $ref: '#/definitions/RESTFedSystemConfigConfig'
+      net_config:
+        $ref: '#/definitions/RESTSysNetConfigConfig'
+      atmo_config:
+        $ref: '#/definitions/RESTSysAtmoConfigConfig'
+  RESTSystemConfigConfigDataV2:
+    type: object
+    description: it leverages RESTSystemConfigConfigData in apis.go
+    properties:
       config_v2:
         $ref: '#/definitions/RESTSystemConfigConfigV2'
       fed_config:
@@ -10752,15 +11416,12 @@ definitions:
         default: false
       role_domains:
         type: object
-        properties:
-          role:
+        description: Object key is role and value is array of domains
+        additionalProperties:
+          type: array
+          items:
             type: string
-            example: admin
-          domains:
-            type: array
-            items:
-              type: string
-            example: ["domain1", "domain2"]
+          example: ["domain1", "domain2"]
       last_login_timestamp:
         type: integer
         format: int64
@@ -10787,6 +11448,10 @@ definitions:
       password_hours_until_expire:
         type: integer
         example:
+      need_to_reset_password:
+        type: boolean
+        description: prompt the uer to login again & provide the new password to reset after login
+        default: false
   RESTUnquarReq:
     type: object
     properties:
@@ -10814,6 +11479,7 @@ definitions:
       - login_count
       - blocked_for_failed_login
       - blocked_for_password_expired
+      - password_resettable
     properties:
       fullname:
         type: string
@@ -10851,15 +11517,12 @@ definitions:
         description: If the password should be modified
       role_domains:
         type: object
-        properties:
-          role:
+        description: Object key is role and value is array of domains
+        additionalProperties:
+          type: array
+          items:
             type: string
-            example: admin
-          domains:
-            type: array
-            items:
-              type: string
-            example: ["domain1", "domain2"]
+          example: ["domain1", "domain2"]
       last_login_timestamp:
         type: integer
         format: int64
@@ -10876,6 +11539,10 @@ definitions:
         example: false
       blocked_for_password_expired:
         type: boolean
+        example: false
+      password_resettable:
+        type: boolean
+        description: whether the user's password can be reset by the current login user
         example: false
   RESTUserData:
     type: object
@@ -10898,6 +11565,14 @@ definitions:
       new_password:
         type: string
         example: ""
+      force_reset_password:
+        type: boolean
+        description: whether to reset password even it's not expired yet
+        example: false
+      reset_password_in_next_login:
+        type: boolean
+        description: whether the target user needs ti reset password in the next login
+        example: true
   RESTUserPwdConfigData:
     type: object
     required:
@@ -11022,15 +11697,12 @@ definitions:
         example: en
       role_domains:
         type: object
-        properties:
-          role:
+        description: Object key is role and value is array of domains
+        additionalProperties:
+          type: array
+          items:
             type: string
-            example: admin
-          domains:
-            type: array
-            items:
-              type: string
-            example: ["domain1", "domain2"]
+          example: ["domain1", "domain2"]
   RESTUserConfigData:
     type: object
     required:
@@ -11082,6 +11754,7 @@ definitions:
       - severity
       - vectors
       - description
+      - file_name
       - package_name
       - package_version
       - fixed_version
@@ -11109,6 +11782,9 @@ definitions:
       description:
         type: string
         example: "The setup_env function in group.c in sshd in OpenSSH allows local users to gain privileges."
+      file_name:
+        type: string
+        example: "usr/lib/python3.9" 
       package_name:
         type: string
         example: openssh
@@ -11253,6 +11929,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RESTVulnerabilityProfileEntry'
+      cfg_type:
+        type: string
+        enum: [user_created, ground]
   RESTVulnerabilityProfileConfig:
     type: object
     required:
@@ -11329,6 +12008,16 @@ definitions:
         items:
           type: string
         example: []
+  RESTVulnProfilesExport:
+    type: object
+    properties:
+      names:
+        type: array
+        items:
+          type: string
+          example: ["default"]
+      remote_export_options:
+        $ref: '#/definitions/RESTRemoteExportOptions'
   RESTVulnPackageVersion:
     type: object
     required:
@@ -11574,6 +12263,8 @@ definitions:
         items:
           type: string
           example: test4321546242574254672462572452615362453
+      remote_export_options:
+        $ref: '#/definitions/RESTRemoteExportOptions'
   RESTWafSensorsData:
     type: object
     required:
@@ -11612,6 +12303,7 @@ definitions:
       - name
       - url
       - enable
+      - use_proxy
       - type
       - cfg_type
     properties:
@@ -11624,6 +12316,9 @@ definitions:
       enable:
         type: boolean
         example: true
+      use_proxy:
+        type: boolean
+        example: false
       type:
         type: string
         enum: ["", Slack, JSON, Teams]
@@ -12005,6 +12700,7 @@ definitions:
       - pod_name
       - image
       - image_id
+      - image_created_at
       - platform_role
       - domain
       - state
@@ -12042,6 +12738,13 @@ definitions:
       image_id:
         type: string
         example: d572b7ee3511b21a2b78b8915bc03c5786ad01949704c1418624224c4cae2c5f
+      image_created_at:
+        type: string
+        format: date-time
+        example: 2018-01-18T00:44:02Z
+      image_reg_scanned:
+        type: boolean
+        example: false
       platform_role:
         type: string
         example: core
@@ -12112,6 +12815,7 @@ definitions:
       - host_id
       - image
       - image_id
+      - image_created_at
       - domain
       - state
       - service
@@ -12139,6 +12843,13 @@ definitions:
       image_id:
         type: string
         example: d572b7ee3511b21a2b78b8915bc03c5786ad01949704c1418624224c4cae2c5f
+      image_created_at:
+        type: string
+        format: date-time
+        example: 2018-01-18T00:44:02Z
+      image_reg_scanned:
+        type: boolean
+        example: false
       domain:
         type: string
         example: ""
@@ -12678,6 +13389,7 @@ definitions:
       - policy_id
       - client_ip
       - server_ip
+      - fqdn
     properties:
       name:
         type: string
@@ -12779,6 +13491,9 @@ definitions:
       server_ip:
         type: string
         example: 172.17.0.3
+      fqdn:
+        type: string
+        example: www.suse.com
   RESTAdminCustomCriteriaOptions:
     type: object
     required:
@@ -12854,15 +13569,12 @@ definitions:
         example: admin
       role_domains:
         type: object
-        properties:
-          role:
+        description: Object key is role and value is array of domains
+        additionalProperties:
+          type: array
+          items:
             type: string
-            example: admin
-          domains:
-            type: array
-            items:
-              type: string
-            example: ["domain1", "domain2"]
+          example: ["domain1", "domain2"]
       expiration_timestamp:
         type: integer
         format: int64
@@ -12902,6 +13614,13 @@ definitions:
         items:
           type: string
         example: ["role1", "role2"]
+  RESTApikeyCreationData:
+    type: object
+    required:
+      - apikey
+    properties:
+      apikey:
+        $ref: '#/definitions/RESTApikeyCreation'
   RESTApikeyCreation:
     type: object
     required:
@@ -12927,15 +13646,12 @@ definitions:
         example: admin
       role_domains:
         type: object
-        properties:
-          role:
+        description: Object key is role and value is array of domains
+        additionalProperties:
+          type: array
+          items:
             type: string
-            example: admin
-          domains:
-            type: array
-            items:
-              type: string
-              example: ["domain1", "domain2"]  
+          example: ["domain1", "domain2"]
   RESTApikeyGeneratedData:
     type: object
     required:
@@ -12955,3 +13671,235 @@ definitions:
       apikey_secret:
         type: string
         example: 0u+tVOWNPRfpCK7p9qz
+  REST_SigstoreRootOfTrustCollection:
+    type: array
+    items:
+      $ref: '#/definitions/REST_SigstoreRootOfTrust_GET'
+  REST_SigstoreRootOfTrust_GET:
+    type: object
+    properties:
+      name:
+        type: string
+        example: example_name
+      is_private:
+        type: boolean
+        example: true
+      rootless_keypairs_only:
+        type: boolean
+        description: it overrides is_private attribute
+        example: true
+      rekor_public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      root_cert:
+        type: string
+        example: -----BEGIN CERTIFICATE-----XXXXXXXXXX-----END CERTIFICATE-----
+      sct_public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      verifiers:
+        type: array
+        items:
+          $ref: '#/definitions/REST_SigstoreVerifier'
+      cfg_type:
+        type: string
+        enum: [user_created, ground, federal]
+      comment:
+        type: string
+        example: example comment
+  REST_SigstoreRootOfTrust_POST:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+        example: example_name
+      is_private:
+        type: boolean
+        example: true
+      rootless_keypairs_only:
+        type: boolean
+        description: it overrides is_private attribute
+        example: true
+      rekor_public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      root_cert:
+        type: string
+        example: -----BEGIN CERTIFICATE-----XXXXXXXXXX-----END CERTIFICATE-----
+      sct_public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      comment:
+        type: string
+        example: example comment
+  REST_SigstoreRootOfTrust_PATCH:
+    type: object
+    properties:
+      rekor_public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      root_cert:
+        type: string
+        example: -----BEGIN CERTIFICATE-----XXXXXXXXXX-----END CERTIFICATE-----
+      sct_public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      comment:
+        type: string
+        example: example comment
+  REST_SigstoreVerifierCollection:
+    type: array
+    items:
+      $ref: '#/definitions/REST_SigstoreVerifier'
+  REST_SigstoreVerifier:
+    type: object
+    required:
+    - name
+    - verifier_type
+    properties:
+      name:
+        type: string
+        example: example name
+      verifier_type:
+        type: string
+        enum: [keypair, keyless]
+      public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      cert_issuer:
+        type: string
+        example: https://github.com/login/oauth
+      cert_subject:
+        type: string
+        example: cert.subject@example.com
+      comment:
+        type: string
+        example: example comment
+  REST_SigstoreVerifier_PATCH:
+    type: object
+    properties:
+      verifier_type:
+        type: string
+        enum: [keypair, keyless]
+      public_key:
+        type: string
+        example: -----BEGIN PUBLIC KEY-----XXXXXXXXXX-----END PUBLIC KEY-----
+      cert_issuer:
+        type: string
+        example: https://github.com/login/oauth
+      cert_subject:
+        type: string
+        example: cert.subject@example.com
+      comment:
+        type: string
+        example: example comment
+  RESTRemoteRepo_GitHubConfig:
+    type: object
+    required:
+      - repository_owner_username
+      - repository_name
+      - repository_branch_name
+      - personal_access_token
+      - personal_access_token_committer_name
+      - personal_access_token_committer_email
+    properties:
+      repository_owner_username:
+        type: string
+        example: myuser
+      repository_name:
+        type: string
+        example: myrepo
+      repository_branch_name:
+        type: string
+        example: main
+      personal_access_token:
+        type: string
+        example: ghp_Agk4DedP5SOHGo8WxSuXCmCcldLyBP0I7CN6
+      personal_access_token_committer_name:
+        type: string
+        example: myuser
+      personal_access_token_committer_email:
+        type: string
+        example: myuser@example.com
+  RESTRemoteRepository:
+    type: object
+    required:
+      - nickname
+      - provider
+      - github_configuration
+    properties:
+      nickname:
+        type: string
+        example: default
+      provider:
+        type: string
+        description: currently only github is supported
+        example: github
+      comment:
+        type: string
+      enable:
+        type: boolean
+        example: true
+      github_configuration:
+        $ref: '#/definitions/RESTRemoteRepo_GitHubConfig'
+  RESTRemoteRepository_GitHubConfigConfig:
+    type: object
+    properties:
+      repository_owner_username:
+        type: string
+        example: myuser
+      repository_name:
+        type: string
+        example: myrepo
+      repository_branch_name:
+        type: string
+        example: main
+      personal_access_token:
+        type: string
+        example: ghp_Agk4DedP5SOHGo8WxSuXCmCcldLyBP0I7CN6
+      personal_access_token_committer_name:
+        type: string
+        example: myuser
+      personal_access_token_committer_email:
+        type: string
+        example: myuser@example.com
+  RESTRemoteRepositoryConfig:
+    type: object
+    required:
+      - nickname
+    properties:
+      nickname:
+        type: string
+        example: default
+      comment:
+        type: string
+      enable:
+        type: boolean
+        example: true
+      github_configuration:
+        $ref: '#/definitions/RESTRemoteRepository_GitHubConfigConfig'
+  RESTRemoteRepositoryConfigData:
+    type: object
+    required:
+      - config
+    properties:
+      config:
+        $ref: '#/definitions/RESTRemoteRepositoryConfig'
+  RESTRemoteExportOptions:
+    type: object
+    required:
+      - file_path
+      - remote_repository_nickname
+    properties:
+      file_path:
+        type: string
+        example: my_exports/example.yaml
+      comment:
+        type: string
+        description: commit message
+        example: commit for poc
+      remote_repository_nickname:
+        type: string
+        example: default
