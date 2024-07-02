@@ -2,7 +2,7 @@ BASE_IMAGE_TAG = latest
 BUILD_IMAGE_TAG = v2
 
 all:
-	go build -ldflags='-s -w' -o adapter
+	go build -ldflags='-s -w' -buildvcs=false -o adapter
 
 STAGE_DIR = stage
 
