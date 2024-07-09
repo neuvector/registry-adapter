@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
+	rpmdb "github.com/neuvector/go-rpmdb/pkg"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/neuvector/neuvector/share"
@@ -78,17 +78,17 @@ var scanErrString = []string{
 }
 
 type CacheRecord struct {
-	Layer	string		`json:"layerID,omitempty"`
-	Size	uint64		`json:"size,omitempty"`
-	RefCnt	uint32		`json:"ref_cnt,omitempty"`
-	RefLast	time.Time	`json:"ref_last,omitempty"`
+	Layer   string    `json:"layerID,omitempty"`
+	Size    uint64    `json:"size,omitempty"`
+	RefCnt  uint32    `json:"ref_cnt,omitempty"`
+	RefLast time.Time `json:"ref_last,omitempty"`
 }
 
 type CacherData struct {
-	CacheRecords 	[]CacheRecord	`json:"cache_records,omitempty"`
-	MissCnt         uint64			`json:"cache_misses,omitempty"`
-	HitCnt          uint64			`json:"cache_hits,omitempty"`
-	CurRecordSize   uint64			`json:"current_record_size"`
+	CacheRecords  []CacheRecord `json:"cache_records,omitempty"`
+	MissCnt       uint64        `json:"cache_misses,omitempty"`
+	HitCnt        uint64        `json:"cache_hits,omitempty"`
+	CurRecordSize uint64        `json:"current_record_size"`
 }
 
 func ScanErrorToStr(e share.ScanErrorCode) string {
@@ -225,8 +225,8 @@ func (s *ScanUtil) GetAppPackages(path string) ([]AppPackage, []byte, share.Scan
 }
 
 func (s *ScanUtil) getContainerAppPkg(pid int) ([]byte, error) {
-	apps := NewScanApps(true)
-	exclDirs := utils.NewSet("bin", "boot", "dev", "proc", "run", "sys", "tmp")
+	apps := NewScanApps(false) // no need to scan the same file twice
+	exclDirs := utils.NewSet("boot", "dev", "proc", "run", "sys")
 	rootPath := s.sys.ContainerFilePath(pid, "/")
 	rootLen := len(rootPath)
 
@@ -289,14 +289,39 @@ func isRpmKernelPackage(p *rpmdb.PackageInfo) string {
 }
 
 func GetRpmPackages(fullpath, kernel string) ([]byte, error) {
+	if strings.HasPrefix(fullpath, "/proc/") || strings.HasPrefix(fullpath, "/host/proc/") {
+		// container scans
+		if rpmFile, err := os.Open(fullpath); err != nil {
+			// log.WithFields(log.Fields{"file": fullpath, "error": err}).Error()
+			return nil, err
+		} else {
+			tempDir, err := os.MkdirTemp("", "")
+			if err == nil {
+				defer os.RemoveAll(tempDir)
+			}
+			dstPath := filepath.Join(tempDir, filepath.Base(fullpath)) // retain the filename
+			if dstFile, err := os.OpenFile(dstPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666); err == nil {
+				if _, err := io.Copy(dstFile, rpmFile); err == nil {
+					fullpath = dstPath // updated
+				}
+				dstFile.Close()
+			} else {
+				log.WithFields(log.Fields{"file": dstPath, "error": err}).Error("failed: Copy")
+			}
+			rpmFile.Close()
+		}
+	}
+
 	db, err := rpmdb.Open(fullpath)
 	if err != nil {
+		log.WithFields(log.Fields{"file": fullpath, "error": err}).Error("Failed to open rpm packages")
 		return nil, err
 	}
+	defer db.Close()
 
 	pkgs, err := db.ListPackages()
 	if err != nil {
-		log.WithFields(log.Fields{"file": fullpath, "kernel": kernel}).Error("Failed to read rpm packages")
+		log.WithFields(log.Fields{"file": fullpath, "error": err}).Error("Failed to read rpm packages")
 		return nil, err
 	}
 
@@ -305,12 +330,17 @@ func GetRpmPackages(fullpath, kernel string) ([]byte, error) {
 	list := make([]RPMPackage, 0, len(pkgs))
 	for _, p := range pkgs {
 		if p.Name != "gpg-pubkey" {
+			var epoch int
+			if p.Epoch != nil {
+				epoch = *p.Epoch
+			}
+
 			if kernel == "" {
-				list = append(list, RPMPackage{Name: p.Name, Epoch: p.Epoch, Version: p.Version, Release: p.Release})
+				list = append(list, RPMPackage{Name: p.Name, Epoch: epoch, Version: p.Version, Release: p.Release})
 			} else {
 				// filter kernels that are not running
 				if k := isRpmKernelPackage(p); k == "" || strings.HasPrefix(kernel, k) {
-					list = append(list, RPMPackage{Name: p.Name, Epoch: p.Epoch, Version: p.Version, Release: p.Release})
+					list = append(list, RPMPackage{Name: p.Name, Epoch: epoch, Version: p.Version, Release: p.Release})
 				}
 			}
 		}
