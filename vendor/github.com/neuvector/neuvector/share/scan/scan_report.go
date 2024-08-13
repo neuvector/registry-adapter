@@ -258,21 +258,13 @@ func ImageBench2REST(cmds []string, secrets []*share.ScanSecretLog, setids []*sh
 	}
 
 	// add tags to every checks
-	for i := range checks {
-		item := checks[i]
-
+	for _, item := range checks {
 		if tagMap == nil {
-			item.Tags = make([]map[string][]api.TagDetail, 0)
-		} else if tags, ok := tagMap[item.TestNum]; ok {
-			item.Tags = make([]map[string][]api.TagDetail, 0, len(tags))
-
-			for _, tag := range tags {
-				tagMap := map[string][]api.TagDetail{tag: []api.TagDetail{}}
-				item.Tags = append(item.Tags, tagMap)
-			}
-
+			item.Tags = make([]string, 0)
+		} else if tags, ok := tagMap[item.TestNum]; !ok {
+			item.Tags = make([]string, 0)
 		} else {
-			item.Tags = make([]map[string][]api.TagDetail, 0)
+			item.Tags = tags
 		}
 	}
 
@@ -392,6 +384,11 @@ func fillVulFields(vr *share.ScanVulnerability, v *api.RESTVulnerability) {
 	}
 
 	if v.Severity == "" {
+		// NVSHAS-8242: temporary reversion
+		// if v.Score >= 9 || v.ScoreV3 >= 9 {
+		// 	v.Severity = share.VulnSeverityCritical
+		// } else
+
 		if v.Score >= 7 || v.ScoreV3 >= 7 {
 			v.Severity = share.VulnSeverityHigh
 		} else if v.Score >= 4 || v.ScoreV3 >= 4 {
@@ -524,16 +521,23 @@ func ExtractVulnerability(vuls []*share.ScanVulnerability) []*VulTrait {
 			fileName: v.FileName,
 			pkgName:  v.PackageName, pkgVer: v.PackageVersion, fixVer: v.FixedVersion,
 		}
+
+		// NVSHAS-8242: temporary reversion
+		// if v.Score >= 9 || v.ScoreV3 >= 9 {
+		// 	traits[i].severity = vulnSeverityCritical
+		// }
 	}
 	return traits
 }
 
-func CountVulTrait(traits []*VulTrait) (int, int) {
-	var highs, meds int
+func CountVulTrait(traits []*VulTrait) (int, int, int) {
+	var criticals, highs, meds int
 
 	for _, t := range traits {
 		if !t.filtered {
 			switch t.severity {
+			case vulnSeverityCritical:
+				criticals++
 			case vulnSeverityHigh:
 				highs++
 			case vulnSeverityMedium:
@@ -541,17 +545,24 @@ func CountVulTrait(traits []*VulTrait) (int, int) {
 			}
 		}
 	}
-	return highs, meds
+	return criticals, highs, meds
 }
 
-func GatherVulTrait(traits []*VulTrait) ([]string, []string, []string, []FixedVulInfo) {
+func GatherVulTrait(traits []*VulTrait) ([]string, []string, []string, []string, []FixedVulInfo, []FixedVulInfo) {
+	criticals := make([]string, 0)
 	highs := make([]string, 0)
 	meds := make([]string, 0)
 	lows := make([]string, 0)
+	fixedCriticalsInfo := make([]FixedVulInfo, 0)
 	fixedHighsInfo := make([]FixedVulInfo, 0)
 	for _, t := range traits {
 		if !t.filtered {
 			switch t.severity {
+			case vulnSeverityCritical:
+				if t.fixVer != "" {
+					fixedCriticalsInfo = append(fixedCriticalsInfo, FixedVulInfo{PubTS: t.pubTS})
+				}
+				criticals = append(criticals, t.Name)
 			case vulnSeverityHigh:
 				if t.fixVer != "" {
 					fixedHighsInfo = append(fixedHighsInfo, FixedVulInfo{PubTS: t.pubTS})
@@ -565,7 +576,7 @@ func GatherVulTrait(traits []*VulTrait) ([]string, []string, []string, []FixedVu
 			}
 		}
 	}
-	return highs, meds, lows, fixedHighsInfo
+	return criticals, highs, meds, lows, fixedCriticalsInfo, fixedHighsInfo
 }
 
 // ----
