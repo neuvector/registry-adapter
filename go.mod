@@ -13,7 +13,7 @@ replace (
 )
 
 require (
-	github.com/neuvector/neuvector v0.0.0-20240814220609-999db5577a39
+	github.com/neuvector/neuvector v0.0.0-20240820213523-d9512b976a4e
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.62.1
 	gopkg.in/yaml.v2 v2.4.0
