@@ -2,9 +2,15 @@ package server
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
+	"math/big"
 	"net/http"
 	"os"
 	"strings"
@@ -50,7 +56,60 @@ var nvScanner = ScannerSpec{
 var reportCache = ReportData{ScanReports: make(map[string]ScanReport)}
 var scanRequestQueue = ScanRequestQueue{}
 
-//InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
+func GenerateDefaultTLSCertificate() error {
+	// Generate private key
+	privKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		return fmt.Errorf("failed to generate private key: %w", err)
+	}
+
+	template := &x509.Certificate{
+		SerialNumber: big.NewInt(2030),
+		Subject: pkix.Name{
+			Country:            []string{"US"},
+			Organization:       []string{"NeuVector Inc."},
+			OrganizationalUnit: []string{"Neuvector"},
+			Locality:           []string{"San Jose"},
+			Province:           []string{"California"},
+			CommonName:         "Neuvector",
+		},
+		NotBefore:   time.Now().Add(time.Hour * -1), // Give it some room for timing skew.
+		NotAfter:    time.Now().AddDate(1, 0, 0),
+		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		KeyUsage:    x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment | x509.KeyUsageDataEncipherment,
+		DNSNames:    []string{"Neuvector"},
+	}
+	cert, err := x509.CreateCertificate(rand.Reader, template, template, &privKey.PublicKey, privKey)
+	if err != nil {
+		return fmt.Errorf("failed to create certificate: %w", err)
+	}
+
+	certfile, err := os.OpenFile(certFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		return fmt.Errorf("failed to open certificate file: %w", err)
+	}
+
+	defer certfile.Close()
+
+	keyfile, err := os.OpenFile(keyFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		return fmt.Errorf("failed to open key file: %w", err)
+	}
+
+	defer keyfile.Close()
+
+	if err := pem.Encode(certfile, &pem.Block{Type: "CERTIFICATE", Bytes: cert}); err != nil {
+		return fmt.Errorf("failed to encode certificate file: %w", err)
+	}
+
+	if err := pem.Encode(keyfile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(privKey)}); err != nil {
+		return fmt.Errorf("failed to encode key file: %w", err)
+	}
+
+	return nil
+}
+
+// InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
 func InitializeServer(config *config.ServerConfig) {
 	serverConfig = *config
 	log.SetLevel(log.DebugLevel)
@@ -77,6 +136,24 @@ func InitializeServer(config *config.ServerConfig) {
 		var err error
 		if serverConfig.ServerProto == "https" {
 			log.Debug("Start https")
+
+			// Check if the certificate is present.  If not, generate one.
+			// Note: For other errors, let it retry in server.ListenAndServeTLS().
+			certMissing := false
+			if _, err := os.Stat(certFile); os.IsNotExist(err) {
+				certMissing = true
+			}
+			if _, err := os.Stat(keyFile); os.IsNotExist(err) {
+				certMissing = true
+			}
+
+			if certMissing {
+				log.Info("no TLS certificate is detected.  Generating one...")
+				if err := GenerateDefaultTLSCertificate(); err != nil {
+					log.WithError(err).Fatal("failed to generate default tls certificate")
+				}
+				log.Info("TLS certificate is generated.")
+			}
 
 			tlsconfig := &tls.Config{
 				MinVersion:               tls.VersionTLS11,
@@ -105,7 +182,7 @@ func InitializeServer(config *config.ServerConfig) {
 	}
 }
 
-//unhandled is the default response for unhandled urls.
+// unhandled is the default response for unhandled urls.
 func unhandled(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
@@ -114,7 +191,7 @@ func unhandled(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{"endpoint": req.URL}).Warning("Unhandled HTTP Endpoint")
 }
 
-//authenticateHarbor wraps other handlerfuncs with basic authentication.
+// authenticateHarbor wraps other handlerfuncs with basic authentication.
 func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch authType := strings.ToLower(serverConfig.Auth.AuthorizationType); authType {
@@ -137,7 +214,7 @@ func authenticateHarbor(function http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-//metadata returns the basic metadata harbor requests regularly from the adapter.
+// metadata returns the basic metadata harbor requests regularly from the adapter.
 func metadata(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
@@ -172,7 +249,7 @@ func metadata(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-//scan translates incoming requests into ScanRequest and queues them for processing.
+// scan translates incoming requests into ScanRequest and queues them for processing.
 func scan(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
@@ -214,7 +291,7 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{}).Debug("End of scan request.")
 }
 
-//processQueue goes through the queue in first-in-first-out order if concurrent jobs are less than the maximum allowed jobs.
+// processQueue goes through the queue in first-in-first-out order if concurrent jobs are less than the maximum allowed jobs.
 func processQueue() {
 	for {
 		time.Sleep(time.Second * time.Duration(dataCheckInterval))
@@ -246,8 +323,8 @@ func processQueue() {
 	}
 }
 
-//processScanTask sends the ScanRequest to the controller, which creates tasks for the attached scanners.
-//Afterwards, the result is added to the saved scan reports.
+// processScanTask sends the ScanRequest to the controller, which creates tasks for the attached scanners.
+// Afterwards, the result is added to the saved scan reports.
 func processScanTask(scanRequest ScanRequest) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
@@ -288,7 +365,7 @@ func processScanTask(scanRequest ScanRequest) {
 	reportCache.Unlock()
 }
 
-//convertRPCReportToScanReport converts the rpc results from the controller into a Harbor readable format.
+// convertRPCReportToScanReport converts the rpc results from the controller into a Harbor readable format.
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
 	result.Status = http.StatusOK
@@ -296,7 +373,7 @@ func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	return result
 }
 
-//convertVulns changes the controller vuln results into a Harbor readable format.
+// convertVulns changes the controller vuln results into a Harbor readable format.
 func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	translatedVulns := make([]Vuln, len(controllerVulns))
 	for index, rawVuln := range controllerVulns {
@@ -322,7 +399,7 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	return translatedVulns
 }
 
-//pollMaxConcurrent finds the max amount of available scanners by polling the controller.
+// pollMaxConcurrent finds the max amount of available scanners by polling the controller.
 func pollMaxConcurrent() (uint32, error) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
@@ -340,14 +417,14 @@ func pollMaxConcurrent() (uint32, error) {
 	return scanners.MaxScanners, nil
 }
 
-//generateExpirationTime generates the timestamp that entries should be deleted after when they aren't retrieved.
+// generateExpirationTime generates the timestamp that entries should be deleted after when they aren't retrieved.
 func generateExpirationTime() time.Time {
 	now := time.Now().UTC()
 	result := now.Add(expirationTime)
 	return result
 }
 
-//pruneOldEntries deletes entries that have passed their expiration timestamp.
+// pruneOldEntries deletes entries that have passed their expiration timestamp.
 func pruneOldEntries() {
 	for {
 		time.Sleep(pruneTime)
@@ -362,7 +439,7 @@ func pruneOldEntries() {
 	}
 }
 
-//mimestring generates the mimestring format
+// mimestring generates the mimestring format
 func mimestring(mimetype string, subtype string, inparams map[string]string) string {
 	s := fmt.Sprintf("%s/%s", mimetype, subtype)
 	if len(inparams) == 0 {
@@ -375,7 +452,7 @@ func mimestring(mimetype string, subtype string, inparams map[string]string) str
 	return fmt.Sprintf("%s; %s", s, strings.Join(params, ";"))
 }
 
-//scanResult returns the scan report with the matching id when requested.
+// scanResult returns the scan report with the matching id when requested.
 func scanResult(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{"URL": req.URL.String()}).Debug()
 	defer req.Body.Close()
@@ -415,7 +492,7 @@ func scanResult(w http.ResponseWriter, req *http.Request) {
 	reportCache.Unlock()
 }
 
-//getIDFromReportRequest separates the report ID from the URL.
+// getIDFromReportRequest separates the report ID from the URL.
 func getIDFromReportRequest(fullURL string) string {
 	splitURL := strings.Split(fullURL, scanReportURL)
 	result := splitURL[len(splitURL)-1]
