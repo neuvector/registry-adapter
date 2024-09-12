@@ -29,7 +29,7 @@ func usage() {
 
 func main() {
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
 	log.WithFields(log.Fields{"version": Version}).Info("START")
