@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/neuvector/neuvector/share/cluster"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,6 +25,7 @@ type ServerConfig struct {
 	ServerProto    string        `yaml:"ServerProto"`
 	ControllerIP   string
 	ControllerPort uint16
+	LogLevel       logrus.Level
 }
 
 type Authorization struct {
@@ -32,7 +34,7 @@ type Authorization struct {
 	PasswordVariable  string `yaml:"PasswordVariable"`
 }
 
-//readYAML reads in the external YAML config file.
+// readYAML reads in the external YAML config file.
 func ReadYAML(path string) (*ServerConfig, error) {
 	config := &ServerConfig{}
 	configFile, err := ioutil.ReadFile(path)
