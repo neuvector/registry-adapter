@@ -29,7 +29,7 @@ func usage() {
 
 func main() {
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.InfoLevel)
+	logLevel := log.InfoLevel
 	log.SetFormatter(&utils.LogFormatter{Module: "SAP"})
 
 	log.WithFields(log.Fields{"version": Version}).Info("START")
@@ -41,9 +41,16 @@ func main() {
 
 	image := flag.String("image", "", "Test image path")
 	token := flag.String("token", "", "Test image token")
+	verbose := flag.Bool("x", false, "more debug")
 
 	flag.Usage = usage
 	flag.Parse()
+
+	if *verbose {
+		logLevel = log.DebugLevel
+	}
+
+	log.SetLevel(logLevel)
 
 	// Reload internal certs
 
@@ -120,6 +127,8 @@ func main() {
 			return
 		}
 	}
+
+	serverConfig.LogLevel = logLevel
 
 	server.InitializeServer(&serverConfig)
 }
