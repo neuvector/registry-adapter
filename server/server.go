@@ -112,7 +112,7 @@ func GenerateDefaultTLSCertificate() error {
 // InitializeServer sets up the go routines and http handlers to handle requests from Harbor.
 func InitializeServer(config *config.ServerConfig) {
 	serverConfig = *config
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 	workloadID = Counter{count: 1}
 	concurrentJobs = Counter{count: 0}
 	defer http.DefaultClient.CloseIdleConnections()
