@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"strconv"
 
@@ -37,7 +36,7 @@ type Authorization struct {
 // readYAML reads in the external YAML config file.
 func ReadYAML(path string) (*ServerConfig, error) {
 	config := &ServerConfig{}
-	configFile, err := ioutil.ReadFile(path)
+	configFile, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

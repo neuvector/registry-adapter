@@ -123,7 +123,10 @@ func InitializeServer(config *config.ServerConfig) {
 	}
 	for nvScanner.Version == "" {
 		time.Sleep(time.Second * 3)
-		pollMaxConcurrent()
+		_, err := pollMaxConcurrent()
+		if err != nil {
+			log.WithError(err).Error("failed to get the maximum scanner numbers")
+		}
 	}
 	http.HandleFunc("/", unhandled)
 	http.HandleFunc(metadataEndpoint, authenticateHarbor(metadata))
