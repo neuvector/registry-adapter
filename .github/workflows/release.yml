@@ -40,10 +40,10 @@ jobs:
         push-to-prime: true
         image: neuvector-registry-adapter
         tag: ${{ env.TAG }}
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64
 
         public-registry: docker.io
-        public-repo: neuvector
+        public-repo: rancher
         public-username: ${{ env.DOCKER_USERNAME }}
         public-password: ${{ env.DOCKER_PASSWORD }}
 
