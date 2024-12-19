@@ -1,6 +1,7 @@
 #
 # Builder image
 FROM registry.suse.com/bci/golang:1.22 AS builder
+ARG VERSION
 
 ENV GOPATH=/go
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
@@ -10,6 +11,7 @@ COPY server/ /src/server
 COPY vendor/ /src/vendor
 COPY go.mod go.sum adapter.go version.go Makefile /src
 WORKDIR /src
+RUN sed -i -e 's/interim.*xxxx/'"$VERSION"'/g' ./version.go
 RUN make
 
 #
