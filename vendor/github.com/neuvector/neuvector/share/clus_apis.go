@@ -788,6 +788,7 @@ type CLUSWebhook struct {
 
 type CLUSSystemConfig struct {
 	NewServicePolicyMode      string `json:"new_service_policy_mode"`
+	NewServiceProfileMode     string `json:"new_service_profile_mode"`
 	NewServiceProfileBaseline string `json:"new_service_profile_baseline"`
 	UnusedGroupAging          uint8  `json:"unused_group_aging"`
 	CLUSSyslogConfig
@@ -1074,6 +1075,7 @@ type CLUSController struct {
 	Leader            bool   `json:"leader"`
 	OrchConnStatus    string `json:"orch_conn_status"`
 	OrchConnLastError string `json:"orch_conn_last_error"`
+	ReadPrimeConfig   bool   `json:"read_prime_config"`
 }
 
 type CLUSProtoPort struct {
@@ -1265,11 +1267,12 @@ type CLUSAgentConfig struct {
 	Debug                []string `json:"debug,omitempty"`
 	DisableNvProtectMode bool     `json:"disable_nvprotect"`
 	DisableKvCongestCtl  bool     `json:"disable_kvcctl"`
-	SyslogLevel          string   `json:"syslog_level,omitempty"`
+	LogLevel             string   `json:"log_level,omitempty"`
 }
 
 type CLUSControllerConfig struct {
-	Debug []string `json:"debug,omitempty"`
+	Debug    []string `json:"debug,omitempty"`
+	LogLevel string   `json:"log_level,omitempty"`
 }
 
 type CLUSVolume struct {
@@ -1457,6 +1460,8 @@ const (
 	CLUSEvCrdSkipped                 // for crd Config import
 	CLUSEvK8sAdmissionWebhookCChange // for admission control
 	CLUSEvGroupMetricViolation       //network metric violation per group level
+	CLUSEvKvRestored                 // kv is restored from pvc
+	CLUSEvScanDataRestored           // scan data is restored from pvc
 )
 
 const (
@@ -1716,34 +1721,25 @@ const (
 )
 
 const (
-	SyslogLevel_Panic = "panic"
-	SyslogLevel_Fatal = "fatal"
-	SyslogLevel_Error = "error"
-	SyslogLevel_Warn  = "warn"
-	SyslogLevel_Info  = "info"
-	SyslogLevel_Debug = "debug"
-	SyslogLevel_Trace = "trace"
+	LogLevel_Error = "error"
+	LogLevel_Warn  = "warn"
+	LogLevel_Info  = "info"
+	LogLevel_Debug = "debug"
 )
 
-func CLUSGetSyslogLevel(syslogLevel string) log.Level {
-	switch syslogLevel {
-	case SyslogLevel_Panic:
-		return log.PanicLevel
-	case SyslogLevel_Fatal:
-		return log.FatalLevel
-	case SyslogLevel_Error:
+func CLUSGetLogLevel(logLevel string) log.Level {
+	switch logLevel {
+	case LogLevel_Error:
 		return log.ErrorLevel
-	case SyslogLevel_Warn:
+	case LogLevel_Warn:
 		return log.WarnLevel
-	case SyslogLevel_Debug:
+	case LogLevel_Info:
+		return log.InfoLevel
+	case LogLevel_Debug:
 		return log.DebugLevel
-	case SyslogLevel_Trace:
-		return log.TraceLevel
-	case SyslogLevel_Info:
 	default:
 		return log.InfoLevel
 	}
-	return log.InfoLevel
 }
 
 type CLUSCustomCheck struct {
@@ -2247,6 +2243,8 @@ const (
 	FedFileMonitorProfilesType = "fed_file_profile"
 	FedProcessProfilesType     = "fed_process_profile"
 	FedSystemConfigType        = "fed_system_config"
+	FedDlpSensorGrpType        = "fed_dlp_sensor_grp"
+	FedWafSensorGrpType        = "fed_waf_sensor_grp"
 )
 
 const (
@@ -2310,6 +2308,8 @@ func CLUSEmptyFedRulesRevision() *CLUSFedRulesRevision {
 			FedFileMonitorProfilesType: 0,
 			FedProcessProfilesType:     0,
 			FedSystemConfigType:        0,
+			FedDlpSensorGrpType:        0,
+			FedWafSensorGrpType:        0,
 		},
 		LastUpdateTime: time.Now().UTC(),
 	}
@@ -2479,6 +2479,19 @@ type CLUSFedScanRevisions struct {
 	ScannedRegRevs map[string]uint64 `json:"scanned_reg_revs"` // increases whenever the scan result of any image in a fed registry is changed (registry name : revision)
 	ScannedRepoRev uint64            `json:"scanned_repo_rev"` // increases whenever there is any change in master cluster's repo scan data
 	Restoring      bool              `json:"restoring"`        // fed registry revision
+	RestoreAt      time.Time         `json:"restore_at"`
+}
+
+type CLUSFedDlpGroupSensorData struct {
+	Revision   uint64           `json:"revision"`
+	DlpSensors []*CLUSDlpSensor `json:"dlp_sensors"`
+	DlpGroups  []*CLUSDlpGroup  `json:"dlp_groups"`
+}
+
+type CLUSFedWafGroupSensorData struct {
+	Revision   uint64           `json:"revision"`
+	WafSensors []*CLUSWafSensor `json:"waf_sensors"`
+	WafGroups  []*CLUSWafGroup  `json:"waf_groups"`
 }
 
 // dlp rule
@@ -2495,26 +2508,42 @@ const (
 )
 
 const (
-	CLUSDlpDefaultSensor = "sensor.dlpdfltnv"
-	CLUSDlpSsnSensor     = "sensor.ssn"
-	CLUSDlpCcSensor      = "sensor.creditcard"
-	CLUSWafDefaultSensor = "sensor.wafdfltnv"
-	CLUSWafLog4shSensor  = "sensor.log4shell"
-	CLUSWafSpr4shSensor  = "sensor.spring4shell"
+	CLUSDlpDefaultSensor    = "sensor.dlpdfltnv"
+	CLUSFedDlpDefaultSensor = "fed.sensor.dlpdfltnv"
+	CLUSFedDlpDefSyncSensor = "fed.sensor.dlpdfltsyncnv"
+	CLUSDlpSsnSensor        = "sensor.ssn"
+	CLUSDlpCcSensor         = "sensor.creditcard"
+	CLUSFedDlpSsnSensor     = "fed.sensor.ssn"
+	CLUSFedDlpCcSensor      = "fed.sensor.creditcard"
+	CLUSWafDefaultSensor    = "sensor.wafdfltnv"
+	CLUSWafLog4shSensor     = "sensor.log4shell"
+	CLUSWafSpr4shSensor     = "sensor.spring4shell"
+	CLUSWafDefaultFedSensor = "fed.sensor.wafdfltnv"
+	CLUSFedWafDefSyncSensor = "fed.sensor.wafdfltsyncnv"
+	CLUSWafFedLog4shSensor  = "fed.sensor.log4shell"
+	CLUSWafFedSpr4shSensor  = "fed.sensor.spring4shell"
 )
 
 const (
-	DlpRuleNameCreditCard string = "rule.creditcard"
-	DlpRuleNameCcAxp      string = "rule.americanexpress"
-	DlpRuleNameCcDiscover string = "rule.discover"
-	DlpRuleNameCcMaster   string = "rule.master"
-	DlpRuleNameCcVisa     string = "rule.visa"
-	DlpRuleNameCcDinerV1  string = "rule.diner1"
-	DlpRuleNameCcDinerV2  string = "rule.diner2"
-	DlpRuleNameCcJcb      string = "rule.jcb"
-	DlpRuleNameSsn        string = "rule.ssn"
-	WafRuleNameLog4sh     string = "rule.log4shell"
-	WafRuleNameSpr4sh     string = "rule.spring4shell"
+	DlpRuleNameCreditCard    string = "rule.creditcard"
+	DlpRuleNameCcAxp         string = "rule.americanexpress"
+	DlpFedRuleNameCcAxp      string = "fed.rule.americanexpress"
+	DlpRuleNameCcMaster      string = "rule.master"
+	DlpFedRuleNameCcMaster   string = "fed.rule.master"
+	DlpRuleNameCcDiscover    string = "rule.discover"
+	DlpFedRuleNameCcDiscover string = "fed.rule.discover"
+	DlpRuleNameCcVisa        string = "rule.visa"
+	DlpFedRuleNameCcVisa     string = "fed.rule.visa"
+	DlpRuleNameCcDinerV1     string = "rule.diner1"
+	DlpFedRuleNameCcDinerV1  string = "fed.rule.diner1"
+	DlpRuleNameCcDinerV2     string = "rule.diner2"
+	DlpFedRuleNameCcDinerV2  string = "fed.rule.diner2"
+	DlpRuleNameCcJcb         string = "rule.jcb"
+	DlpFedRuleNameCcJcb      string = "fed.rule.jcb"
+	DlpRuleNameSsn           string = "rule.ssn"
+	DlpFedRuleNameSsn        string = "fed.rule.ssn"
+	WafRuleNameLog4sh        string = "rule.log4shell"
+	WafRuleNameSpr4sh        string = "rule.spring4shell"
 )
 
 const (
@@ -2678,13 +2707,14 @@ type CLUSCrdEventQueueInfo struct {
 const CLUSReservedUuidPrefix string = "00000000-0000-0000-0000-0000000000" // reserved the last 2 digits
 
 // ////
-const CLUSReservedUuidNotAlllowed string = "00000000-0000-0000-0000-000000000000"    // processes beyond white list
-const CLUSReservedUuidRiskyApp string = "00000000-0000-0000-0000-000000000001"       // riskApp
-const CLUSReservedUuidTunnelProc string = "00000000-0000-0000-0000-000000000002"     // tunnel
-const CLUSReservedUuidRootEscalation string = "00000000-0000-0000-0000-000000000003" // root privilege escallation
-const CLUSReservedUuidDockerCp string = "00000000-0000-0000-0000-000000000004"       // docker cp
-const CLUSReservedUuidAnchorMode string = "00000000-0000-0000-0000-000000000005"     // rejected by anchor mode
-const CLUSReservedUuidShieldMode string = "00000000-0000-0000-0000-000000000006"     // rejected by non-family process
+const CLUSReservedUuidNotAlllowed string = "00000000-0000-0000-0000-000000000000"       // processes beyond white list
+const CLUSReservedUuidRiskyApp string = "00000000-0000-0000-0000-000000000001"          // riskApp
+const CLUSReservedUuidTunnelProc string = "00000000-0000-0000-0000-000000000002"        // tunnel
+const CLUSReservedUuidRootEscalation string = "00000000-0000-0000-0000-000000000003"    // root privilege escallation
+const CLUSReservedUuidDockerCp string = "00000000-0000-0000-0000-000000000004"          // docker cp
+const CLUSReservedUuidAnchorMode string = "00000000-0000-0000-0000-000000000005"        // rejected by anchor mode
+const CLUSReservedUuidShieldMode string = "00000000-0000-0000-0000-000000000006"        // rejected by non-family process
+const CLUSReservedUuidShieldNotListMode string = "00000000-0000-0000-0000-000000000007" // rejected by Monitor mode for not-listed family process
 
 type ProcRule struct {
 	Active int                     `json:"active"`

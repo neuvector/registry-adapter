@@ -139,71 +139,6 @@ type RESTProfilingData struct {
 	Profiling *RESTProfiling `json:"profiling"`
 }
 
-type RESTRiskScoreMetricsWL struct {
-	RunningPods    int `json:"running_pods"`
-	PrivilegedWLs  int `json:"privileged_wls"`
-	RootWLs        int `json:"root_wls"`
-	DiscoverExtEPs int `json:"discover_ext_eps"`
-	MonitorExtEPs  int `json:"monitor_ext_eps"`
-	ProtectExtEPs  int `json:"protect_ext_eps"`
-	ThrtExtEPs     int `json:"threat_ext_eps"`
-	VioExtEPs      int `json:"violate_ext_eps"`
-}
-
-type RESTRiskScoreMetricsGroup struct {
-	Groups           int `json:"groups"`
-	DiscoverGroups   int `json:"discover_groups"`
-	MonitorGroups    int `json:"monitor_groups"`
-	ProtectGroups    int `json:"protect_groups"`
-	DiscoverGroupsZD int `json:"discover_groups_zero_drift"`
-	MonitorGroupsZD  int `json:"monitor_groups_zero_drift"`
-	ProtectGroupsZD  int `json:"protect_groups_zero_drift"`
-}
-
-type RESTRiskScoreMetricsCVE struct {
-	DiscoverCVEs int `json:"discover_cves"`
-	MonitorCVEs  int `json:"monitor_cves"`
-	ProtectCVEs  int `json:"protect_cves"`
-	PlatformCVEs int `json:"platform_cves"`
-	HostCVEs     int `json:"host_cves"`
-}
-
-type RESTRiskScoreMetrics struct {
-	Platform         string                    `json:"platform"`
-	K8sVersion       string                    `json:"kube_version"`
-	OCVersion        string                    `json:"openshift_version"`
-	NewServiceMode   string                    `json:"new_service_policy_mode"`
-	DenyAdmCtrlRules int                       `json:"deny_adm_ctrl_rules"`
-	Hosts            int                       `json:"hosts"`
-	WLs              RESTRiskScoreMetricsWL    `json:"workloads"`
-	Groups           RESTRiskScoreMetricsGroup `json:"groups"`
-	CVEs             RESTRiskScoreMetricsCVE   `json:"cves"`
-}
-
-type RESTExposedEndpoint struct {
-	ID             string                         `json:"id"`
-	Name           string                         `json:"name"`
-	DisplayName    string                         `json:"display_name"`
-	PodName        string                         `json:"pod_name"`
-	Service        string                         `json:"service"`
-	ThreatSeverity string                         `json:"severity"`
-	CriticalVuls   int                            `json:"critical"`
-	HighVuls       int                            `json:"high"`
-	MedVuls        int                            `json:"medium"`
-	PolicyMode     string                         `json:"policy_mode"`
-	PolicyAction   string                         `json:"policy_action"`
-	Protos         []string                       `json:"protocols,omitempty"`
-	Apps           []string                       `json:"applications,omitempty"`
-	Ports          []string                       `json:"ports,omitempty"`
-	Entries        []*RESTConversationReportEntry `json:"entries"`
-}
-
-type RESTInternalSystemData struct {
-	Metrics *RESTRiskScoreMetrics  `json:"metrics"`
-	Ingress []*RESTExposedEndpoint `json:"ingress"`
-	Egress  []*RESTExposedEndpoint `json:"egress"`
-}
-
 type RESTK8sNvRbacStatus struct {
 	ClusterRoleErrors        []string                   `json:"clusterrole_errors,omitempty"`        // obsolete
 	ClusterRoleBindingErrors []string                   `json:"clusterrolebinding_errors,omitempty"` // obsolete
@@ -225,9 +160,9 @@ type RESTK8sNvAcceptableAlerts struct {
 }
 
 type RESTNvAlerts struct {
-	NvUpgradeInfo            *RESTCheckUpgradeInfo   `json:"neuvector_upgrade_info"`
-	AcceptableAlerts         *RESTNvAcceptableAlerts `json:"acceptable_alerts,omitempty"` // acceptable controller-generated alerts
-	AcceptedAlerts           []string                `json:"accepted_alerts,omitempty"`   // keys of accepted manager-generated/user alerts
+	NvUpgradeInfo    *RESTCheckUpgradeInfo   `json:"neuvector_upgrade_info"`
+	AcceptableAlerts *RESTNvAcceptableAlerts `json:"acceptable_alerts,omitempty"` // acceptable controller-generated alerts
+	AcceptedAlerts   []string                `json:"accepted_alerts,omitempty"`   // keys of accepted manager-generated/user alerts
 }
 
 type RESTNvAcceptableAlerts struct {
@@ -253,8 +188,8 @@ type RESTNvAlertGroup struct {
 }
 
 type RESTNvAlert struct {
-	ID       string `json:"id"`      // ID is md5 of the English message
-	Message  string `json:"message"`
+	ID      string `json:"id"` // ID is md5 of the English message
+	Message string `json:"message"`
 }
 
 type RESTAcceptedAlerts struct {
@@ -273,4 +208,8 @@ type RESTUpgradeInfo struct {
 type RESTCheckUpgradeInfo struct {
 	MinUpgradeVersion *RESTUpgradeInfo `json:"min_upgrade_version"`
 	MaxUpgradeVersion *RESTUpgradeInfo `json:"max_upgrade_version"`
+}
+
+type RESTPredictScoreData struct {
+	Metrics *RESTRiskScoreMetrics `json:"metrics"`
 }

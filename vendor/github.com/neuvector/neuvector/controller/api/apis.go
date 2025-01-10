@@ -13,6 +13,7 @@ const RESTMaskedValue string = "The value is masked"
 const RESTAPIKeyHeader string = "X-Auth-Apikey"
 
 const RESTNvPageDashboard string = "dashboard"
+const RESTNvPageNavigationBar string = "navbar"
 
 // Don't modify value or reorder
 const RESTErrNotFound int = 1
@@ -528,10 +529,16 @@ type RESTListData struct {
 	List *RESTList `json:"list"`
 }
 
+// NV 5.4(-):   process/file profile mode value priority is "policy_mode"
+// NV 5.4.1(+): process/file profile mode value priority is "profile_mode" -> "policy_mode"
+// NV future: 	     process profile mode value priority is "profile_mode" -> "policy_mode"
+// NV future:           file profile mode value priority is "file_profile_mode" -> "profile_mode" -> "policy_mode"
 type RESTGroupExport struct {
 	Groups              []string                 `json:"groups"`
 	PolicyMode          string                   `json:"policy_mode,omitempty"`
+	ProfileMode         string                   `json:"profile_mode,omitempty"` // for both process/file profiles(if specified) since 5.4.1
 	RemoteExportOptions *RESTRemoteExportOptions `json:"remote_export_options,omitempty"`
+	//FileProfileMode   string                   `json:"file_profile_mode,omitempty"`    // for file profile(if specified). not supported yet
 }
 
 type RESTAdmCtrlRulesExport struct {
@@ -850,6 +857,7 @@ type RESTController struct {
 	DisconnAt         string            `json:"disconnected_at"`
 	OrchConnStatus    string            `json:"orch_conn_status"`
 	OrchConnLastError string            `json:"orch_conn_last_error"`
+	ReadPrimeConfig   bool              `json:"read_prime_config"`
 }
 
 type RESTControllersData struct {
@@ -1474,7 +1482,7 @@ type RESTAgentConfig struct {
 	Debug            *[]string `json:"debug,omitempty"`
 	DisableNvProtect *bool     `json:"disable_nvprotect,omitempty"`
 	DisableKvCCtl    *bool     `json:"disable_kvcctl,omitempty"`
-	SyslogLevel      *string   `json:"syslog_level,omitempty"`
+	LogLevel         *string   `json:"log_level,omitempty"`
 }
 
 type RESTAgentConfigData struct {
@@ -1494,7 +1502,8 @@ type RESTControllerCounterData struct {
 }
 
 type RESTControllerConfig struct {
-	Debug *[]string `json:"debug,omitempty"`
+	Debug    *[]string `json:"debug,omitempty"`
+	LogLevel *string   `json:"log_level,omitempty"`
 }
 
 type RESTControllerConfigData struct {
@@ -1702,6 +1711,90 @@ type RESTSystemStatsData struct {
 	Stats *RESTSystemStats `json:"stats"`
 }
 
+type RESTRiskScoreMetricsWL struct {
+	RunningPods    int `json:"running_pods"`
+	PrivilegedWLs  int `json:"privileged_wls"`
+	RootWLs        int `json:"root_wls"`
+	DiscoverExtEPs int `json:"discover_ext_eps"`
+	MonitorExtEPs  int `json:"monitor_ext_eps"`
+	ProtectExtEPs  int `json:"protect_ext_eps"`
+	ThrtExtEPs     int `json:"threat_ext_eps"`
+	VioExtEPs      int `json:"violate_ext_eps"`
+}
+
+type RESTRiskScoreMetricsGroup struct {
+	Groups                int `json:"groups"`
+	DiscoverGroups        int `json:"discover_groups"`
+	MonitorGroups         int `json:"monitor_groups"`
+	ProtectGroups         int `json:"protect_groups"`
+	ProfileDiscoverGroups int `json:"profile_discover_groups"`
+	ProfileMonitorGroups  int `json:"profile_monitor_groups"`
+	ProfileProtectGroups  int `json:"profile_protect_groups"`
+	DiscoverGroupsZD      int `json:"discover_groups_zero_drift"`
+	MonitorGroupsZD       int `json:"monitor_groups_zero_drift"`
+	ProtectGroupsZD       int `json:"protect_groups_zero_drift"`
+}
+
+type RESTRiskScoreMetricsCVE struct {
+	DiscoverCVEs int `json:"discover_cves"`
+	MonitorCVEs  int `json:"monitor_cves"`
+	ProtectCVEs  int `json:"protect_cves"`
+	PlatformCVEs int `json:"platform_cves"`
+	HostCVEs     int `json:"host_cves"`
+}
+
+type RESTRiskScoreMetrics struct {
+	Platform         string                    `json:"platform"`
+	K8sVersion       string                    `json:"kube_version"`
+	OCVersion        string                    `json:"openshift_version"`
+	NewServiceMode   string                    `json:"new_service_policy_mode"`
+	NewProfileMode   string                    `json:"new_service_profile_mode"`
+	DenyAdmCtrlRules int                       `json:"deny_adm_ctrl_rules"`
+	Hosts            int                       `json:"hosts"`
+	WLs              RESTRiskScoreMetricsWL    `json:"workloads"`
+	Groups           RESTRiskScoreMetricsGroup `json:"groups"`
+	CVEs             RESTRiskScoreMetricsCVE   `json:"cves"`
+}
+
+type RESTExposedEndpoint struct {
+	ID             string                         `json:"id"`
+	Name           string                         `json:"name"`
+	DisplayName    string                         `json:"display_name"`
+	PodName        string                         `json:"pod_name"`
+	Service        string                         `json:"service"`
+	ThreatSeverity string                         `json:"severity"`
+	CriticalVuls   int                            `json:"critical"`
+	HighVuls       int                            `json:"high"`
+	MedVuls        int                            `json:"medium"`
+	PolicyMode     string                         `json:"policy_mode"`
+	PolicyAction   string                         `json:"policy_action"`
+	Protos         []string                       `json:"protocols,omitempty"`
+	Apps           []string                       `json:"applications,omitempty"`
+	Ports          []string                       `json:"ports,omitempty"`
+	Entries        []*RESTConversationReportEntry `json:"entries"`
+}
+
+type RESTSecurityScores struct {
+	NewServiceModeScore      int `json:"new_service_mode_score"`
+	ServiceModeScore         int `json:"service_mode_score"`
+	ServiceModeScoreBy100    int `json:"service_mode_score_by_100"`
+	ExposureScore            int `json:"exposure_score"`
+	ExposureScoreBy100       int `json:"exposure_score_by_100"`
+	PrivilegedContainerScore int `json:"privileged_container_score"`
+	RunAsRootScore           int `json:"run_as_root_score"`
+	AdmissionRuleScore       int `json:"admission_rule_score"`
+	VulnerabilityScore       int `json:"vulnerability_score"`
+	VulnerabilityScoreBy100  int `json:"vulnerability_score_by_100"`
+	SecurityRiskScore        int `json:"security_risk_score"`
+}
+
+type RESTScoreMetricsData struct {
+	Metrics        *RESTRiskScoreMetrics  `json:"metrics"`
+	Ingress        []*RESTExposedEndpoint `json:"ingress"`
+	Egress         []*RESTExposedEndpoint `json:"egress"`
+	SecurityScores *RESTSecurityScores    `json:"security_scores"`
+}
+
 type RESTProxy struct {
 	URL      string `json:"url"`
 	Username string `json:"username"`
@@ -1737,6 +1830,7 @@ const (
 
 type RESTSystemConfigConfig struct {
 	NewServicePolicyMode      *string                          `json:"new_service_policy_mode,omitempty"`
+	NewServiceProfileMode     *string                          `json:"new_service_profile_mode,omitempty"`
 	NewServiceProfileBaseline *string                          `json:"new_service_profile_baseline,omitempty"`
 	UnusedGroupAging          *uint8                           `json:"unused_group_aging,omitempty"`
 	SyslogServer              *string                          `json:"syslog_ip,omitempty"`
@@ -1814,6 +1908,7 @@ type RESTSystemConfigConfigData struct {
 
 type RESTSystemConfigSvcCfgV2 struct {
 	NewServicePolicyMode      *string `json:"new_service_policy_mode,omitempty"`
+	NewServiceProfileMode     *string `json:"new_service_profile_mode,omitempty"`
 	NewServiceProfileBaseline *string `json:"new_service_profile_baseline,omitempty"`
 }
 
@@ -1886,6 +1981,7 @@ type RESTUnquarReq struct {
 
 type RESTSystemRequest struct {
 	PolicyMode      *string        `json:"policy_mode,omitempty"`
+	ProfileMode     *string        `json:"profile_mode,omitempty"`
 	BaselineProfile *string        `json:"baseline_profile,omitempty"`
 	Unquar          *RESTUnquarReq `json:"unquarantine,omitempty"`
 }
@@ -1903,6 +1999,7 @@ type RESTProxyConfig struct {
 // If more log servers needed, they can be defined as servers.
 type RESTSystemConfig struct {
 	NewServicePolicyMode      string                    `json:"new_service_policy_mode"`
+	NewServiceProfileMode     string                    `json:"new_service_profile_mode"`
 	NewServiceProfileBaseline string                    `json:"new_service_profile_baseline"`
 	UnusedGroupAging          uint8                     `json:"unused_group_aging"`
 	SyslogServer              string                    `json:"syslog_ip"`
@@ -1956,6 +2053,7 @@ type RESTSystemConfigData struct {
 
 type RESTSystemConfigNewSvcV2 struct {
 	NewServicePolicyMode      string `json:"new_service_policy_mode"`
+	NewServiceProfileMode     string `json:"new_service_profile_mode"`
 	NewServiceProfileBaseline string `json:"new_service_profile_baseline"`
 }
 
@@ -2093,6 +2191,7 @@ type RESTServiceConfig struct {
 	Domain          string  `json:"domain"`
 	Comment         *string `json:"comment"`
 	PolicyMode      *string `json:"policy_mode,omitempty"`
+	ProfileMode     *string `json:"profile_mode,omitempty"`
 	BaselineProfile *string `json:"baseline_profile,omitempty"`
 	NotScored       *bool   `json:"not_scored,omitempty"`
 }
@@ -2130,6 +2229,7 @@ type RESTServiceData struct {
 type RESTServiceBatchConfig struct {
 	Services        []string `json:"services,omitempty"`
 	PolicyMode      *string  `json:"policy_mode,omitempty"`
+	ProfileMode     *string  `json:"profile_mode,omitempty"`
 	BaselineProfile *string  `json:"baseline_profile,omitempty"`
 	NotScored       *bool    `json:"not_scored,omitempty"`
 }
@@ -2342,6 +2442,7 @@ type RESTVulnerabilityAssetV2 struct {
 	VectorsV3   string                              `json:"vectors_v3"`
 	PublishedTS int64                               `json:"published_timestamp"`
 	LastModTS   int64                               `json:"last_modified_timestamp"`
+	FeedRating  string                              `json:"feed_rating"`
 
 	Workloads   []*RESTWorkloadAsset `json:"workloads,omitempty"`
 	WorkloadIDs []string             `json:"-"`
@@ -2936,6 +3037,7 @@ type RESTProcessProfileConfigData struct {
 
 const MinDlpRuleID = 20000
 const MinDlpPredefinedRuleID = 30000
+const MinDlpFedPredefinedRuleID = 35000
 const MaxDlpPredefinedRuleID = 40000
 
 type RESTDlpCriteriaEntry struct {
@@ -2978,7 +3080,7 @@ type RESTDlpGroup struct {
 	Name    string            `json:"name"`
 	Status  bool              `json:"status"`
 	Sensors []*RESTDlpSetting `json:"sensors"`
-	CfgType string            `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround
+	CfgType string            `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
 }
 
 type RESTDlpGroupData struct {
@@ -3013,7 +3115,7 @@ type RESTDlpSensor struct {
 	RuleList  []*RESTDlpRule `json:"rules"`
 	Comment   string         `json:"comment"`
 	Predefine bool           `json:"predefine"`
-	CfgType   string         `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround
+	CfgType   string         `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
 }
 
 type RESTDlpSensorData struct {
@@ -3030,6 +3132,7 @@ type RESTDlpSensorConfig struct {
 	RuleDelList *[]RESTDlpRule `json:"delete,omitempty"` //delete list used by CLI
 	Rules       *[]RESTDlpRule `json:"rules,omitempty"`  //replace list used by GUI
 	Comment     *string        `json:"comment,omitempty"`
+	CfgType     string         `json:"cfg_type"` //CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
 }
 
 type RESTDlpSensorConfigData struct {
@@ -3141,6 +3244,7 @@ type RESTWafSensorConfig struct {
 	RuleDelList *[]RESTWafRule `json:"delete,omitempty"` //delete list used by CLI
 	Rules       *[]RESTWafRule `json:"rules,omitempty"`  //replace list used by GUI
 	Comment     *string        `json:"comment,omitempty"`
+	CfgType     string         `json:"cfg_type"` //CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
 }
 
 type RESTWafSensorConfigData struct {

@@ -21,12 +21,6 @@ type CVEDBType map[string]*share.ScanVulnerability
 var scanDbMutex sync.RWMutex
 var scannerDB = share.CLUSScannerDB{CVEDB: make(map[string]*share.ScanVulnerability)}
 
-type RegTestMeg struct {
-	comment string
-	url     string
-	body    string
-}
-
 const (
 	vulnSeverityLow int8 = iota
 	vulnSeverityMedium
@@ -190,7 +184,7 @@ func GetSecretBenchMessage(stype, loc, evidence string) string {
 	return fmt.Sprintf("File %s contains %s: %s", loc, stype, evidence)
 }
 
-func ImageBench2REST(cmds []string, secrets []*share.ScanSecretLog, setids []*share.ScanSetIdPermLog, tagMap map[string][]string) []*api.RESTBenchItem {
+func ImageBench2REST(cmds []string, secrets []*share.ScanSecretLog, setids []*share.ScanSetIdPermLog, complianceProfileFilter map[string][]string) []*api.RESTBenchItem {
 	_, metaMap := GetImageBenchMeta()
 	runAsRoot, hasADD, hasHEALTHCHECK := ParseImageCmds(cmds)
 
@@ -259,13 +253,19 @@ func ImageBench2REST(cmds []string, secrets []*share.ScanSecretLog, setids []*sh
 
 	// add tags to every checks
 	for _, item := range checks {
-		if tagMap == nil {
+		filteredTagsV2 := make(map[string]share.TagDetails)
+		if complianceProfileFilter == nil {
 			item.Tags = make([]string, 0)
-		} else if tags, ok := tagMap[item.TestNum]; !ok {
+		} else if tags, ok := complianceProfileFilter[item.TestNum]; !ok {
 			item.Tags = make([]string, 0)
 		} else {
 			item.Tags = tags
+			for _, tag := range tags {
+				filteredTagsV2[tag] = share.TagDetails{}
+			}
 		}
+		// init the TagV2 for compliance profile.
+		item.TagsV2 = filteredTagsV2
 	}
 
 	return checks
@@ -979,8 +979,6 @@ func GetCVERecord(name, dbKey, baseOS string) *api.RESTVulnerability {
 func Perf_getRandomCVEs(count int) []string {
 	sdb := GetScannerDB()
 	cvedb := sdb.CVEDB
-
-	rand.Seed(time.Now().UnixNano())
 
 	// Get all cve names
 	keys := make([]string, 0, len(cvedb))
