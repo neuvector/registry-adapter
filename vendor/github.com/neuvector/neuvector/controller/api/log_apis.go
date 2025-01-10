@@ -159,6 +159,8 @@ const (
 	EventNameScannerAutoScaleDisabled    = "Configuration.ScannerAutoScale.Disabled"
 	EventNameK8sAdmissionWebhookChange   = "Kubenetes.Admission.Webhook.Change" // for admission control
 	EventNameGroupMetricViolation        = "Group.Metric.Violation"
+	EventNameKvRestored                  = "Configuration.Restore"
+	EventNameScanDataRestored            = "Scan.Data.Restore"
 )
 
 // TODO: these are not events but incidents
@@ -197,19 +199,19 @@ const (
 	EventNameAwsLambdaScan                           = "AwsLambda.Scan"
 )
 
-var incidentNameList []string = []string{
-	EventNameHostPrivilEscalate,
-	EventNameContainerPrivilEscalate,
-	EventNameHostSuspiciousProcess,
-	EventNameContainerSuspiciousProcess,
-	EventNameHostFileAccessViolation,
-	EventNameContainerFileAccessViolation,
-	EventNameHostPackageUpdated,
-	EventNameContainerPackageUpdated,
-	EventNameHostTunnelDetected,
-	EventNameProcessProfileViolation,
-	EventNameHostProcessProfileViolation,
-}
+// var incidentNameList []string = []string{
+// 	EventNameHostPrivilEscalate,
+// 	EventNameContainerPrivilEscalate,
+// 	EventNameHostSuspiciousProcess,
+// 	EventNameContainerSuspiciousProcess,
+// 	EventNameHostFileAccessViolation,
+// 	EventNameContainerFileAccessViolation,
+// 	EventNameHostPackageUpdated,
+// 	EventNameContainerPackageUpdated,
+// 	EventNameHostTunnelDetected,
+// 	EventNameProcessProfileViolation,
+// 	EventNameHostProcessProfileViolation,
+// }
 
 const (
 	EventCatREST       = "RESTFUL"

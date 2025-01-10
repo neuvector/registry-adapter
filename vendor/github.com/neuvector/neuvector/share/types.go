@@ -37,6 +37,11 @@ const (
 	PolicyModeUnavailable string = "N/A"
 )
 
+// Both policy mode & profile mode support Discover/Monitor/Protect modes
+func IsValidPolicyMode(mode string) bool {
+	return mode == PolicyModeLearn || mode == PolicyModeEvaluate || mode == PolicyModeEnforce
+}
+
 const (
 	ProfileDefault_UNUSED string = "default" // (obsolete) it's equal to "zero-drift"
 	ProfileShield_UNUSED  string = "shield"  // (obsolete) it's equal to "zero-drift"
@@ -130,6 +135,7 @@ const (
 	RegistryTypeSonatypeNexus    = "Sonatype Nexus"
 	RegistryTypeGitlab           = "Gitlab"
 	RegistryTypeIBMCloud         = "IBM Cloud Container Registry"
+	RegistryTypeHarbor           = "Harbor Registry"
 )
 
 const (

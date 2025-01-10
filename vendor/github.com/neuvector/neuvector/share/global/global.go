@@ -101,8 +101,6 @@ func getContainerPlatform(c *container.ContainerMeta) (string, string) {
 		cloudPlatform = share.CloudAKS
 	}
 
-	// log.WithFields(log.Fields{"container": c, "cloudPlatform": cloudPlatform}).Info("XXXXX Determined platform and cloudPlatform in getContainerPlatform")
-
 	return platform, cloudPlatform
 }
 
@@ -158,6 +156,7 @@ func getPlatform(containers []*container.ContainerMeta) (string, string, string,
 		}
 		// continue parsing flavor and network
 	case "":
+		platform = share.PlatformDocker
 		for _, c := range containers {
 			containerPlatform, containerCloudPlatform := getContainerPlatform(c)
 			// Find the first platform is not docker then update it
@@ -208,7 +207,7 @@ func IdentifyK8sContainerID(id string) (string, error) {
 				if strings.HasPrefix(c.Name, "k8s_POD") {
 					// parent: POD
 					if c.ID == id {
-						podname, _ = c.Labels[container.KubeKeyPodName]
+						podname = c.Labels[container.KubeKeyPodName]
 						break
 					}
 				} else {
@@ -234,9 +233,9 @@ func IdentifyK8sContainerID(id string) (string, error) {
 }
 
 func (d *orchHub) SetFlavor(flavor string) error {
-	d.Driver.SetFlavor(flavor)
+	_ = d.Driver.SetFlavor(flavor)
 	if d.ResourceDriver != nil {
-		d.ResourceDriver.SetFlavor(flavor)
+		_ = d.ResourceDriver.SetFlavor(flavor)
 	}
 
 	return nil
