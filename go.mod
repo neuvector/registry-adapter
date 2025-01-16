@@ -3,11 +3,7 @@ module github.com/neuvector/registry-adapter
 go 1.22
 
 replace (
-	github.com/containerd/cri => github.com/containerd/cri v1.19.0
-	github.com/docker/distribution => github.com/docker/distribution v2.8.0-beta.1+incompatible
-	github.com/docker/docker => github.com/docker/docker v1.13.1
 	github.com/jrhouston/k8slock => github.com/holyspectral/k8slock v0.0.0-20240306020054-dcc2a005b265
-	github.com/opencontainers/runc => github.com/opencontainers/runc v1.0.0-rc5
 	google.golang.org/grpc/security/advancedtls => github.com/holyspectral/grpc-go/security/advancedtls v0.0.0-20240202204003-24d7309846bd
 	k8s.io/cri-api => k8s.io/cri-api v0.25.16
 )
@@ -38,8 +34,9 @@ require (
 	github.com/containerd/typeurl v1.0.3-0.20220422153119-7f6e6d160d67 // indirect
 	github.com/containerd/typeurl/v2 v2.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/distribution/reference v0.5.0 // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
-	github.com/docker/docker v24.0.9+incompatible // indirect
+	github.com/docker/docker v26.1.5+incompatible // indirect
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
