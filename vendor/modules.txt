@@ -431,6 +431,10 @@ go.opentelemetry.io/otel/metric/embedded
 # go.opentelemetry.io/otel/trace v1.19.0
 ## explicit; go 1.20
 go.opentelemetry.io/otel/trace
+# golang.org/x/crypto v0.31.0
+## explicit; go 1.20
+golang.org/x/crypto/cryptobyte
+golang.org/x/crypto/cryptobyte/asn1
 # golang.org/x/net v0.33.0
 ## explicit; go 1.18
 golang.org/x/net/http/httpguts
@@ -500,6 +504,7 @@ google.golang.org/grpc/codes
 google.golang.org/grpc/connectivity
 google.golang.org/grpc/credentials
 google.golang.org/grpc/credentials/insecure
+google.golang.org/grpc/credentials/tls/certprovider
 google.golang.org/grpc/encoding
 google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
@@ -539,8 +544,8 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/grpc/security/advancedtls v0.0.0-20240408170116-ec257b4e1cec => github.com/holyspectral/grpc-go/security/advancedtls v0.0.0-20240202204003-24d7309846bd
-## explicit; go 1.13
+# google.golang.org/grpc/security/advancedtls v0.0.0-20240408170116-ec257b4e1cec => github.com/holyspectral/grpc-go/security/advancedtls v0.0.0-20231108191014-be1d1c10a930
+## explicit; go 1.19
 google.golang.org/grpc/security/advancedtls
 # google.golang.org/protobuf v1.33.0
 ## explicit; go 1.17
@@ -1018,5 +1023,5 @@ sigs.k8s.io/structured-merge-diff/v4/value
 sigs.k8s.io/yaml
 sigs.k8s.io/yaml/goyaml.v2
 # github.com/jrhouston/k8slock => github.com/holyspectral/k8slock v0.0.0-20240306020054-dcc2a005b265
-# google.golang.org/grpc/security/advancedtls => github.com/holyspectral/grpc-go/security/advancedtls v0.0.0-20240202204003-24d7309846bd
+# google.golang.org/grpc/security/advancedtls => github.com/holyspectral/grpc-go/security/advancedtls v0.0.0-20231108191014-be1d1c10a930
 # k8s.io/cri-api => k8s.io/cri-api v0.25.16
