@@ -3,7 +3,7 @@ module github.com/neuvector/registry-adapter
 go 1.22
 
 replace (
-	github.com/jrhouston/k8slock => github.com/holyspectral/k8slock v0.0.0-20240306020054-dcc2a005b265
+	github.com/jrhouston/k8slock => github.com/holyspectral/k8slock v0.0.0-20230312203603-b87a9b5c854c
 	google.golang.org/grpc/security/advancedtls => github.com/holyspectral/grpc-go/security/advancedtls v0.0.0-20240202204003-24d7309846bd
 	k8s.io/cri-api => k8s.io/cri-api v0.25.16
 )
