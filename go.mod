@@ -8,7 +8,7 @@ replace (
 )
 
 require (
-	github.com/neuvector/neuvector v0.0.0-20250114195603-86475d9399ae
+	github.com/neuvector/neuvector v0.0.0-20250131213859-0656f37d29ed
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.69.2
 	gopkg.in/yaml.v2 v2.4.0

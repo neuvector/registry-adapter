@@ -364,7 +364,7 @@ github.com/neuvector/go-rpmdb/pkg/bdb
 github.com/neuvector/go-rpmdb/pkg/db
 github.com/neuvector/go-rpmdb/pkg/ndb
 github.com/neuvector/go-rpmdb/pkg/sqlite3
-# github.com/neuvector/neuvector v0.0.0-20250114195603-86475d9399ae => github.com/holyspectral/neuvector v0.0.0-20250110182846-e06366176a56
+# github.com/neuvector/neuvector v0.0.0-20250131213859-0656f37d29ed => github.com/holyspectral/neuvector v0.0.0-20250110182846-e06366176a56
 ## explicit; go 1.22
 github.com/neuvector/neuvector/controller/api
 github.com/neuvector/neuvector/share
