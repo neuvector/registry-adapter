@@ -4,7 +4,7 @@ go 1.22
 
 replace (
 	github.com/neuvector/neuvector => github.com/holyspectral/neuvector v0.0.0-20250110182846-e06366176a56
-	k8s.io/cri-api => k8s.io/cri-api v0.25.16
+	k8s.io/cri-api => k8s.io/cri-api v0.27.16
 )
 
 require (
