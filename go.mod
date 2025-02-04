@@ -2,13 +2,10 @@ module github.com/neuvector/registry-adapter
 
 go 1.22
 
-replace (
-	github.com/neuvector/neuvector => github.com/holyspectral/neuvector v0.0.0-20250110182846-e06366176a56
-	k8s.io/cri-api => k8s.io/cri-api v0.25.16
-)
+replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
 require (
-	github.com/neuvector/neuvector v0.0.0-20250131213859-0656f37d29ed
+	github.com/neuvector/neuvector v0.0.0-20250204034627-a868ddae5754
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.69.2
 	gopkg.in/yaml.v2 v2.4.0
@@ -84,10 +81,11 @@ require (
 	github.com/opencontainers/runtime-spec v1.1.1-0.20230922153023-c0e90434df2a // indirect
 	github.com/opencontainers/selinux v1.11.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/quay/clair/v2 v2.1.8 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230126093431-47fa9a501578 // indirect
 	github.com/streadway/simpleuuid v0.0.0-20130420165545-6617b501e485 // indirect
 	github.com/vishvananda/netlink v1.2.1-beta.2 // indirect
-	github.com/vishvananda/netns v0.0.4 // indirect
+	github.com/vishvananda/netns v0.0.5 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.45.0 // indirect
 	go.opentelemetry.io/otel v1.31.0 // indirect
@@ -114,7 +112,7 @@ require (
 	k8s.io/cri-api v0.29.3 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
-	k8s.io/utils v0.0.0-20231127182322-b307cd553661 // indirect
+	k8s.io/utils v0.0.0-20241210054802-24370beab758 // indirect
 	modernc.org/libc v1.22.2 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.5.0 // indirect
