@@ -1128,6 +1128,12 @@ type CLUSWlMetric struct {
 	WlByteIn12  uint64 `json:"wl_byte_in12"`
 }
 
+type CLUSNetPolicyMetric struct {
+	ID          uint32 `json:"id"`
+	MatchCntr   uint64 `json:"match_cntr"`
+	LastMatchAt uint32 `json:"last_match_at"`
+}
+
 type CLUSWorkload struct {
 	ID           string                    `json:"id"`
 	Name         string                    `json:"name"`
@@ -1236,6 +1242,8 @@ type CLUSPolicyRule struct {
 	LastModAt      time.Time `json:"last_modified_at"`
 	CfgType        TCfgType  `json:"cfg_type"`
 	Priority       uint32    `json:"priority"`
+	MatchCntr      uint64    `json:"match_cntr"`
+	LastMatchAt    time.Time `json:"last_match_at"`
 }
 
 type CLUSRuleHead struct {
@@ -2707,7 +2715,7 @@ type CLUSCrdEventQueueInfo struct {
 const CLUSReservedUuidPrefix string = "00000000-0000-0000-0000-0000000000" // reserved the last 2 digits
 
 // ////
-const CLUSReservedUuidNotAlllowed string = "00000000-0000-0000-0000-000000000000"       // processes beyond white list
+const CLUSReservedUuidNotAllowed string = "00000000-0000-0000-0000-000000000000"        // processes beyond white list
 const CLUSReservedUuidRiskyApp string = "00000000-0000-0000-0000-000000000001"          // riskApp
 const CLUSReservedUuidTunnelProc string = "00000000-0000-0000-0000-000000000002"        // tunnel
 const CLUSReservedUuidRootEscalation string = "00000000-0000-0000-0000-000000000003"    // root privilege escallation
