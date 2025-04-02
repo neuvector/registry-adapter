@@ -7,7 +7,7 @@ toolchain go1.24.1
 replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
 require (
-	github.com/neuvector/neuvector v0.0.0-20250318171256-1d62b7f73bb8
+	github.com/neuvector/neuvector v0.0.0-20250402015917-55fddd6d667c
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.71.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -35,7 +35,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
-	github.com/docker/docker v26.1.5+incompatible // indirect
+	github.com/docker/docker v28.0.4+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/neuvector/go-rpmdb v0.0.0-20240605184921-0db4de14c27a // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
-	github.com/opencontainers/runtime-spec v1.2.0 // indirect
+	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/opencontainers/selinux v1.11.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/quay/clair/v2 v2.1.8 // indirect
@@ -94,7 +94,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/oauth2 v0.28.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
