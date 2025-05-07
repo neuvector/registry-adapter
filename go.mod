@@ -4,7 +4,7 @@ go 1.23.0
 
 toolchain go1.24.3
 
-replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
+replace k8s.io/cri-api => k8s.io/cri-api v0.31.8
 
 require (
 	github.com/neuvector/neuvector v0.0.0-20250507041540-ecbe0df91b05
