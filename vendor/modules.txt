@@ -378,7 +378,7 @@ github.com/neuvector/go-rpmdb/pkg/bdb
 github.com/neuvector/go-rpmdb/pkg/db
 github.com/neuvector/go-rpmdb/pkg/ndb
 github.com/neuvector/go-rpmdb/pkg/sqlite3
-# github.com/neuvector/neuvector v0.0.0-20250507041540-ecbe0df91b05
+# github.com/neuvector/neuvector v0.0.0-20250507113307-0b53512b8810
 ## explicit; go 1.23.0
 github.com/neuvector/neuvector/controller/api
 github.com/neuvector/neuvector/share
@@ -514,7 +514,7 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.29.0
+# golang.org/x/oauth2 v0.30.0
 ## explicit; go 1.23.0
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
