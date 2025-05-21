@@ -7,7 +7,7 @@ toolchain go1.24.3
 replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
 require (
-	github.com/neuvector/neuvector v0.0.0-20250508121332-6ebbb8fb8fe4
+	github.com/neuvector/neuvector v0.0.0-20250521172018-cefc96d1c715
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.72.1
 	gopkg.in/yaml.v2 v2.4.0
@@ -15,13 +15,13 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/Microsoft/hcsshim v0.13.0-rc.3 // indirect
+	github.com/Microsoft/hcsshim v0.13.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.7 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
-	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe // indirect
+	github.com/codeskyblue/go-sh v0.0.0-20250509230738-c29da582b0f5 // indirect
 	github.com/containerd/cgroups/v3 v3.0.5 // indirect
 	github.com/containerd/containerd/api v1.9.0 // indirect
-	github.com/containerd/containerd/v2 v2.1.0 // indirect
+	github.com/containerd/containerd/v2 v2.1.1 // indirect
 	github.com/containerd/continuity v0.4.5 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
