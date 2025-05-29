@@ -7,7 +7,7 @@ toolchain go1.24.3
 replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
 require (
-	github.com/neuvector/neuvector v0.0.0-20250521172018-cefc96d1c715
+	github.com/neuvector/neuvector v0.0.0-20250528231802-0e7758c41cc7
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.72.2
 	gopkg.in/yaml.v2 v2.4.0
