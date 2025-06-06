@@ -2,7 +2,7 @@ module github.com/neuvector/registry-adapter
 
 go 1.23.0
 
-toolchain go1.24.3
+toolchain go1.24.4
 
 replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
