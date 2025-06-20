@@ -16,7 +16,7 @@ RUN make
 
 #
 # base image
-FROM registry.suse.com/bci/bci-micro:15.6 AS micro
+FROM registry.suse.com/bci/bci-micro:15.7 AS micro
 FROM registry.suse.com/bci/bci-base:15.7 AS base
 FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.5.0 AS xx
 FROM --platform=$BUILDPLATFORM registry.suse.com/bci/bci-base:15.7 AS basebuilder
