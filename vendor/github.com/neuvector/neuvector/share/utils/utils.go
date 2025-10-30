@@ -6,7 +6,6 @@ import (
 	"compress/gzip"
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/md5"
 	"crypto/rand"
 	"crypto/sha512"
 	"crypto/tls"
@@ -37,6 +36,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/simpleuuid"
 
@@ -150,19 +150,8 @@ func GzipBytes(buf []byte) []byte {
 	return b.Bytes()
 }
 
-func GetMd5(s string) string {
-	h := md5.New()
-	h.Write([]byte(s))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
 func GetGuid() (string, error) {
-	b := make([]byte, 48)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return "", err
-	}
-
-	return GetMd5(base64.StdEncoding.EncodeToString(b)), nil
+	return strings.Replace(uuid.NewString(), "-", "", -1), nil
 }
 
 func GetTimeUUID(t time.Time) string {
@@ -515,6 +504,15 @@ func GetPortRangeLink(ipproto uint8, port uint16, portR uint16) string {
 			return getPortRangeStr(port, portR)
 		}
 	}
+}
+
+func IsPolicyModeEnforce(addr *share.CLUSWorkloadAddr, addrMap map[string]*share.CLUSWorkloadAddr) bool {
+	if a, ok := addrMap[addr.WlID]; ok {
+		if a.PolicyMode == share.PolicyModeEnforce {
+			return true
+		}
+	}
+	return false
 }
 
 func IsHostRelated(addr *share.CLUSWorkloadAddr) bool {
@@ -931,6 +929,7 @@ func Encrypt(encryptionKey, text []byte) ([]byte, error) {
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return nil, err
 	}
+	//nolint:staticcheck // SA1019
 	cfb := cipher.NewCFBEncrypter(block, iv)
 	cfb.XORKeyStream(ciphertext[aes.BlockSize:], text)
 	return ciphertext, nil
@@ -954,6 +953,7 @@ func Decrypt(encryptionKey, text []byte) ([]byte, error) {
 	}
 	iv := text[:aes.BlockSize]
 	text = text[aes.BlockSize:]
+	//nolint:staticcheck // SA1019
 	cfb := cipher.NewCFBDecrypter(block, iv)
 	cfb.XORKeyStream(text, text)
 	return text, nil
@@ -1058,34 +1058,28 @@ func EncryptSensitive(data string, key []byte) string {
 	return encrypted
 }
 
-func DecryptUserToken(encrypted string, key []byte) string {
+func DecryptUserToken(encrypted string, key []byte) (string, error) {
+	if len(key) == 0 {
+		return "", errors.New("empty encryption key")
+	}
 	if encrypted == "" {
-		return ""
+		return "", nil
 	}
 
-	encrypted = strings.ReplaceAll(encrypted, "_", "/")
-	if key == nil {
-		key = getPasswordSymKey()
-	}
-	token, _ := DecryptFromRawStdBase64(key, encrypted)
-	return token
+	return DecryptFromRawURLBase64(key, encrypted)
 }
 
-// User token cannot have / in it and cannot have - as the first char.
-func EncryptUserToken(token string, key []byte) string {
-	if token == "" {
-		return ""
+func EncryptUserToken(token string, key []byte) (string, error) {
+	if len(key) == 0 {
+		return "", errors.New("empty encryption key")
 	}
-
-	if key == nil {
-		key = getPasswordSymKey()
+	if token == "" {
+		return "", nil
 	}
 
 	// Std base64 encoding has + and /, instead of - and _ (url encoding)
-	// token can be part of kv key, so we replace / with _
-	encrypted, _ := EncryptToRawStdBase64(key, []byte(token))
-	encrypted = strings.ReplaceAll(encrypted, "/", "_")
-	return encrypted
+	// encrypted token can be used as part of kv key string, so we replace / with _
+	return EncryptToRawURLBase64(key, []byte(token))
 }
 
 func DecryptURLSafe(encrypted string) string {
