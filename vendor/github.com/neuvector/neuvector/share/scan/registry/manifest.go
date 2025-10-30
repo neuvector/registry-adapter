@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -77,12 +76,10 @@ func (r *Registry) ManifestRequest(ctx context.Context, repository, reference st
 				req.Header.Add("Accept", MediaTypeOCIIndex)
 			}
 		case 2:
-			// Add Accept headers for manifest types:
-			// - Docker V2 manifest format
-			// - OCI manifest format
-			// This allows the registry to return the appropriate manifest format based on what's available
-			fuseMediaType := fmt.Sprintf("%s,%s", manifestV2.MediaTypeManifest, MediaTypeOCIManifest)
-			req.Header.Add("Accept", fuseMediaType)
+			req.Header.Add("Accept", manifestV2.MediaTypeManifest)
+			if withOCIManifest {
+				req.Header.Add("Accept", MediaTypeOCIManifest)
+			}
 			if withOCIIndex {
 				req.Header.Add("Accept", MediaTypeOCIIndex)
 			}

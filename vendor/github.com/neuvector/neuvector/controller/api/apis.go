@@ -69,7 +69,6 @@ const RESTErrPlatformAuthDisabled int = 50
 const RESTErrRancherUnauthorized int = 51
 const RESTErrRemoteExportFail int = 52
 const RESTErrInvalidQueryToken int = 53
-const RESTErrPollJobNotFoundError int = 54
 
 const FilterPrefix string = "f_"
 const SortPrefix string = "s_"
@@ -535,7 +534,6 @@ type RESTListData struct {
 // NV future: 	     process profile mode value priority is "profile_mode" -> "policy_mode"
 // NV future:           file profile mode value priority is "file_profile_mode" -> "profile_mode" -> "policy_mode"
 type RESTGroupExport struct {
-	UseNameReferral     bool                     `json:"use_name_referral"` // whether to use referranl for exported groups
 	Groups              []string                 `json:"groups"`
 	PolicyMode          string                   `json:"policy_mode,omitempty"`
 	ProfileMode         string                   `json:"profile_mode,omitempty"` // for both process/file profiles(if specified) since 5.4.1
@@ -1117,7 +1115,6 @@ type RESTConversationReportEntry struct {
 	CIP          string `json:"client_ip,omitempty"`
 	SIP          string `json:"server_ip,omitempty"`
 	FQDN         string `json:"fqdn,omitempty"`
-	LastSeenAt   int64  `json:"last_seen_at"`
 }
 
 type RESTConversationReport struct {
@@ -1264,15 +1261,14 @@ type RESTGroupConfig struct {
 }
 
 type RESTCrdGroupConfig struct {
-	OriginalName string              `json:"original_name"`
-	Name         string              `json:"name"`
-	Comment      string              `json:"comment"`
-	NameReferral bool                `json:"name_referral,omitempty"`
-	Criteria     []RESTCriteriaEntry `json:"criteria,omitempty"`
-	MonMetric    *bool               `json:"mon_metric,omitempty"`
-	GrpSessCur   *uint32             `json:"grp_sess_cur,omitempty"`
-	GrpSessRate  *uint32             `json:"grp_sess_rate,omitempty"`
-	GrpBandWidth *uint32             `json:"grp_band_width,omitempty"`
+	OriginalName string               `json:"original_name"`
+	Name         string               `json:"name"`
+	Comment      string               `json:"comment"`
+	Criteria     *[]RESTCriteriaEntry `json:"criteria,omitempty"`
+	MonMetric    *bool                `json:"mon_metric,omitempty"`
+	GrpSessCur   *uint32              `json:"grp_sess_cur,omitempty"`
+	GrpSessRate  *uint32              `json:"grp_sess_rate,omitempty"`
+	GrpBandWidth *uint32              `json:"grp_band_width,omitempty"`
 }
 
 type RESTGroupsData struct {
@@ -1318,8 +1314,6 @@ type RESTPolicyRule struct {
 	LastModTS    int64    `json:"last_modified_timestamp"`
 	CfgType      string   `json:"cfg_type"` // CfgTypeLearned / CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal (see above)
 	Priority     uint32   `json:"priority"`
-	MatchCntr    uint64   `json:"match_counter"`
-	LastMatchTS  int64    `json:"last_match_timestamp"`
 }
 
 type RESTPolicyRuleData struct {
@@ -1638,6 +1632,7 @@ type RESTPolicyViolationsWLData struct {
 }
 
 type RESTSystemUsageReport struct {
+	Signature      string `json:"signature"`
 	ReportedTS     int64  `json:"reported_timestamp"`
 	ReportedAt     string `json:"reported_at"`
 	Platform       string `json:"platform"`
@@ -1749,18 +1744,16 @@ type RESTRiskScoreMetricsCVE struct {
 }
 
 type RESTRiskScoreMetrics struct {
-	Platform                string                    `json:"platform"`
-	K8sVersion              string                    `json:"kube_version"`
-	OCVersion               string                    `json:"openshift_version"`
-	NewServiceMode          string                    `json:"new_service_policy_mode"`
-	NewProfileMode          string                    `json:"new_service_profile_mode"`
-	AdmCtrlMode             string                    `json:"adm_mode"`
-	EnabledDenyAdmCtrlRules int                       `json:"enabled_deny_adm_ctrl_rules"`
-	DenyAdmCtrlRules        int                       `json:"deny_adm_ctrl_rules"`
-	Hosts                   int                       `json:"hosts"`
-	WLs                     RESTRiskScoreMetricsWL    `json:"workloads"`
-	Groups                  RESTRiskScoreMetricsGroup `json:"groups"`
-	CVEs                    RESTRiskScoreMetricsCVE   `json:"cves"`
+	Platform         string                    `json:"platform"`
+	K8sVersion       string                    `json:"kube_version"`
+	OCVersion        string                    `json:"openshift_version"`
+	NewServiceMode   string                    `json:"new_service_policy_mode"`
+	NewProfileMode   string                    `json:"new_service_profile_mode"`
+	DenyAdmCtrlRules int                       `json:"deny_adm_ctrl_rules"`
+	Hosts            int                       `json:"hosts"`
+	WLs              RESTRiskScoreMetricsWL    `json:"workloads"`
+	Groups           RESTRiskScoreMetricsGroup `json:"groups"`
+	CVEs             RESTRiskScoreMetricsCVE   `json:"cves"`
 }
 
 type RESTExposedEndpoint struct {
@@ -2246,24 +2239,14 @@ type RESTServiceBatchConfigData struct {
 }
 
 type RESTScanConfig struct {
-	AutoScan bool `json:"auto_scan"` // Deprecated, keeps for backward compatibility
-	// New fields for auto scan, to separate from the old unified auto scan
-	EnableAutoScanWorkload *bool `json:"enable_auto_scan_workload,omitempty"`
-	EnableAutoScanHost     *bool `json:"enable_auto_scan_host,omitempty"`
+	AutoScan bool `json:"auto_scan"`
 }
 
 type RESTScanConfigConfig struct {
-	AutoScan *bool `json:"auto_scan"` // Deprecated, keeps for backward compatibility
-	// New fields for auto scan, to separate from the old unified auto scan
-	EnableAutoScanWorkload *bool `json:"enable_auto_scan_workload"`
-	EnableAutoScanHost     *bool `json:"enable_auto_scan_host"`
+	AutoScan *bool `json:"auto_scan"`
 }
 
 type RESTScanConfigData struct {
-	Config *RESTScanConfigConfig `json:"config"`
-}
-
-type RESTScanConfigResp struct {
 	Config *RESTScanConfig `json:"config"`
 }
 
@@ -2459,7 +2442,6 @@ type RESTVulnerabilityAssetV2 struct {
 	VectorsV3   string                              `json:"vectors_v3"`
 	PublishedTS int64                               `json:"published_timestamp"`
 	LastModTS   int64                               `json:"last_modified_timestamp"`
-	FeedRating  string                              `json:"feed_rating"`
 
 	Workloads   []*RESTWorkloadAsset `json:"workloads,omitempty"`
 	WorkloadIDs []string             `json:"-"`
@@ -3054,7 +3036,6 @@ type RESTProcessProfileConfigData struct {
 
 const MinDlpRuleID = 20000
 const MinDlpPredefinedRuleID = 30000
-const MinDlpFedPredefinedRuleID = 35000
 const MaxDlpPredefinedRuleID = 40000
 
 type RESTDlpCriteriaEntry struct {
@@ -3097,7 +3078,7 @@ type RESTDlpGroup struct {
 	Name    string            `json:"name"`
 	Status  bool              `json:"status"`
 	Sensors []*RESTDlpSetting `json:"sensors"`
-	CfgType string            `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
+	CfgType string            `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround
 }
 
 type RESTDlpGroupData struct {
@@ -3132,7 +3113,7 @@ type RESTDlpSensor struct {
 	RuleList  []*RESTDlpRule `json:"rules"`
 	Comment   string         `json:"comment"`
 	Predefine bool           `json:"predefine"`
-	CfgType   string         `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
+	CfgType   string         `json:"cfg_type"` // CfgTypeUserCreated / CfgTypeGround
 }
 
 type RESTDlpSensorData struct {
@@ -3149,7 +3130,6 @@ type RESTDlpSensorConfig struct {
 	RuleDelList *[]RESTDlpRule `json:"delete,omitempty"` //delete list used by CLI
 	Rules       *[]RESTDlpRule `json:"rules,omitempty"`  //replace list used by GUI
 	Comment     *string        `json:"comment,omitempty"`
-	CfgType     string         `json:"cfg_type"` //CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
 }
 
 type RESTDlpSensorConfigData struct {
@@ -3261,7 +3241,6 @@ type RESTWafSensorConfig struct {
 	RuleDelList *[]RESTWafRule `json:"delete,omitempty"` //delete list used by CLI
 	Rules       *[]RESTWafRule `json:"rules,omitempty"`  //replace list used by GUI
 	Comment     *string        `json:"comment,omitempty"`
-	CfgType     string         `json:"cfg_type"` //CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal
 }
 
 type RESTWafSensorConfigData struct {
@@ -4019,21 +3998,12 @@ type RESTRemoteRepo_GitHubConfig struct {
 	PersonalAccessTokenEmail         string `json:"personal_access_token_email"`
 }
 
-type RESTRemoteRepo_AzureDevopsConfig struct {
-	OrganizationName    *string `json:"organization_name"`
-	ProjectName         *string `json:"project_name"`
-	RepoName            *string `json:"repo_name"`
-	BranchName          *string `json:"branch_name"`
-	PersonalAccessToken *string `json:"personal_access_token,cloak"`
-}
-
 type RESTRemoteRepository struct {
-	Nickname                 string                            `json:"nickname"`
-	Provider                 string                            `json:"provider"`
-	Comment                  string                            `json:"comment"`
-	Enable                   bool                              `json:"enable"`
-	GitHubConfiguration      *RESTRemoteRepo_GitHubConfig      `json:"github_configuration"`
-	AzureDevopsConfiguration *RESTRemoteRepo_AzureDevopsConfig `json:"azure_devops_configuration"`
+	Nickname            string                       `json:"nickname"`
+	Provider            string                       `json:"provider"`
+	Comment             string                       `json:"comment"`
+	Enable              bool                         `json:"enable"`
+	GitHubConfiguration *RESTRemoteRepo_GitHubConfig `json:"github_configuration"`
 }
 
 type RESTRemoteRepository_GitHubConfigConfig struct {
@@ -4068,11 +4038,10 @@ func (g *RESTRemoteRepository_GitHubConfigConfig) IsValid() bool {
 
 type RESTRemoteRepositoryConfig struct {
 	// Provider is unchangable
-	Nickname                 string                                   `json:"nickname"`
-	Comment                  *string                                  `json:"comment"`
-	Enable                   *bool                                    `json:"enable"`
-	GitHubConfiguration      *RESTRemoteRepository_GitHubConfigConfig `json:"github_configuration"`
-	AzureDevopsConfiguration *RESTRemoteRepo_AzureDevopsConfig        `json:"azure_devops_configuration"`
+	Nickname            string                                   `json:"nickname"`
+	Comment             *string                                  `json:"comment"`
+	Enable              *bool                                    `json:"enable"`
+	GitHubConfiguration *RESTRemoteRepository_GitHubConfigConfig `json:"github_configuration"`
 }
 
 type RESTRemoteRepositoryConfigData struct {
@@ -4235,7 +4204,6 @@ type RESTVulQueryStats struct {
 	QueryToken              string                  `json:"query_token"`
 	PerfStats               []string                `json:"debug_perf_stats"`
 	Summary                 *VulAssetSessionSummary `json:"summary"`
-	Status                  string                  `json:"status"`
 }
 
 // for asset pagination

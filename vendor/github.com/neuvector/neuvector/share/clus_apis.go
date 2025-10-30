@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/containerd/log"
 	admissionv1beta1 "k8s.io/api/admission/v1beta1"
 )
 
@@ -698,9 +698,7 @@ type CLUSScanState struct {
 }
 
 type CLUSScanConfig struct {
-	AutoScan               bool  `json:"auto_scan"`
-	EnableAutoScanWorkload *bool `json:"enable_auto_scan_workload"`
-	EnableAutoScanHost     *bool `json:"enable_auto_scan_host"`
+	AutoScan bool `json:"auto_scan"`
 }
 
 type CLUSCtrlVersion struct {
@@ -727,6 +725,7 @@ type CLUSSyslogConfig struct {
 }
 
 type CLUSSystemUsageReport struct {
+	Signature      string    `json:"signature"`
 	ReportedAt     time.Time `json:"reported"`
 	Platform       string    `json:"platform"`
 	Hosts          int       `json:"hosts"`
@@ -1129,12 +1128,6 @@ type CLUSWlMetric struct {
 	WlByteIn12  uint64 `json:"wl_byte_in12"`
 }
 
-type CLUSNetPolicyMetric struct {
-	ID          uint32 `json:"id"`
-	MatchCntr   uint64 `json:"match_cntr"`
-	LastMatchAt uint32 `json:"last_match_at"`
-}
-
 type CLUSWorkload struct {
 	ID           string                    `json:"id"`
 	Name         string                    `json:"name"`
@@ -1243,8 +1236,6 @@ type CLUSPolicyRule struct {
 	LastModAt      time.Time `json:"last_modified_at"`
 	CfgType        TCfgType  `json:"cfg_type"`
 	Priority       uint32    `json:"priority"`
-	MatchCntr      uint64    `json:"match_cntr"`
-	LastMatchAt    time.Time `json:"last_match_at"`
 }
 
 type CLUSRuleHead struct {
@@ -2252,8 +2243,6 @@ const (
 	FedFileMonitorProfilesType = "fed_file_profile"
 	FedProcessProfilesType     = "fed_process_profile"
 	FedSystemConfigType        = "fed_system_config"
-	FedDlpSensorGrpType        = "fed_dlp_sensor_grp"
-	FedWafSensorGrpType        = "fed_waf_sensor_grp"
 )
 
 const (
@@ -2317,8 +2306,6 @@ func CLUSEmptyFedRulesRevision() *CLUSFedRulesRevision {
 			FedFileMonitorProfilesType: 0,
 			FedProcessProfilesType:     0,
 			FedSystemConfigType:        0,
-			FedDlpSensorGrpType:        0,
-			FedWafSensorGrpType:        0,
 		},
 		LastUpdateTime: time.Now().UTC(),
 	}
@@ -2491,18 +2478,6 @@ type CLUSFedScanRevisions struct {
 	RestoreAt      time.Time         `json:"restore_at"`
 }
 
-type CLUSFedDlpGroupSensorData struct {
-	Revision   uint64           `json:"revision"`
-	DlpSensors []*CLUSDlpSensor `json:"dlp_sensors"`
-	DlpGroups  []*CLUSDlpGroup  `json:"dlp_groups"`
-}
-
-type CLUSFedWafGroupSensorData struct {
-	Revision   uint64           `json:"revision"`
-	WafSensors []*CLUSWafSensor `json:"waf_sensors"`
-	WafGroups  []*CLUSWafGroup  `json:"waf_groups"`
-}
-
 // dlp rule
 const (
 	DlpRuleKeyPattern string = "pattern"
@@ -2517,42 +2492,26 @@ const (
 )
 
 const (
-	CLUSDlpDefaultSensor    = "sensor.dlpdfltnv"
-	CLUSFedDlpDefaultSensor = "fed.sensor.dlpdfltnv"
-	CLUSFedDlpDefSyncSensor = "fed.sensor.dlpdfltsyncnv"
-	CLUSDlpSsnSensor        = "sensor.ssn"
-	CLUSDlpCcSensor         = "sensor.creditcard"
-	CLUSFedDlpSsnSensor     = "fed.sensor.ssn"
-	CLUSFedDlpCcSensor      = "fed.sensor.creditcard"
-	CLUSWafDefaultSensor    = "sensor.wafdfltnv"
-	CLUSWafLog4shSensor     = "sensor.log4shell"
-	CLUSWafSpr4shSensor     = "sensor.spring4shell"
-	CLUSWafDefaultFedSensor = "fed.sensor.wafdfltnv"
-	CLUSFedWafDefSyncSensor = "fed.sensor.wafdfltsyncnv"
-	CLUSWafFedLog4shSensor  = "fed.sensor.log4shell"
-	CLUSWafFedSpr4shSensor  = "fed.sensor.spring4shell"
+	CLUSDlpDefaultSensor = "sensor.dlpdfltnv"
+	CLUSDlpSsnSensor     = "sensor.ssn"
+	CLUSDlpCcSensor      = "sensor.creditcard"
+	CLUSWafDefaultSensor = "sensor.wafdfltnv"
+	CLUSWafLog4shSensor  = "sensor.log4shell"
+	CLUSWafSpr4shSensor  = "sensor.spring4shell"
 )
 
 const (
-	DlpRuleNameCreditCard    string = "rule.creditcard"
-	DlpRuleNameCcAxp         string = "rule.americanexpress"
-	DlpFedRuleNameCcAxp      string = "fed.rule.americanexpress"
-	DlpRuleNameCcMaster      string = "rule.master"
-	DlpFedRuleNameCcMaster   string = "fed.rule.master"
-	DlpRuleNameCcDiscover    string = "rule.discover"
-	DlpFedRuleNameCcDiscover string = "fed.rule.discover"
-	DlpRuleNameCcVisa        string = "rule.visa"
-	DlpFedRuleNameCcVisa     string = "fed.rule.visa"
-	DlpRuleNameCcDinerV1     string = "rule.diner1"
-	DlpFedRuleNameCcDinerV1  string = "fed.rule.diner1"
-	DlpRuleNameCcDinerV2     string = "rule.diner2"
-	DlpFedRuleNameCcDinerV2  string = "fed.rule.diner2"
-	DlpRuleNameCcJcb         string = "rule.jcb"
-	DlpFedRuleNameCcJcb      string = "fed.rule.jcb"
-	DlpRuleNameSsn           string = "rule.ssn"
-	DlpFedRuleNameSsn        string = "fed.rule.ssn"
-	WafRuleNameLog4sh        string = "rule.log4shell"
-	WafRuleNameSpr4sh        string = "rule.spring4shell"
+	DlpRuleNameCreditCard string = "rule.creditcard"
+	DlpRuleNameCcAxp      string = "rule.americanexpress"
+	DlpRuleNameCcDiscover string = "rule.discover"
+	DlpRuleNameCcMaster   string = "rule.master"
+	DlpRuleNameCcVisa     string = "rule.visa"
+	DlpRuleNameCcDinerV1  string = "rule.diner1"
+	DlpRuleNameCcDinerV2  string = "rule.diner2"
+	DlpRuleNameCcJcb      string = "rule.jcb"
+	DlpRuleNameSsn        string = "rule.ssn"
+	WafRuleNameLog4sh     string = "rule.log4shell"
+	WafRuleNameSpr4sh     string = "rule.spring4shell"
 )
 
 const (
@@ -2716,14 +2675,13 @@ type CLUSCrdEventQueueInfo struct {
 const CLUSReservedUuidPrefix string = "00000000-0000-0000-0000-0000000000" // reserved the last 2 digits
 
 // ////
-const CLUSReservedUuidNotAllowed string = "00000000-0000-0000-0000-000000000000"        // processes beyond white list
-const CLUSReservedUuidRiskyApp string = "00000000-0000-0000-0000-000000000001"          // riskApp
-const CLUSReservedUuidTunnelProc string = "00000000-0000-0000-0000-000000000002"        // tunnel
-const CLUSReservedUuidRootEscalation string = "00000000-0000-0000-0000-000000000003"    // root privilege escallation
-const CLUSReservedUuidDockerCp string = "00000000-0000-0000-0000-000000000004"          // docker cp
-const CLUSReservedUuidAnchorMode string = "00000000-0000-0000-0000-000000000005"        // rejected by anchor mode
-const CLUSReservedUuidShieldMode string = "00000000-0000-0000-0000-000000000006"        // rejected by non-family process
-const CLUSReservedUuidShieldNotListMode string = "00000000-0000-0000-0000-000000000007" // rejected by Monitor mode for not-listed family process
+const CLUSReservedUuidNotAlllowed string = "00000000-0000-0000-0000-000000000000"    // processes beyond white list
+const CLUSReservedUuidRiskyApp string = "00000000-0000-0000-0000-000000000001"       // riskApp
+const CLUSReservedUuidTunnelProc string = "00000000-0000-0000-0000-000000000002"     // tunnel
+const CLUSReservedUuidRootEscalation string = "00000000-0000-0000-0000-000000000003" // root privilege escallation
+const CLUSReservedUuidDockerCp string = "00000000-0000-0000-0000-000000000004"       // docker cp
+const CLUSReservedUuidAnchorMode string = "00000000-0000-0000-0000-000000000005"     // rejected by anchor mode
+const CLUSReservedUuidShieldMode string = "00000000-0000-0000-0000-000000000006"     // rejected by non-family process
 
 type ProcRule struct {
 	Active int                     `json:"active"`
@@ -3099,46 +3057,33 @@ type RemoteRepository_GitHubConfiguration struct {
 
 // TODO: generalize this
 func (g *RemoteRepository_GitHubConfiguration) IsValid() bool {
-	return NoneEmpty([]string{
+	isEmpty := func(s string) bool {
+		return s == ""
+	}
+	requiredFields := []string{
 		g.RepositoryOwnerUsername,
 		g.RepositoryName,
 		g.RepositoryBranchName,
 		g.PersonalAccessToken,
 		g.PersonalAccessTokenCommitterName,
 		g.PersonalAccessTokenEmail,
-	})
+	}
+	for _, requiredField := range requiredFields {
+		if isEmpty(requiredField) {
+			return false
+		}
+	}
+	return true
 }
 
-type RemoteRepository_AzureDevopsConfiguration struct {
-	OrganizationName    string `json:"organization_name"`
-	ProjectName         string `json:"project_name"`
-	RepoName            string `json:"repo_name"`
-	BranchName          string `json:"branch_name"`
-	PersonalAccessToken string `json:"personal_access_token,cloak"`
-}
-
-func (a *RemoteRepository_AzureDevopsConfiguration) IsValid() bool {
-	return NoneEmpty([]string{
-		a.OrganizationName,
-		a.ProjectName,
-		a.RepoName,
-		a.BranchName,
-		a.PersonalAccessToken,
-	})
-}
-
-const (
-	RemoteRepositoryProvider_GitHub      string = "github"
-	RemoteRepositoryProvider_AzureDevops string = "azure devops"
-)
+const RemoteRepositoryProvider_GitHub string = "github"
 
 type CLUSRemoteRepository struct {
-	Nickname                 string                                     `json:"nickname"`
-	Provider                 string                                     `json:"provider"`
-	Comment                  string                                     `json:"comment"`
-	Enable                   bool                                       `json:"enable"`
-	GitHubConfiguration      *RemoteRepository_GitHubConfiguration      `json:"github_configuration"`
-	AzureDevopsConfiguration *RemoteRepository_AzureDevopsConfiguration `json:"azure_devops_configuration"`
+	Nickname            string                                `json:"nickname"`
+	Provider            string                                `json:"provider"`
+	Comment             string                                `json:"comment"`
+	Enable              bool                                  `json:"enable"`
+	GitHubConfiguration *RemoteRepository_GitHubConfiguration `json:"github_configuration"`
 }
 
 func (r *CLUSRemoteRepository) IsValid() bool {
@@ -3151,23 +3096,5 @@ func (r *CLUSRemoteRepository) IsValid() bool {
 		}
 		return r.GitHubConfiguration.IsValid()
 	}
-	if r.Provider == RemoteRepositoryProvider_AzureDevops {
-		if r.AzureDevopsConfiguration == nil {
-			return false
-		}
-		return r.AzureDevopsConfiguration.IsValid()
-	}
 	return false
-}
-
-func NoneEmpty(stringsToCheck []string) bool {
-	isEmpty := func(s string) bool {
-		return s == ""
-	}
-	for _, str := range stringsToCheck {
-		if isEmpty(str) {
-			return false
-		}
-	}
-	return true
 }

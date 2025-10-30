@@ -20,7 +20,6 @@ import (
 
 const (
 	AppFileName = "apps_pkg"
-	Kubernetes  = "kubernetes"
 
 	nodeModules1 = "/usr/lib/node_modules"
 	nodeModules2 = "/usr/local/lib/node_modules"
@@ -106,13 +105,8 @@ type mvnDependency struct {
 }
 */
 
-type dotnetRuntimeDetail struct {
-	AssemblyVersion string `json:"assemblyVersion"`
-	FileVersion     string `json:"fileVersion"`
-}
 type dotnetDependency struct {
-	Deps    map[string]string              `json:"dependencies"`
-	Runtime map[string]dotnetRuntimeDetail `json:"runtime"`
+	Deps map[string]string `json:"dependencies"`
 }
 
 type dotnetRuntime struct {
@@ -738,11 +732,7 @@ func parseDotNetJsonData(filename string, fullpath string, dotnet dotnetPackage)
 
 	if targets, ok := dotnet.Targets[dotnet.Runtime.Name]; ok {
 		for target, dep := range targets {
-			// Skip if the target has no runtime; it means the dependency is not actually installed.
-			// if SCAN_DOTNET_RUNTIME is not set, we don't need to skip
-			if dep.Runtime == nil && os.Getenv("SCAN_DOTNET_RUNTIME") != "" {
-				continue
-			}
+
 			//Get dependencies of individual targets
 			for app, v := range dep.Deps {
 				key := fmt.Sprintf("%s-%s", ".NET:"+app, v)

@@ -5,7 +5,7 @@ swagger: '2.0'
 ################################################################################
 info:
   description: Secure Docker and Kubernetes based container deployments with the NeuVector run-time security solution.
-  version: '5.4.3'
+  version: '5.4.2'
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -298,42 +298,19 @@ paths:
     post:
       tags:
         - Admission
-      description: Testing admission control rules. The payload body is the content of a resource yaml file.
       summary: Test admission control rules
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'text/plain; charset=utf-8'
+        - application/json
       parameters:
         - in: body
           name: body
-          description: Resource yaml file
+          description: Admission rule data
           required: true
           schema:
-            type: string
-            example: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: nginx-deployment
-                labels:
-                  app: nginx
-              spec:
-                replicas: 3
-                selector:
-                  matchLabels:
-                    app: nginx
-                template:
-                  metadata:
-                    labels:
-                      app: nginx
-                  spec:
-                    containers:
-                      - name: nginx
-                        image: nginx:latest
-                        ports:
-                          - containerPort: 80
+            $ref: '#/definitions/RESTAdmissionRuleConfigData'
       responses:
         '200':
           description: Success
@@ -2376,7 +2353,7 @@ paths:
     get:
       tags:
         - Scan
-      summary: Retrieve scan configuration, including global auto-scan settings and fine-grained controls for workloads and hosts.
+      summary: Get scan configure
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -2386,11 +2363,11 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanConfigResp'
+            $ref: '#/definitions/RESTScanConfigData'
     patch:
       tags:
         - Scan
-      summary: Auto-scan can be configured either globally or with fine-grained control for workloads and hosts. If any of the detailed control fields (enable_auto_scan_workload, enable_auto_scan_host) is explicitly provided, its value takes precedence and overrides the auto-scan setting.
+      summary: Update scan configure
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -7269,10 +7246,6 @@ definitions:
     required:
       - groups
     properties:
-      use_name_referral:
-        type: boolean
-        example: false
-        description: Do not export groups' criteria. Instead, refer to NvGroupDefinition CRs for all groups involved in the export.
       groups:
         type: array
         items:
@@ -7673,8 +7646,6 @@ definitions:
       - last_modified_timestamp
       - cfg_type
       - priority
-      - match_counter
-      - last_match_timestamp
     properties:
       id:
         type: integer
@@ -7724,14 +7695,6 @@ definitions:
         type: integer
         format: uint32
         example: 0
-      match_counter:
-        type: integer
-        format: uint64
-        example: 699
-      last_match_timestamp:
-        type: integer
-        format: int64
-        example: 1736811451
   RESTPolicyRuleActionData:
     type: object
     properties:
@@ -9150,31 +9113,6 @@ definitions:
       - auto_scan
     properties:
       auto_scan:
-        description: Global auto-scan setting. When true, auto-scan is adopted unless one of the detailed control flags (enable_auto_scan_workload or enable_auto_scan_host) is explicitly provided (non-nil).
-        type: boolean
-        example: false
-      enable_auto_scan_workload:
-        description: Optional detailed control for workload auto-scan. If provided (non-nil), its value is adopted.
-        type: boolean
-        example: false
-      enable_auto_scan_host:
-        description: Optional detailed control for host auto-scan. If provided (non-nil), its value is adopted.
-        type: boolean
-        example: false
-  RESTScanConfigConfig:
-    type: object
-    minProperties: 1
-    properties:
-      auto_scan:
-        description: Global auto-scan setting. When true, auto-scan is adopted unless one of the detailed control flags (enable_auto_scan_workload or enable_auto_scan_host) is explicitly provided (non-nil).
-        type: boolean
-        example: false
-      enable_auto_scan_workload:
-        description: Optional detailed control for workload auto-scan. If provided (non-nil), its value is adopted.
-        type: boolean
-        example: false
-      enable_auto_scan_host:
-        description: Optional detailed control for host auto-scan. If provided (non-nil), its value is adopted.
         type: boolean
         example: false
   RESTScanConfigData:
@@ -9183,14 +9121,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTScanConfigConfig'
-  RESTScanConfigResp:
-    type: object
-    required:
-      - config
-    properties:
-      config:
-        $ref: '#/definitions/RESTScanConfig'        
+        $ref: '#/definitions/RESTScanConfig'
   RESTScanImageSummaryData:
     type: object
     required:
@@ -14297,9 +14228,6 @@ definitions:
         type: string
       fqdn:
         type: string
-      last_seen_at:
-        type: integer
-        format: int64
   RESTSecurityScores:
     type: object
     properties:

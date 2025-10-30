@@ -51,26 +51,24 @@ type GRPCServer struct {
 }
 
 func NewGRPCServerTCP(endpoint string) (*GRPCServer, error) {
-	options := &advancedtls.Options{
-		IdentityOptions: advancedtls.IdentityCertificateOptions{
-			GetIdentityCertificatesForServer: func(*tls.ClientHelloInfo) ([]*tls.Certificate, error) {
-				log.Debug("Server getting certificates")
-				_, cert, _ := GetInternalCert()
+	options := &advancedtls.ServerOptions{
+		GetCertificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
+			log.Debug("Server getting certificates")
+			_, cert, _ := GetInternalCert()
 
-				return []*tls.Certificate{cert}, nil
-			},
+			return cert, nil
 		},
-		RootOptions: advancedtls.RootCertificateOptions{
-			GetRootCertificates: func(params *advancedtls.ConnectionInfo) (*advancedtls.RootCertificates, error) {
+		RootCertificateOptions: advancedtls.RootCertificateOptions{
+			GetRootCAs: func(params *advancedtls.GetRootCAsParams) (*advancedtls.GetRootCAsResults, error) {
 				log.Debug("Server getting root CAs")
 				caCertPool, _, _ := GetInternalCert()
 
-				return &advancedtls.RootCertificates{
+				return &advancedtls.GetRootCAsResults{
 					TrustCerts: caCertPool,
 				}, nil
 			},
 		},
-		AdditionalPeerVerification: func(params *advancedtls.HandshakeVerificationInfo) (*advancedtls.PostHandshakeVerificationResults, error) {
+		VerifyPeer: func(params *advancedtls.VerificationFuncParams) (*advancedtls.VerificationResults, error) {
 			log.Debug("Server checking CN")
 			_, _, cn := GetInternalCert()
 			if params.Leaf == nil || len(params.Leaf.DNSNames) == 0 {
@@ -81,12 +79,12 @@ func NewGRPCServerTCP(endpoint string) (*GRPCServer, error) {
 				log.Warnf("server name is invalid: %s", params.Leaf.DNSNames[0])
 				return nil, fmt.Errorf("server name is invalid: %s", params.Leaf.DNSNames[0])
 			}
-			return &advancedtls.PostHandshakeVerificationResults{}, nil
+			return &advancedtls.VerificationResults{}, nil
 		},
 		RequireClientCert: true,
-		VerificationType:  advancedtls.CertVerification,
-		MinTLSVersion:     tls.VersionTLS11,
-		MaxTLSVersion:     tls.VersionTLS13,
+		VType:             advancedtls.CertVerification,
+		MinVersion:        tls.VersionTLS11,
+		MaxVersion:        tls.VersionTLS13,
 		CipherSuites:      utils.GetSupportedTLSCipherSuites(),
 	}
 
@@ -96,7 +94,8 @@ func NewGRPCServerTCP(endpoint string) (*GRPCServer, error) {
 		return nil, fmt.Errorf("failed to create new server credentials: %w", err)
 	}
 
-	//nolint:staticcheck // SA1019
+	//TODO: addressing go-linter "SA1019: grpc.NewGZIPDecompressor is deprecated: use package encoding/gzip. (staticcheck)"
+	//nolint:staticcheck
 	opts := []grpc.ServerOption{
 		grpc.Creds(ct),
 		grpc.UnaryInterceptor(middlefunc),
@@ -167,7 +166,8 @@ func ReloadInternalCert() error {
 }
 
 func NewGRPCServerUnix(socket string) (*GRPCServer, error) {
-	//nolint:staticcheck // SA1019
+	//TODO: addressing go-linter "SA1019: grpc.NewGZIPDecompressor is deprecated: use package encoding/gzip. (staticcheck)"
+	//nolint:staticcheck
 	opts := []grpc.ServerOption{
 		grpc.RPCCompressor(grpc.NewGZIPCompressor()),
 		grpc.RPCDecompressor(grpc.NewGZIPDecompressor()),
@@ -270,26 +270,24 @@ func (c *GRPCClient) monitorGRPCConnectivity(ctx context.Context) {
 
 // For backward compatibility.  Use internal certs.
 func newGRPCClientTCP(ctx context.Context, key, endpoint string, cb GRPCCallback, compress bool) (*GRPCClient, error) {
-	options := &advancedtls.Options{
-		IdentityOptions: advancedtls.IdentityCertificateOptions{
-			GetIdentityCertificatesForClient: func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
-				log.Debug("Client getting certificates")
-				_, cert, _ := GetInternalCert()
+	options := &advancedtls.ClientOptions{
+		GetClientCertificate: func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+			log.Debug("Client getting certificates")
+			_, cert, _ := GetInternalCert()
 
-				return cert, nil
-			},
+			return cert, nil
 		},
-		RootOptions: advancedtls.RootCertificateOptions{
-			GetRootCertificates: func(params *advancedtls.ConnectionInfo) (*advancedtls.RootCertificates, error) {
+		RootCertificateOptions: advancedtls.RootCertificateOptions{
+			GetRootCAs: func(params *advancedtls.GetRootCAsParams) (*advancedtls.GetRootCAsResults, error) {
 				log.Debug("Client getting root CAs")
 				caCertPool, _, _ := GetInternalCert()
 
-				return &advancedtls.RootCertificates{
+				return &advancedtls.GetRootCAsResults{
 					TrustCerts: caCertPool,
 				}, nil
 			},
 		},
-		AdditionalPeerVerification: func(params *advancedtls.HandshakeVerificationInfo) (*advancedtls.PostHandshakeVerificationResults, error) {
+		VerifyPeer: func(params *advancedtls.VerificationFuncParams) (*advancedtls.VerificationResults, error) {
 			log.Debug("Client checking CN")
 			_, _, cn := GetInternalCert()
 			if params.Leaf == nil || len(params.Leaf.DNSNames) == 0 {
@@ -297,14 +295,14 @@ func newGRPCClientTCP(ctx context.Context, key, endpoint string, cb GRPCCallback
 			}
 			if params.Leaf.DNSNames[0] != cn {
 				log.Warnf("server name is invalid: %s", params.Leaf.DNSNames[0])
-				return &advancedtls.PostHandshakeVerificationResults{}, fmt.Errorf("server name is invalid: %s", params.Leaf.DNSNames[0])
+				return &advancedtls.VerificationResults{}, fmt.Errorf("server name is invalid: %s", params.Leaf.DNSNames[0])
 			}
 			return nil, nil
 		},
-		VerificationType: advancedtls.CertVerification, // Custom check is performed in VerifyPeer().
-		MinTLSVersion:    tls.VersionTLS11,
-		MaxTLSVersion:    tls.VersionTLS13,
-		CipherSuites:     utils.GetSupportedTLSCipherSuites(),
+		VType:        advancedtls.CertVerification, // Custom check is performed in VerifyPeer().
+		MinVersion:   tls.VersionTLS11,
+		MaxVersion:   tls.VersionTLS13,
+		CipherSuites: utils.GetSupportedTLSCipherSuites(),
 	}
 
 	ct, err := advancedtls.NewClientCreds(options)
@@ -316,7 +314,8 @@ func newGRPCClientTCP(ctx context.Context, key, endpoint string, cb GRPCCallback
 	// This is to be compatible with pre-3.2 grpc server that doesn't install decompressor.
 	var opts []grpc.DialOption
 	if compress {
-		//nolint:staticcheck // SA1019
+		//TODO: addressing go-linter "SA1019: grpc.NewGZIPDecompressor is deprecated: use package encoding/gzip. (staticcheck)"
+		//nolint:staticcheck
 		opts = []grpc.DialOption{
 			grpc.WithTransportCredentials(ct),
 			grpc.WithDecompressor(grpc.NewGZIPDecompressor()),
@@ -327,7 +326,8 @@ func newGRPCClientTCP(ctx context.Context, key, endpoint string, cb GRPCCallback
 				grpc.MaxCallSendMsgSize(GRPCMaxMsgSize)),
 		}
 	} else {
-		//nolint:staticcheck // SA1019
+		//TODO: addressing go-linter "SA1019: grpc.NewGZIPDecompressor is deprecated: use package encoding/gzip. (staticcheck)"
+		//nolint:staticcheck
 		opts = []grpc.DialOption{
 			grpc.WithTransportCredentials(ct),
 			grpc.WithDecompressor(grpc.NewGZIPDecompressor()),
@@ -338,7 +338,6 @@ func newGRPCClientTCP(ctx context.Context, key, endpoint string, cb GRPCCallback
 		}
 	}
 
-	//nolint:staticcheck // SA1019
 	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return nil, err
@@ -354,7 +353,8 @@ func newGRPCClientTCP(ctx context.Context, key, endpoint string, cb GRPCCallback
 func newGRPCClientUnix(ctx context.Context, key, socket string, cb GRPCCallback, compress bool) (*GRPCClient, error) {
 	var opts []grpc.DialOption
 	if compress {
-		//nolint:staticcheck // SA1019
+		//TODO: addressing go-linter "SA1019: grpc.NewGZIPDecompressor is deprecated: use package encoding/gzip. (staticcheck)"
+		//nolint:staticcheck
 		opts = []grpc.DialOption{
 			grpc.WithInsecure(),
 			grpc.WithDecompressor(grpc.NewGZIPDecompressor()),
@@ -368,7 +368,8 @@ func newGRPCClientUnix(ctx context.Context, key, socket string, cb GRPCCallback,
 			}),
 		}
 	} else {
-		//nolint:staticcheck // SA1019
+		//TODO: addressing go-linter "SA1019: grpc.NewGZIPDecompressor is deprecated: use package encoding/gzip. (staticcheck)"
+		//nolint:staticcheck
 		opts = []grpc.DialOption{
 			grpc.WithInsecure(),
 			grpc.WithDecompressor(grpc.NewGZIPDecompressor()),
@@ -382,7 +383,6 @@ func newGRPCClientUnix(ctx context.Context, key, socket string, cb GRPCCallback,
 		}
 	}
 
-	//nolint:staticcheck // SA1019
 	conn, err := grpc.DialContext(ctx, socket, opts...)
 	if err != nil {
 		return nil, err
@@ -411,8 +411,6 @@ func isUnixSocketEndpoint(endpoint string) bool {
 	return !strings.Contains(endpoint, ":")
 }
 
-// Create a GRPCClient, connect to remote and see if GRPCCompressed is enabled.
-// After that, close the connection.
 func IsControllerGRPCCommpressed(endpoint string) bool {
 	var err error
 	var c *GRPCClient
@@ -429,7 +427,6 @@ func IsControllerGRPCCommpressed(endpoint string) bool {
 		log.WithFields(log.Fields{"err": err}).Error("Failed to get controller cap client")
 		return false
 	}
-	defer c.Close()
 
 	s := share.NewControllerCapServiceClient(c.GetClient())
 
@@ -441,8 +438,6 @@ func IsControllerGRPCCommpressed(endpoint string) bool {
 	}
 }
 
-// Create a GRPCClient, connect to remote and see if GRPCCompressed is enabled.
-// After that, close the connection.
 func IsEnforcerGRPCCommpressed(endpoint string) bool {
 	var err error
 	var c *GRPCClient
@@ -459,7 +454,6 @@ func IsEnforcerGRPCCommpressed(endpoint string) bool {
 		log.WithFields(log.Fields{"err": err}).Error("Failed to get enforcer cap client")
 		return false
 	}
-	defer c.Close()
 
 	s := share.NewEnforcerCapServiceClient(c.GetClient())
 
