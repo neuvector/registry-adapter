@@ -250,7 +250,7 @@ func (s *ScanApps) parseGolangPackage(filename, fullpath string) {
 	}
 	defer f.Close()
 
-	_, mod, err := readRawBuildInfo(f, false)
+	goVersion, mod, err := readRawBuildInfo(f, false)
 	if err != nil {
 		return
 	}
@@ -275,6 +275,18 @@ func (s *ScanApps) parseGolangPackage(filename, fullpath string) {
 		}
 		pkgs[i] = pkg
 	}
+
+	if goVersion != "" {
+		goVersion := strings.TrimPrefix(goVersion, "go")
+		stdLibPkg := AppPackage{
+			AppName:    golang,
+			ModuleName: "go:stdlib",
+			Version:    goVersion,
+			FileName:   filename,
+		}
+		pkgs = append(pkgs, stdLibPkg)
+	}
+
 	s.pkgs[filename] = pkgs
 }
 
@@ -413,6 +425,13 @@ func parseJarManifestFile(path string, rc io.Reader) (*AppPackage, error) {
 
 	if len(vendorId) == 0 || vendorId[0] == '%' {
 		vendorId = "jar"
+	}
+
+	// NVSHAS-9942
+	if title == "org.elasticsearch#server" {
+		title = "elasticsearch"
+	} else if title == "Spring Boot" {
+		title = "spring-boot"
 	}
 
 	// Suppress incomplete entries as we can't use them later.
