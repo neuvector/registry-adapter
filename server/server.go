@@ -20,6 +20,7 @@ import (
 	"github.com/neuvector/neuvector/share/utils"
 	"github.com/neuvector/registry-adapter/config"
 	log "github.com/sirupsen/logrus"
+	scanUtils "github.com/neuvector/neuvector/share/scan"
 )
 
 const scanReportURL = "/endpoint/api/v1/scan/"
@@ -341,13 +342,31 @@ func processScanTask(scanRequest ScanRequest) {
 		concurrentJobs.Decrement()
 		return
 	}
-	request := share.AdapterScanImageRequest{
-		Registry:   scanRequest.Registry.URL,
-		Repository: scanRequest.Artifact.Repository,
-		Tag:        scanRequest.Artifact.Tag,
-		Token:      scanRequest.Registry.Authorization,
-		ScanLayers: true,
+
+	Image := fmt.Sprintf("%s/%s:%s", 
+	scanRequest.Registry.URL, 
+	scanRequest.Artifact.Repository, 
+	scanRequest.Artifact.Tag)
+
+	reg, repo, tag, err := scanUtils.ParseImageName(Image)
+	if err != nil {
+		reportCache.Lock()
+		report := reportCache.ScanReports[scanRequest.WorkloadID]
+		report.Status = http.StatusBadRequest
+		reportCache.ScanReports[scanRequest.WorkloadID] = report
+		reportCache.Unlock()
+		log.WithFields(log.Fields{"error": err, "image": Image}).Error("Failed to parse image name")
+		concurrentJobs.Decrement()
+		return
 	}
+
+	request := share.AdapterScanImageRequest{
+        Registry:   reg,
+        Repository: repo,
+        Tag:        tag,
+        Token:      scanRequest.Registry.Authorization,
+        ScanLayers: true,
+    }
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
 	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
