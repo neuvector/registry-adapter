@@ -1,7 +1,7 @@
 package server
 
 import (
-	"context"
+"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
@@ -12,9 +12,9 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
-	"os"
-	"strings"
 	"time"
+	"strings"
+	"os"
 
 	"github.com/neuvector/neuvector/share"
 	"github.com/neuvector/neuvector/share/utils"
@@ -229,6 +229,7 @@ func metadata(w http.ResponseWriter, req *http.Request) {
 		Scanner: nvScanner,
 		Capabilities: []Capability{
 			{
+				Type: "vulnerability",
 				ConsumeMIMEs: []string{
 					MimeOCI,
 					MimeDockerIM,
@@ -344,9 +345,9 @@ func processScanTask(scanRequest ScanRequest) {
 		Registry:   scanRequest.Registry.URL,
 		Repository: scanRequest.Artifact.Repository,
 		Tag:        scanRequest.Artifact.Tag,
-		Token:      scanRequest.Registry.Authorization,
-		ScanLayers: true,
-	}
+        Token:      scanRequest.Registry.Authorization,
+        ScanLayers: true,
+    }
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
 	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
@@ -372,20 +373,46 @@ func processScanTask(scanRequest ScanRequest) {
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
 	result.Status = http.StatusOK
+	result.GeneratedAt = time.Now().UTC()
+	result.Scanner = nvScanner
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
+	
+	// Compute overall severity from vulnerabilities
+	result.Severity = computeOverallSeverity(result.Vulnerabilities)
 	return result
 }
+
 
 // convertVulns changes the controller vuln results into a Harbor readable format.
 func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	translatedVulns := make([]Vuln, len(controllerVulns))
 	for index, rawVuln := range controllerVulns {
+		var severity string
+		if useFeedBasedSeverity {
+			score := rawVuln.GetScoreV3()
+			if score == 0 {
+				score = rawVuln.GetScore()
+			}
+			severity = mapFeedRatingToSeverity(rawVuln.FeedRating, score)
+		} else {
+			severity = rawVuln.Severity
+		}
+
+		vendorAttrs := map[string]interface{}{}
+		if rawVuln.GetScoreV3() > 0 || rawVuln.GetVectorsV3() != "" {
+			vendorAttrs["CVSS"] = map[string]interface{}{
+				"cvedb": map[string]interface{}{
+					"V3Score":  rawVuln.GetScoreV3(),
+					"V3Vector": rawVuln.GetVectorsV3(),
+				},
+			}
+		}
 		translatedVuln := Vuln{
 			ID:          rawVuln.Name,
 			Pkg:         rawVuln.PackageName,
 			Version:     rawVuln.PackageVersion,
 			FixVersion:  rawVuln.FixedVersion,
-			Severity:    rawVuln.Severity,
+			Severity:    severity,
 			Description: rawVuln.Description,
 			Links:       []string{rawVuln.Link},
 			PreferredCVSS: &CVSSDetails{
@@ -395,12 +422,13 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 				VectorV3: rawVuln.GetVectorsV3(),
 			},
 			CweIDs:           []string{},
-			VendorAttributes: map[string]interface{}{},
+			VendorAttributes: vendorAttrs,
 		}
 		translatedVulns[index] = translatedVuln
 	}
 	return translatedVulns
 }
+
 
 // pollMaxConcurrent finds the max amount of available scanners by polling the controller.
 func pollMaxConcurrent() (uint32, error) {

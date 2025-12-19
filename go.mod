@@ -9,6 +9,7 @@ replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 require (
 	github.com/neuvector/neuvector v0.0.0-20251020133207-084a437033b4
 	github.com/sirupsen/logrus v1.9.3
+	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.74.2
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -84,6 +85,7 @@ require (
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/opencontainers/selinux v1.13.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/quay/clair/v2 v2.1.8 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230126093431-47fa9a501578 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
