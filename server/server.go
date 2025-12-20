@@ -376,9 +376,9 @@ func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	result.GeneratedAt = time.Now().UTC()
 	result.Scanner = nvScanner
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
-
-	// Compute overall severity from vulnerabilities
-	result.Severity = computeOverallSeverity(result.Vulnerabilities)
+	if useFeedBasedSeverity {
+		result.Severity = computeOverallSeverity(result.Vulnerabilities)
+	}
 	return result
 }
 

@@ -73,10 +73,11 @@ func TestComputeOverallSeverity(t *testing.T) {
 		{Severity: "Low"},
 		{Severity: "Medium"},
 		{Severity: "High"},
+		{Severity: "Critical"},
 		{Severity: "Unknown"},
 	}
 
-	expected := "High"
+	expected := "Critical"
 	result := computeOverallSeverity(vulns)
 	require.Equal(t, expected, result, "overall severity mismatch")
 }
