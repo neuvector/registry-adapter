@@ -21,16 +21,19 @@ func TestMapFeedRatingToSeverity(t *testing.T) {
 		{"Medium", "medium", 5.0, "Medium"},
 		{"Moderate", "moderate", 5.0, "Medium"},
 		{"Low", "low", 5.0, "Low"},
-		{"None", "none", 5.0, "None"},
+		{"None", "none", 5.0, "Negligible"},
 		{"Unimportant", "unimportant", 5.0, "Low"},
 		{"Negligible", "negligible", 5.0, "Low"},
 		{"End-of-life", "end-of-life", 5.0, "Low"},
-		{"Unknown", "unknown", 5.0, "Low"},
+		{"Unknown", "unknown", 9.0, "Critical"},
+		{"Unknown", "unknown", 7.2, "High"},
+		{"Unknown", "unknown", 5.0, "Medium"},
+		{"Unknown", "unknown", 1.6, "Low"},
 		{"", "", 9.5, "Critical"},
 		{"", "", 7.5, "High"},
 		{"", "", 4.5, "Medium"},
 		{"", "", 1.5, "Low"},
-		{"", "", 0, "None"},
+		{"", "", 0, "Negligible"},
 		{"Unexpected", "unexpected", 6.5, "Medium"},
 	}
 
@@ -53,6 +56,7 @@ func TestCvssScoreToSeverity(t *testing.T) {
 		{"Medium", 4.0, "Medium"},
 		{"Low", 1.0, "Low"},
 		{"Negligible", 0.0, "Negligible"},
+		{"Negligible", 0, "Negligible"},
 		{"Unknown", -1.0, "Unknown"},
 	}
 
