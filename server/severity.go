@@ -44,7 +44,7 @@ func cvssScoreToSeverity(score float32) string {
 	case score > 0:
 		return "Low"
 	case score == 0:
-		return "Negligible" // Negligible = "None" in Harbor CVSS3 severity.
+		return "Negligible"
 	default:
 		return "Unknown"
 	}
