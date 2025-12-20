@@ -1,7 +1,7 @@
 package server
 
 import (
-"context"
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
@@ -12,9 +12,9 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
-	"time"
-	"strings"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/neuvector/neuvector/share"
 	"github.com/neuvector/neuvector/share/utils"
@@ -345,9 +345,9 @@ func processScanTask(scanRequest ScanRequest) {
 		Registry:   scanRequest.Registry.URL,
 		Repository: scanRequest.Artifact.Repository,
 		Tag:        scanRequest.Artifact.Tag,
-        Token:      scanRequest.Registry.Authorization,
-        ScanLayers: true,
-    }
+		Token:      scanRequest.Registry.Authorization,
+		ScanLayers: true,
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
 	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
@@ -376,12 +376,11 @@ func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	result.GeneratedAt = time.Now().UTC()
 	result.Scanner = nvScanner
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
-	
+
 	// Compute overall severity from vulnerabilities
 	result.Severity = computeOverallSeverity(result.Vulnerabilities)
 	return result
 }
-
 
 // convertVulns changes the controller vuln results into a Harbor readable format.
 func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
@@ -428,7 +427,6 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	}
 	return translatedVulns
 }
-
 
 // pollMaxConcurrent finds the max amount of available scanners by polling the controller.
 func pollMaxConcurrent() (uint32, error) {
