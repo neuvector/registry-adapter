@@ -376,7 +376,7 @@ func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	result.GeneratedAt = time.Now().UTC()
 	result.Scanner = nvScanner
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
-	if useFeedBasedSeverity {
+	if serverConfig.UseFeedBasedSeverity {
 		result.Severity = computeOverallSeverity(result.Vulnerabilities)
 	}
 	return result
@@ -387,7 +387,7 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	translatedVulns := make([]Vuln, len(controllerVulns))
 	for index, rawVuln := range controllerVulns {
 		var severity string
-		if useFeedBasedSeverity {
+		if serverConfig.UseFeedBasedSeverity {
 			score := rawVuln.GetScoreV3()
 			if score == 0 {
 				score = rawVuln.GetScore()
