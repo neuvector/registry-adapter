@@ -86,6 +86,7 @@ type ScanRequestReturn struct {
 }
 
 type Capability struct {
+	Type         string   `json:"type,omitempty"`
 	ConsumeMIMEs []string `json:"consumes_mime_types"`
 	ProduceMIMEs []string `json:"produces_mime_types"`
 }

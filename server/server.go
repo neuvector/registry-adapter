@@ -230,6 +230,7 @@ func metadata(w http.ResponseWriter, req *http.Request) {
 		Scanner: nvScanner,
 		Capabilities: []Capability{
 			{
+				Type: "vulnerability",
 				ConsumeMIMEs: []string{
 					MimeOCI,
 					MimeDockerIM,
@@ -391,7 +392,12 @@ func processScanTask(scanRequest ScanRequest) {
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
 	result.Status = http.StatusOK
+	result.GeneratedAt = time.Now().UTC()
+	result.Scanner = nvScanner
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
+	if serverConfig.UseFeedBasedSeverity {
+		result.Severity = computeOverallSeverity(result.Vulnerabilities)
+	}
 	return result
 }
 
@@ -399,12 +405,32 @@ func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	translatedVulns := make([]Vuln, len(controllerVulns))
 	for index, rawVuln := range controllerVulns {
+		var severity string
+		if serverConfig.UseFeedBasedSeverity {
+			score := rawVuln.GetScoreV3()
+			if score == 0 {
+				score = rawVuln.GetScore()
+			}
+			severity = mapFeedRatingToSeverity(rawVuln.FeedRating, score)
+		} else {
+			severity = rawVuln.Severity
+		}
+
+		vendorAttrs := map[string]interface{}{}
+		if rawVuln.GetScoreV3() > 0 || rawVuln.GetVectorsV3() != "" {
+			vendorAttrs["CVSS"] = map[string]interface{}{
+				"cvedb": map[string]interface{}{
+					"V3Score":  rawVuln.GetScoreV3(),
+					"V3Vector": rawVuln.GetVectorsV3(),
+				},
+			}
+		}
 		translatedVuln := Vuln{
 			ID:          rawVuln.Name,
 			Pkg:         rawVuln.PackageName,
 			Version:     rawVuln.PackageVersion,
 			FixVersion:  rawVuln.FixedVersion,
-			Severity:    rawVuln.Severity,
+			Severity:    severity,
 			Description: rawVuln.Description,
 			Links:       []string{rawVuln.Link},
 			PreferredCVSS: &CVSSDetails{
@@ -414,7 +440,7 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 				VectorV3: rawVuln.GetVectorsV3(),
 			},
 			CweIDs:           []string{},
-			VendorAttributes: map[string]interface{}{},
+			VendorAttributes: vendorAttrs,
 		}
 		translatedVulns[index] = translatedVuln
 	}
