@@ -83,9 +83,9 @@ func TestComputeOverallSeverity(t *testing.T) {
 }
 
 func TestConvertVulns_FeedBasedEnabled(t *testing.T) {
-	orig := useFeedBasedSeverity
-	useFeedBasedSeverity = true
-	defer func() { useFeedBasedSeverity = orig }()
+	orig := serverConfig.UseFeedBasedSeverity
+	serverConfig.UseFeedBasedSeverity = true
+	defer func() { serverConfig.UseFeedBasedSeverity = orig }()
 
 	controllerVulns := []*share.ScanVulnerability{
 		{
@@ -120,9 +120,9 @@ func TestConvertVulns_FeedBasedEnabled(t *testing.T) {
 }
 
 func TestConvertVulns_FeedBasedDisabled(t *testing.T) {
-	orig := useFeedBasedSeverity
-	useFeedBasedSeverity = false
-	defer func() { useFeedBasedSeverity = orig }()
+	orig := serverConfig.UseFeedBasedSeverity
+	serverConfig.UseFeedBasedSeverity = false
+	defer func() { serverConfig.UseFeedBasedSeverity = orig }()
 
 	controllerVulns := []*share.ScanVulnerability{
 		{
@@ -148,6 +148,9 @@ func TestConvertVulns_FeedBasedDisabled(t *testing.T) {
 }
 
 func TestConvertRPCReportToScanReport(t *testing.T) {
+	orig := serverConfig.UseFeedBasedSeverity
+	serverConfig.UseFeedBasedSeverity = true
+	defer func() { serverConfig.UseFeedBasedSeverity = orig }()
 	scanResult := &share.ScanResult{
 		Vuls: []*share.ScanVulnerability{
 			{

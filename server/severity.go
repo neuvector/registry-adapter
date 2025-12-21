@@ -1,14 +1,11 @@
 package server
 
 import (
-	"os"
-	"strconv"
 	"strings"
 )
 
 // Controls whether severity is determined based on NeuVector's vulnerability feed ratings.
-// Set the environment variable USE_FEED_BASED_SEVERITY to "true" to enable this behavior.
-var useFeedBasedSeverity, _ = strconv.ParseBool(os.Getenv("USE_FEED_BASED_SEVERITY"))
+// Configure via `ServerConfig.UseFeedBasedSeverity` (env `USE_FEED_BASED_SEVERITY` or YAML).
 
 // computeOverallSeverity returns the highest severity found in the vulnerability list
 func computeOverallSeverity(vulns []Vuln) string {

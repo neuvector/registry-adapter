@@ -18,13 +18,15 @@ const EnvCtrlServerPort = "CLUSTER_JOIN_PORT"
 const EnvHarborServerProto = "HARBOR_SERVER_PROTO"
 const EnvHarborAuthUsername = "HARBOR_BASIC_AUTH_USERNAME"
 const EnvHarborAuthPassword = "HARBOR_BASIC_AUTH_PASSWORD"
+const EnvUseFeedBasedSeverity = "USE_FEED_BASED_SEVERITY"
 
 type ServerConfig struct {
-	Auth           Authorization `yaml:"Authorization"`
-	ServerProto    string        `yaml:"ServerProto"`
-	ControllerIP   string
-	ControllerPort uint16
-	LogLevel       logrus.Level
+	Auth                 Authorization `yaml:"Authorization"`
+	ServerProto          string        `yaml:"ServerProto"`
+	ControllerIP         string
+	ControllerPort       uint16
+	LogLevel             logrus.Level
+	UseFeedBasedSeverity bool `yaml:"UseFeedBasedSeverity"`
 }
 
 type Authorization struct {
@@ -64,5 +66,12 @@ func (serverConfig *ServerConfig) LoadEnvironementVariables() error {
 	serverConfig.Auth.AuthorizationType = AUTH_BASIC
 	serverConfig.Auth.UsernameVariable = EnvHarborAuthUsername
 	serverConfig.Auth.PasswordVariable = EnvHarborAuthPassword
+	if v, ok := os.LookupEnv(EnvUseFeedBasedSeverity); ok {
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			return err
+		}
+		serverConfig.UseFeedBasedSeverity = b
+	}
 	return nil
 }
