@@ -6,7 +6,7 @@ import (
 
 	"github.com/neuvector/neuvector/share/cluster"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 const AUTH_BASIC = "basic"
