@@ -17,10 +17,10 @@ import (
 	"time"
 
 	"github.com/neuvector/neuvector/share"
+	scanUtils "github.com/neuvector/neuvector/share/scan"
 	"github.com/neuvector/neuvector/share/utils"
 	"github.com/neuvector/registry-adapter/config"
 	log "github.com/sirupsen/logrus"
-	scanUtils "github.com/neuvector/neuvector/share/scan"
 )
 
 const scanReportURL = "/endpoint/api/v1/scan/"
@@ -343,10 +343,10 @@ func processScanTask(scanRequest ScanRequest) {
 		return
 	}
 
-	Image := fmt.Sprintf("%s/%s:%s", 
-	scanRequest.Registry.URL, 
-	scanRequest.Artifact.Repository, 
-	scanRequest.Artifact.Tag)
+	Image := fmt.Sprintf("%s/%s:%s",
+		scanRequest.Registry.URL,
+		scanRequest.Artifact.Repository,
+		scanRequest.Artifact.Tag)
 
 	reg, repo, tag, err := scanUtils.ParseImageName(Image)
 	if err != nil {
@@ -361,12 +361,12 @@ func processScanTask(scanRequest ScanRequest) {
 	}
 
 	request := share.AdapterScanImageRequest{
-        Registry:   reg,
-        Repository: repo,
-        Tag:        tag,
-        Token:      scanRequest.Registry.Authorization,
-        ScanLayers: true,
-    }
+		Registry:   reg,
+		Repository: repo,
+		Tag:        tag,
+		Token:      scanRequest.Registry.Authorization,
+		ScanLayers: true,
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
 	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
