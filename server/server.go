@@ -360,6 +360,10 @@ func processScanTask(scanRequest ScanRequest) {
 		return
 	}
 
+	if tag == "" {
+		tag = scanRequest.Artifact.Digest
+	}
+
 	request := share.AdapterScanImageRequest{
 		Registry:   reg,
 		Repository: repo,
