@@ -182,3 +182,43 @@ func TestGenerateExpirationTime(t *testing.T) {
 
 	require.WithinDuration(t, expected, expiration, time.Second, "expiration time mismatch")
 }
+
+func TestBuildImageReference(t *testing.T) {
+	tests := []struct {
+		name         string
+		url          string
+		repo         string
+		tag          string
+		digest       string
+		expectedReg  string
+		expectedRepo string
+		expectedRef  string
+		expectError  bool
+	}{
+		{"Valid tag", "https://reg.com", "repo", "v1", "sha256:123", "https://reg.com/", "repo", "v1", false},
+		{"Valid digest", "http://ghcr.io", "org/app", "", "sha256:abc", "http://ghcr.io/", "org/app", "sha256:abc", false},
+		{"Missing URL", "", "repo", "v1", "", "", "", "", true},
+		{"Missing repo", "reg.com", "", "v1", "", "", "", "", true},
+		{"Missing ref", "reg.com", "repo", "", "", "", "", "", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := ScanRequest{
+				Registry: HarborRegistry{URL: tt.url},
+				Artifact: HarborArtifact{Repository: tt.repo, Tag: tt.tag, Digest: tt.digest},
+			}
+
+			reg, repo, ref, err := buildImageReference(req)
+
+			if tt.expectError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedReg, reg)
+				require.Equal(t, tt.expectedRepo, repo)
+				require.Equal(t, tt.expectedRef, ref)
+			}
+		})
+	}
+}

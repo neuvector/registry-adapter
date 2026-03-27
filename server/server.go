@@ -9,6 +9,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -17,10 +18,10 @@ import (
 	"time"
 
 	"github.com/neuvector/neuvector/share"
+	scanUtils "github.com/neuvector/neuvector/share/scan"
 	"github.com/neuvector/neuvector/share/utils"
 	"github.com/neuvector/registry-adapter/config"
 	log "github.com/sirupsen/logrus"
-	scanUtils "github.com/neuvector/neuvector/share/scan"
 )
 
 const scanReportURL = "/endpoint/api/v1/scan/"
@@ -38,7 +39,7 @@ const rpcTimeout = time.Minute * 20
 const expirationTime = time.Minute * 25
 const pruneTime = time.Minute * 60
 const reportCheckTime = "10"
-const concurrentJobLimitDelay = time.Second * 30
+const concurrentJobLimitDelay = time.Second * 5
 
 var workloadID Counter
 var concurrentJobs Counter
@@ -327,6 +328,38 @@ func processQueue() {
 		}
 	}
 }
+func buildImageReference(scanRequest ScanRequest) (string, string, string, error) {
+	registryURL := strings.TrimSpace(scanRequest.Registry.URL)
+	if registryURL == "" {
+		return "", "", "", errors.New("registry URL is required")
+	}
+
+	repository := strings.TrimSpace(scanRequest.Artifact.Repository)
+	if repository == "" {
+		return "", "", "", errors.New("artifact repository is required")
+	}
+
+	reg, err := scanUtils.ParseRegistryURI(registryURL)
+	if err != nil {
+		return "", "", "", fmt.Errorf("invalid registry URL: %w", err)
+	}
+
+	var ref string
+	tag := strings.TrimSpace(scanRequest.Artifact.Tag)
+	digest := strings.TrimSpace(scanRequest.Artifact.Digest)
+
+	if tag == "" {
+		ref = digest
+	} else {
+		ref = tag
+	}
+
+	if ref == "" {
+		return "", "", "", errors.New("either tag or digest is required")
+	}
+
+	return reg, repository, ref, nil
+}
 
 // processScanTask sends the ScanRequest to the controller, which creates tasks for the attached scanners.
 // Afterwards, the result is added to the saved scan reports.
@@ -343,30 +376,25 @@ func processScanTask(scanRequest ScanRequest) {
 		return
 	}
 
-	Image := fmt.Sprintf("%s/%s:%s", 
-	scanRequest.Registry.URL, 
-	scanRequest.Artifact.Repository, 
-	scanRequest.Artifact.Tag)
-
-	reg, repo, tag, err := scanUtils.ParseImageName(Image)
+	reg, _, ref, err := buildImageReference(scanRequest)
 	if err != nil {
 		reportCache.Lock()
 		report := reportCache.ScanReports[scanRequest.WorkloadID]
-		report.Status = http.StatusBadRequest
+		report.Status = http.StatusInternalServerError
 		reportCache.ScanReports[scanRequest.WorkloadID] = report
 		reportCache.Unlock()
-		log.WithFields(log.Fields{"error": err, "image": Image}).Error("Failed to parse image name")
+		log.WithFields(log.Fields{"error": err}).Error("Error building image reference")
 		concurrentJobs.Decrement()
 		return
 	}
 
 	request := share.AdapterScanImageRequest{
-        Registry:   reg,
-        Repository: repo,
-        Tag:        tag,
-        Token:      scanRequest.Registry.Authorization,
-        ScanLayers: true,
-    }
+		Registry:   reg,
+		Repository: scanRequest.Artifact.Repository,
+		Tag:        ref,
+		Token:      scanRequest.Registry.Authorization,
+		ScanLayers: true,
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
 	log.WithFields(log.Fields{"workloadId": scanRequest.WorkloadID, "artifact": scanRequest.Artifact, "registry": scanRequest.Registry}).Debug("Scan request forwarded to controller")
