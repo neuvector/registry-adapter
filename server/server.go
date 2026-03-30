@@ -23,39 +23,45 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const scanReportURL = "/endpoint/api/v1/scan/"
-const scanEndpoint = "/endpoint/api/v1/scan"
-const metadataEndpoint = "/endpoint/api/v1/metadata"
-const adapterHttpsPort = "9443"
-const adapterHttpPort = "8090"
-const certFile = "/etc/neuvector/certs/ssl-cert.pem"
-const keyFile = "/etc/neuvector/certs/ssl-cert.key"
+const (
+	scanReportURL    = "/endpoint/api/v1/scan/"
+	scanEndpoint     = "/endpoint/api/v1/scan"
+	metadataEndpoint = "/endpoint/api/v1/metadata"
+	adapterHttpsPort = "9443"
+	adapterHttpPort  = "8090"
+	certFile         = "/etc/neuvector/certs/ssl-cert.pem"
+	keyFile          = "/etc/neuvector/certs/ssl-cert.key"
 
-const reportSuffixURL = "/report"
-const dataCheckInterval = 1.0
+	reportSuffixURL   = "/report"
+	dataCheckInterval = 1.0
 
-const rpcTimeout = time.Minute * 20
-const expirationTime = time.Minute * 25
-const pruneTime = time.Minute * 60
-const reportCheckTime = "10"
-const concurrentJobLimitDelay = time.Second * 30
+	rpcTimeout              = time.Minute * 20
+	expirationTime          = time.Minute * 25
+	pruneTime               = time.Minute * 60
+	reportCheckTime         = "10"
+	concurrentJobLimitDelay = time.Second * 5
+)
 
-var workloadID Counter
-var concurrentJobs Counter
+var (
+	workloadID     Counter
+	concurrentJobs Counter
+)
 
 var serverConfig config.ServerConfig
 
-var MimeOCI = "application/vnd.oci.image.manifest.v1+json"
-var MimeDockerIM = "application/vnd.docker.distribution.manifest.v2+json"
-var MimeSecurityVulnReport = "application/vnd.security.vulnerability.report; version=1.1"
-var nvScanner = ScannerSpec{
-	Name:    "NeuVector",
-	Vendor:  "NeuVector",
-	Version: "",
-}
+var (
+	MimeOCI                = "application/vnd.oci.image.manifest.v1+json"
+	MimeDockerIM           = "application/vnd.docker.distribution.manifest.v2+json"
+	MimeSecurityVulnReport = "application/vnd.security.vulnerability.report; version=1.1"
+	nvScanner              = ScannerSpec{
+		Name:    "NeuVector",
+		Vendor:  "NeuVector",
+		Version: "",
+	}
 
-var reportCache = ReportData{ScanReports: make(map[string]ScanReport)}
-var scanRequestQueue = ScanRequestQueue{}
+	reportCache      = ReportData{ScanReports: make(map[string]ScanReport)}
+	scanRequestQueue = ScanRequestQueue{}
+)
 
 func GenerateDefaultTLSCertificate() error {
 	// Generate private key
@@ -85,14 +91,14 @@ func GenerateDefaultTLSCertificate() error {
 		return fmt.Errorf("failed to create certificate: %w", err)
 	}
 
-	certfile, err := os.OpenFile(certFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	certfile, err := os.OpenFile(certFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
 		return fmt.Errorf("failed to open certificate file: %w", err)
 	}
 
 	defer certfile.Close()
 
-	keyfile, err := os.OpenFile(keyFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	keyfile, err := os.OpenFile(keyFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
 		return fmt.Errorf("failed to open key file: %w", err)
 	}
@@ -268,7 +274,7 @@ func scan(w http.ResponseWriter, req *http.Request) {
 	}
 	scanRequest.Authorization = req.Header.Get("Authorization")
 
-	//Add to resultmap with wait http code
+	// Add to resultmap with wait http code
 	w.WriteHeader(http.StatusAccepted)
 
 	workloadID.Lock()
