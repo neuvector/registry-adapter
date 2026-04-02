@@ -24,6 +24,7 @@ enum ScanErrorCode {
 	ScanErrAwsDownloadErr = 18;
 	ScanErrArgument = 19;
     ScanErrSignatureScanError = 20;
+    ScanErrAcquireScannerTimeout = 21;
 }
 
 enum ScanObjectType {
@@ -37,6 +38,12 @@ enum ScanObjectType {
 enum ScanProvider {
     Neuvector = 0;
     JFrogXray = 1;
+}
+
+enum OSScanStatus {
+    OSScanStatusUnknown = 0;
+    OSScanStatusSupported = 1;
+    OSScanStatusUnsupported = 2;
 }
 
 enum ScanVulStatus {
@@ -143,6 +150,7 @@ message ScanResult {
     ScanSignatureInfo SignatureInfo = 25;
     string Created = 26;
     ScanTypeMap ScanTypesRequested = 27;
+    OSScanStatus OSScanStatus = 28;
 }
 
 message ScanSignatureInfo {

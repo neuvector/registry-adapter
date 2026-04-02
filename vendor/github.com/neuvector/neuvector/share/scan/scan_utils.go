@@ -16,7 +16,8 @@ import (
 	"strings"
 	"time"
 
-	rpmdb "github.com/neuvector/go-rpmdb/pkg"
+	_ "github.com/glebarez/go-sqlite"
+	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/neuvector/neuvector/share"
@@ -56,26 +57,28 @@ var OSPkgFiles utils.Set = utils.NewSet(
 ).Union(RPMPkgFiles)
 
 var scanErrString = []string{
-	share.ScanErrorCode_ScanErrNone:                "succeeded",
-	share.ScanErrorCode_ScanErrNetwork:             "network error",
-	share.ScanErrorCode_ScanErrNotSupport:          "unsupported OS",
-	share.ScanErrorCode_ScanErrSizeOverLimit:       "file size over limit",
-	share.ScanErrorCode_ScanErrPackage:             "package error",
-	share.ScanErrorCode_ScanErrDatabase:            "database error",
-	share.ScanErrorCode_ScanErrTimeout:             "timeout",
-	share.ScanErrorCode_ScanErrInProgress:          "scan in progress",
-	share.ScanErrorCode_ScanErrRegistryAPI:         "registry API error",
-	share.ScanErrorCode_ScanErrFileSystem:          "access file system error",
-	share.ScanErrorCode_ScanErrContainerAPI:        "container API call error",
-	share.ScanErrorCode_ScanErrXrayAPI:             "Xray API call error",
-	share.ScanErrorCode_ScanErrContainerExit:       "container exit",
-	share.ScanErrorCode_ScanErrAuthentication:      "authentication error",
-	share.ScanErrorCode_ScanErrCertificate:         "certificate error",
-	share.ScanErrorCode_ScanErrCanceled:            "scan canceled",
-	share.ScanErrorCode_ScanErrDriverAPINotSupport: "driver API not supported",
-	share.ScanErrorCode_ScanErrImageNotFound:       "Image not found",
-	share.ScanErrorCode_ScanErrAwsDownloadErr:      "Aws Resource download error",
-	share.ScanErrorCode_ScanErrArgument:            "invalid input arguments",
+	share.ScanErrorCode_ScanErrNone:                  "succeeded",
+	share.ScanErrorCode_ScanErrNetwork:               "network error",
+	share.ScanErrorCode_ScanErrNotSupport:            "unsupported OS",
+	share.ScanErrorCode_ScanErrSizeOverLimit:         "file size over limit",
+	share.ScanErrorCode_ScanErrPackage:               "package error",
+	share.ScanErrorCode_ScanErrDatabase:              "database error",
+	share.ScanErrorCode_ScanErrTimeout:               "timeout",
+	share.ScanErrorCode_ScanErrInProgress:            "scan in progress",
+	share.ScanErrorCode_ScanErrRegistryAPI:           "registry API error",
+	share.ScanErrorCode_ScanErrFileSystem:            "access file system error",
+	share.ScanErrorCode_ScanErrContainerAPI:          "container API call error",
+	share.ScanErrorCode_ScanErrXrayAPI:               "Xray API call error",
+	share.ScanErrorCode_ScanErrContainerExit:         "container exit",
+	share.ScanErrorCode_ScanErrAuthentication:        "authentication error",
+	share.ScanErrorCode_ScanErrCertificate:           "certificate error",
+	share.ScanErrorCode_ScanErrCanceled:              "scan canceled",
+	share.ScanErrorCode_ScanErrDriverAPINotSupport:   "driver API not supported",
+	share.ScanErrorCode_ScanErrImageNotFound:         "Image not found",
+	share.ScanErrorCode_ScanErrAwsDownloadErr:        "Aws Resource download error",
+	share.ScanErrorCode_ScanErrArgument:              "invalid input arguments",
+	share.ScanErrorCode_ScanErrAcquireScannerTimeout: "acquire scanner timeout",
+	share.ScanErrorCode_ScanErrSignatureScanError:    "signature scan error",
 }
 
 type CacheRecord struct {
@@ -411,11 +414,12 @@ func GetDpkgStatus(fullpath, kernel string) ([]byte, error) {
 		// filter kernels that are not running
 		if strings.HasPrefix(line, "Package: ") && kernel != "" {
 			kpkg := isDpkgKernelPackage(line)
-			if kpkg == "" {
+			switch kpkg {
+			case "":
 				skipPackage = false
-			} else if kpkg == kernel {
+			case kernel:
 				skipPackage = false
-			} else {
+			default:
 				skipPackage = true
 				continue
 			}
@@ -637,7 +641,7 @@ func GetAwsFuncPackages(fileName string) ([]*share.ScanAppPackage, error) {
 	for _, v := range apps.pkgs {
 		for _, vt := range v {
 
-			filename := strings.Replace(vt.FileName, "/package.json", "", -1)
+			filename := strings.ReplaceAll(vt.FileName, "/package.json", "")
 			pckg := &share.ScanAppPackage{
 				AppName:    vt.AppName,
 				ModuleName: vt.ModuleName,

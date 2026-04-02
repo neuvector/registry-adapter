@@ -346,23 +346,24 @@ func ScanRepoResult2REST(result *share.ScanResult, tagMap map[string][]string) *
 		BaseOS:          result.Namespace,
 		Layers:          layers,
 		RESTScanReport: api.RESTScanReport{
-			Envs:    result.Envs,
-			Labels:  result.Labels,
-			Vuls:    rvuls,
-			Modules: rmods,
-			Secrets: rsecrets,
-			SetIDs:  ridperms,
-			Checks:  checks,
-			Cmds:    result.Cmds,
+			OSScanStatus: result.OSScanStatus.String(),
+			Envs:         result.Envs,
+			Labels:       result.Labels,
+			Vuls:         rvuls,
+			Modules:      rmods,
+			Secrets:      rsecrets,
+			SetIDs:       ridperms,
+			Checks:       checks,
+			Cmds:         result.Cmds,
 		},
 	}
 	if result.SignatureInfo != nil {
-		report.RESTScanReport.SignatureInfo = &api.RESTScanSignatureInfo{
+		report.SignatureInfo = &api.RESTScanSignatureInfo{
 			Verifiers:             result.SignatureInfo.Verifiers,
 			VerificationTimestamp: result.SignatureInfo.VerificationTimestamp,
 		}
 	} else {
-		report.RESTScanReport.SignatureInfo = &api.RESTScanSignatureInfo{}
+		report.SignatureInfo = &api.RESTScanSignatureInfo{}
 	}
 
 	return report
@@ -409,15 +410,16 @@ func fillVulFields(vr *share.ScanVulnerability, v *api.RESTVulnerability) {
 func normalizeBaseOS(baseOS string) string {
 	if a := strings.Index(baseOS, ":"); a > 0 {
 		baseOS = baseOS[:a]
-		if baseOS == "rhel" || baseOS == "server" || baseOS == "centos" {
+		switch baseOS {
+		case "rhel", "server", "centos":
 			baseOS = "centos"
-		} else if baseOS == "rhcos" {
+		case "rhcos":
 			baseOS = ""
-		} else if baseOS == "ol" {
+		case "ol":
 			baseOS = "oracle"
-		} else if baseOS == "amzn" {
+		case "amzn":
 			baseOS = "amazon"
-		} else if baseOS == "sles" {
+		case "sles":
 			baseOS = "suse"
 		}
 	}
@@ -619,14 +621,14 @@ func MakeVulnerabilityProfileFilter(vf *api.RESTVulnerabilityProfile) VPFInterfa
 
 		if f.isNameRegexp = strings.Contains(e.Name, "*"); f.isNameRegexp {
 			// case insensitive
-			f.name = regexp.MustCompile("(?i)" + strings.Replace(e.Name, "*", ".*", -1))
+			f.name = regexp.MustCompile("(?i)" + strings.ReplaceAll(e.Name, "*", ".*"))
 		}
 
 		f.isDomainRegexp = make([]bool, len(e.Domains))
 		f.domains = make([]*regexp.Regexp, len(e.Domains))
 		for j, domain := range e.Domains {
 			if f.isDomainRegexp[j] = strings.Contains(domain, "*"); f.isDomainRegexp[j] {
-				f.domains[j] = regexp.MustCompile(strings.Replace(domain, "*", ".*", -1))
+				f.domains[j] = regexp.MustCompile(strings.ReplaceAll(domain, "*", ".*"))
 			}
 		}
 
@@ -634,7 +636,7 @@ func MakeVulnerabilityProfileFilter(vf *api.RESTVulnerabilityProfile) VPFInterfa
 		f.images = make([]*regexp.Regexp, len(e.Images))
 		for j, image := range e.Images {
 			if f.isImageRegexp[j] = strings.Contains(image, "*"); f.isImageRegexp[j] {
-				f.images[j] = regexp.MustCompile(strings.Replace(image, "*", ".*", -1))
+				f.images[j] = regexp.MustCompile(strings.ReplaceAll(image, "*", ".*"))
 			}
 		}
 	}
