@@ -1,11 +1,11 @@
-swagger: '2.0'
+swagger: "2.0"
 
 ################################################################################
 #                              API Information                                 #
 ################################################################################
 info:
   description: Secure Docker and Kubernetes based container deployments with the NeuVector run-time security solution.
-  version: '5.4.3'
+  version: "5.5.0"
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -16,7 +16,7 @@ schemes:
   - https
 externalDocs:
   description: Find out more about NeuVector
-  url: 'https://www.suse.com/products/neuvector/'
+  url: "https://www.suse.com/products/neuvector/"
 
 ################################################################################
 #                                   Tags                                       #
@@ -92,10 +92,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmissionConfigData'
+            $ref: "#/definitions/RESTAdmissionConfigData"
   /v1/admission/rule/{id}:
     get:
       tags:
@@ -113,10 +113,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmissionRuleData'
+            $ref: "#/definitions/RESTAdmissionRuleData"
     delete:
       tags:
         - Admission
@@ -131,7 +131,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/admission/rule:
     post:
@@ -149,12 +149,12 @@ paths:
           description: Admission rule data
           required: true
           schema:
-            $ref: '#/definitions/RESTAdmissionRuleConfigData'
+            $ref: "#/definitions/RESTAdmissionRuleConfigData"
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmissionRuleData'
+            $ref: "#/definitions/RESTAdmissionRuleData"
     patch:
       tags:
         - Admission
@@ -170,9 +170,9 @@ paths:
           description: Admission rule data
           required: true
           schema:
-            $ref: '#/definitions/RESTAdmissionRuleConfigData'
+            $ref: "#/definitions/RESTAdmissionRuleConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/admission/rule/promote:
     post:
@@ -190,9 +190,9 @@ paths:
           description: Admission control rule data
           required: true
           schema:
-            $ref: '#/definitions/RESTAdmCtrlPromoteRequestData'
+            $ref: "#/definitions/RESTAdmCtrlPromoteRequestData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/admission/rules:
     get:
@@ -214,10 +214,10 @@ paths:
             - local
           description: "When set to fed, returned fed admission rules. When set to local, returned local admission rules. If there is no query string 'scope', all admission rules will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmissionRulesData'
+            $ref: "#/definitions/RESTAdmissionRulesData"
     delete:
       tags:
         - Admission
@@ -235,7 +235,7 @@ paths:
             - local
           description: "When set to fed, fed admission rules get removed. When set to local or no query string, local admission rules will be removed."
       responses:
-        '200':
+        "200":
           description: Success
   /v1/admission/state:
     get:
@@ -248,14 +248,14 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmissionConfigData'
-        '404':
+            $ref: "#/definitions/RESTAdmissionConfigData"
+        "404":
           description: Operation not allowed
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
     patch:
       tags:
         - Admission
@@ -271,14 +271,14 @@ paths:
           description: Admission config state data
           required: true
           schema:
-            $ref: '#/definitions/RESTAdmissionConfigData'
+            $ref: "#/definitions/RESTAdmissionConfigData"
       responses:
-        '200':
+        "200":
           description: Success
-        '404':
+        "404":
           description: Operation not allowed
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
   /v1/admission/stats:
     get:
       tags:
@@ -290,10 +290,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmissionStatsData'
+            $ref: "#/definitions/RESTAdmissionStatsData"
   /v1/assess/admission/rule:
     post:
       tags:
@@ -304,7 +304,7 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'text/plain; charset=utf-8'
+        - "text/plain; charset=utf-8"
       parameters:
         - in: body
           name: body
@@ -335,10 +335,10 @@ paths:
                         ports:
                           - containerPort: 80
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAdmCtrlRulesTestResults'
+            $ref: "#/definitions/RESTAdmCtrlRulesTestResults"
   /v1/auth:
     post:
       tags:
@@ -354,16 +354,16 @@ paths:
           description: User login data
           required: true
           schema:
-            $ref: '#/definitions/RESTAuthData'
+            $ref: "#/definitions/RESTAuthData"
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTTokenData'
-        '401':
+            $ref: "#/definitions/RESTTokenData"
+        "401":
           description: Authentication failed
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
     patch:
       tags:
         - Authentication
@@ -372,7 +372,7 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -382,12 +382,12 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       responses:
-        '200':
+        "200":
           description: Success
-        '408':
+        "408":
           description: Authentication failed
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
   /v1/auth/{server}:
     post:
       tags:
@@ -409,9 +409,9 @@ paths:
           description: User login data
           required: true
           schema:
-            $ref: '#/definitions/RESTAuthData'
+            $ref: "#/definitions/RESTAuthData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/bench/host/{id}/docker:
     get:
@@ -430,10 +430,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTBenchReport'
+            $ref: "#/definitions/RESTBenchReport"
     post:
       tags:
         - Compliance
@@ -448,7 +448,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/bench/host/{id}/kubernetes:
     get:
@@ -467,10 +467,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTBenchReport'
+            $ref: "#/definitions/RESTBenchReport"
     post:
       tags:
         - Compliance
@@ -485,7 +485,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/compliance/profile:
     get:
@@ -498,10 +498,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTComplianceProfilesData'
+            $ref: "#/definitions/RESTComplianceProfilesData"
   /v1/compliance/profile/{name}:
     get:
       tags:
@@ -519,10 +519,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTComplianceProfileData'
+            $ref: "#/definitions/RESTComplianceProfileData"
     patch:
       tags:
         - Compliance
@@ -543,9 +543,9 @@ paths:
           description: Compliance profile config data
           required: true
           schema:
-            $ref: '#/definitions/RESTComplianceProfileConfigData'
+            $ref: "#/definitions/RESTComplianceProfileConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/compliance/profile/{name}/entry/{check}:
     patch:
@@ -573,9 +573,9 @@ paths:
           description: Compliance profile entry data
           required: true
           schema:
-            $ref: '#/definitions/RESTComplianceProfileEntryConfigData'
+            $ref: "#/definitions/RESTComplianceProfileEntryConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -596,7 +596,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/compliance/profile:
     post:
@@ -617,10 +617,12 @@ paths:
           name: body
           description: Names of profiles to export
           schema:
-            $ref: '#/definitions/RESTCompProfilesExport'
+            $ref: "#/definitions/RESTCompProfilesExport"
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/compliance/profile/config:
     post:
       tags:
@@ -630,8 +632,8 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Auth-Token
@@ -648,7 +650,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/controller:
     get:
@@ -661,10 +663,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTController'
+            $ref: "#/definitions/RESTController"
   /v1/controller/{id}:
     get:
       tags:
@@ -682,10 +684,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTControllerData'
+            $ref: "#/definitions/RESTControllerData"
     patch:
       tags:
         - Controller
@@ -706,9 +708,9 @@ paths:
           description: Controller update data
           required: true
           schema:
-            $ref: '#/definitions/RESTControllerConfigData'
+            $ref: "#/definitions/RESTControllerConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/controller/{id}/stats:
     get:
@@ -727,10 +729,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadStatsData'
+            $ref: "#/definitions/RESTWorkloadStatsData"
   /v1/controller/{id}/config:
     get:
       tags:
@@ -748,10 +750,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTControllerConfigData'
+            $ref: "#/definitions/RESTControllerConfigData"
   /v1/custom_check:
     get:
       tags:
@@ -763,10 +765,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTCustomCheckListData'
+            $ref: "#/definitions/RESTCustomCheckListData"
   /v1/custom_check/{group}:
     get:
       tags:
@@ -784,10 +786,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTCustomCheckData'
+            $ref: "#/definitions/RESTCustomCheckData"
     patch:
       tags:
         - Compliance
@@ -808,9 +810,9 @@ paths:
           description: Script config data
           required: true
           schema:
-            $ref: '#/definitions/RESTCustomCheckConfigData'
+            $ref: "#/definitions/RESTCustomCheckConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/dlp/sensor:
     get:
@@ -823,10 +825,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDlpSensorsData'
+            $ref: "#/definitions/RESTDlpSensorsData"
     post:
       tags:
         - DLP
@@ -842,9 +844,9 @@ paths:
           description: Sensor data
           required: true
           schema:
-            $ref: '#/definitions/RESTDlpSensorConfigData'
+            $ref: "#/definitions/RESTDlpSensorConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/dlp/sensor/{name}:
     get:
@@ -863,10 +865,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDlpSensorData'
+            $ref: "#/definitions/RESTDlpSensorData"
     patch:
       tags:
         - DLP
@@ -887,9 +889,9 @@ paths:
           description: Sensor data
           required: true
           schema:
-            $ref: '#/definitions/RESTDlpSensorConfigData'
+            $ref: "#/definitions/RESTDlpSensorConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -905,7 +907,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/dlp/group:
     get:
@@ -918,10 +920,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDlpGroupsData'
+            $ref: "#/definitions/RESTDlpGroupsData"
   /v1/dlp/group/{name}:
     get:
       tags:
@@ -939,10 +941,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDlpGroupData'
+            $ref: "#/definitions/RESTDlpGroupData"
     patch:
       tags:
         - DLP
@@ -963,9 +965,9 @@ paths:
           description: DLP group data
           required: true
           schema:
-            $ref: '#/definitions/RESTDlpGroupConfigData'
+            $ref: "#/definitions/RESTDlpGroupConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/dlp/rule:
     get:
@@ -978,10 +980,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDlpRulesData'
+            $ref: "#/definitions/RESTDlpRulesData"
   /v1/dlp/rule/{name}:
     get:
       tags:
@@ -999,10 +1001,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDlpRuleData'
+            $ref: "#/definitions/RESTDlpRuleData"
   /v1/domain:
     get:
       tags:
@@ -1014,10 +1016,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTDomainsData'
+            $ref: "#/definitions/RESTDomainsData"
     patch:
       tags:
         - Namespace
@@ -1033,9 +1035,9 @@ paths:
           description: Namespace update data
           required: true
           schema:
-            $ref: '#/definitions/RESTDomainConfigData'
+            $ref: "#/definitions/RESTDomainConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/domain/{name}:
     patch:
@@ -1058,9 +1060,9 @@ paths:
           description: Namespace update data
           required: true
           schema:
-            $ref: '#/definitions/RESTDomainEntryConfigData'
+            $ref: "#/definitions/RESTDomainEntryConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/enforcer:
     get:
@@ -1073,10 +1075,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAgentsData'
+            $ref: "#/definitions/RESTAgentsData"
   /v1/enforcer/{id}:
     get:
       tags:
@@ -1094,10 +1096,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAgentData'
+            $ref: "#/definitions/RESTAgentData"
     patch:
       tags:
         - Enforcer
@@ -1118,9 +1120,9 @@ paths:
           description: Enforcer update data
           required: true
           schema:
-            $ref: '#/definitions/RESTAgentConfigData'
+            $ref: "#/definitions/RESTAgentConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/enforcer/{id}/stats:
     get:
@@ -1139,10 +1141,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAgentStatsData'
+            $ref: "#/definitions/RESTAgentStatsData"
   /v1/enforcer/{id}/config:
     get:
       tags:
@@ -1160,10 +1162,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAgentConfigData'
+            $ref: "#/definitions/RESTAgentConfigData"
   /v1/eula:
     get:
       tags:
@@ -1172,10 +1174,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTEULAData'
+            $ref: "#/definitions/RESTEULAData"
     post:
       tags:
         - EULA
@@ -1191,15 +1193,15 @@ paths:
           description: EULA data
           required: true
           schema:
-            $ref: '#/definitions/RESTEULAData'
+            $ref: "#/definitions/RESTEULAData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/admission:
     post:
       tags:
         - File
-      summary: Export admission control configuration as a yaml format. The exported yaml file can be imported by CRD or REST API to update the admission control settings.
+      summary: Export admission control configuration as a yaml format. The exported yaml file can be imported by CRD (non-fed scope only) or REST API to update the admission control settings.
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -1212,16 +1214,19 @@ paths:
           required: false
           enum:
             - local
-          description: "It exports the admission control rules & state configurations when the scope is local."
+            - fed
+          description: "It exports the federated admission control rules when the scope is fed. Otherwise it's for exporting local admission control rules & state configurations."
         - in: body
           name: body
           description: Configuration data
           required: true
           schema:
-            $ref: '#/definitions/RESTAdmCtrlRulesExport'
+            $ref: "#/definitions/RESTAdmCtrlRulesExport"
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/admission/config:
     post:
       tags:
@@ -1232,13 +1237,21 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Transaction-ID
           required: false
           type: string
+        - in: query
+          name: scope
+          type: string
+          required: false
+          enum:
+            - local
+            - fed
+          description: "It imports the federated admission control rules when the scope is fed. Otherwise it's for importing local admission control rules & state configurations."
         - in: body
           name: body
           description: admission config yaml file
@@ -1246,13 +1259,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/response/rule:
     post:
       tags:
         - File
-      summary: Export non-group-dependent response rules as a yaml format. The exported yaml file can be imported by CRD or REST API to update the response rules.
+      summary: Export non-group-dependent (federated) response rules as a yaml format. The exported yaml file can be imported by CRD (non-fed scope only) or REST API to update the response rules.
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -1265,16 +1278,19 @@ paths:
           required: false
           enum:
             - local
-          description: "It exports the non-group-dependent response rules when the scope is local."
+            - fed
+          description: "It exports the federated non-group-dependent response rules when the scope is fed. Otherwise it's for exporting local non-group-dependent response rules."
         - in: body
           name: body
           description: Non-group-dependent response rules yaml file
           required: true
           schema:
-            $ref: '#/definitions/RESTResponseRulesExport'
+            $ref: "#/definitions/RESTResponseRulesExport"
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/response/rule/config:
     post:
       tags:
@@ -1285,13 +1301,21 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Transaction-ID
           required: false
           type: string
+        - in: query
+          name: scope
+          type: string
+          required: false
+          enum:
+            - local
+            - fed
+          description: "It imports the federated non-group-dependent response rules when the scope is fed. Otherwise it's for importing local non-group-dependent response rules."
         - in: body
           name: body
           description: response rules yaml file
@@ -1299,7 +1323,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/config:
     get:
@@ -1312,7 +1336,7 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success. Get a configure file.
     post:
       tags:
@@ -1328,18 +1352,52 @@ paths:
           name: X-Transaction-ID
           required: false
           type: string
+        - in: query
+          name: scope
+          type: string
+          required: false
+          enum:
+            - local
+            - fed
+          description: "It imports the federated configurations when the scope is fed. Otherwise it's for importing local configurations"
         - in: formData
           type: file
           name: configuration
           description: a yaml configure file
       responses:
-        '200':
+        "200":
           description: Success. Upload a configure file.
+  /v1/file/fed_config:
+    post:
+      tags:
+        - File
+      summary: Export federated webhooks configuration as a yaml format
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: header
+          name: X-Transaction-ID
+          required: false
+          type: string
+        - in: body
+          name: body
+          description: Configuration data
+          required: true
+          schema:
+            $ref: "#/definitions/RESTFedConfigExport"
+      responses:
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/dlp:
     post:
       tags:
         - File
-      summary: Export DLP configuration as a yaml format
+      summary: Export (federated) DLP configuration as a yaml format. The exported yaml file can be imported by CRD (non-fed scope only) or REST API to update the DLP configurations.
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -1352,16 +1410,19 @@ paths:
           required: false
           enum:
             - local
-          description: "It exports the DLP configurations when the scope is local."
+            - fed
+          description: "It exports the federated DLP configurations when the scope is fed. Otherwise it's for exporting local DLP configurations"
         - in: body
           name: body
           description: Configuration data
           required: true
           schema:
-            $ref: '#/definitions/RESTDlpSensorExport'
+            $ref: "#/definitions/RESTDlpSensorExport"
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/dlp/config:
     post:
       tags:
@@ -1372,13 +1433,21 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Transaction-ID
           required: false
           type: string
+        - in: query
+          name: scope
+          type: string
+          required: false
+          enum:
+            - local
+            - fed
+          description: "It imports the federated DLP configurations when the scope is fed. Otherwise it's for importing local DLP configurations"
         - in: body
           name: body
           description: DLP config yaml file
@@ -1386,7 +1455,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/vulnerability/profile:
     post:
@@ -1407,10 +1476,12 @@ paths:
           name: body
           description: Names of profiles to export
           schema:
-            $ref: '#/definitions/RESTVulnProfilesExport'
+            $ref: "#/definitions/RESTVulnProfilesExport"
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/vulnerability/profile/config:
     post:
       tags:
@@ -1420,8 +1491,8 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Auth-Token
@@ -1438,13 +1509,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/waf:
     post:
       tags:
         - File
-      summary: Export waf configuration as a yaml format
+      summary: Export (federated) WAF configuration as a yaml format. The exported yaml file can be imported by CRD (non-fed scope only) or REST API to update the WAF configurations.
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -1457,33 +1528,44 @@ paths:
           required: false
           enum:
             - local
-          description: "It exports the waf configurations when the scope is local."
+            - fed
+          description: "It exports the federated WAF configurations when the scope is fed. Otherwise it's for exporting local WAF configurations."
         - in: body
           name: body
           description: Configuration data
           required: true
           schema:
-            $ref: '#/definitions/RESTWafSensorExport'
+            $ref: "#/definitions/RESTWafSensorExport"
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/waf/config:
     post:
       tags:
         - File
-      description: Importing waf config. The payload body is the content of the waf config yaml file.
+      description: Importing WAF config. The payload body is the content of the WAF config yaml file.
       summary: import waf config
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Transaction-ID
           required: false
           type: string
+        - in: query
+          name: scope
+          type: string
+          required: false
+          enum:
+            - local
+            - fed
+          description: "It imports the federated WAF configurations when the scope is fed. Otherwise it's for importing local WAF configurations."
         - in: body
           name: body
           description: waf config yaml file
@@ -1491,7 +1573,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file/group:
     get:
@@ -1509,14 +1591,14 @@ paths:
           description: Configuration data
           required: true
           schema:
-            $ref: '#/definitions/RESTGroupExport'
+            $ref: "#/definitions/RESTGroupExport"
       responses:
-        '200':
+        "200":
           description: Success. Get a yaml file.
     post:
       tags:
         - File
-      summary: Export configuration as the yaml format ( used for CRD or group policy )
+      summary: Export (federated) group configuration as a yaml format. The exported yaml file can be imported by CRD (non-fed scope only) or REST API to update the group policy.
       security:
         - ApiKeyAuth: []
         - TokenAuth: []
@@ -1528,10 +1610,20 @@ paths:
           description: Configuration data
           required: true
           schema:
-            $ref: '#/definitions/RESTGroupExport'
+            $ref: "#/definitions/RESTGroupExport"
+        - in: query
+          name: scope
+          type: string
+          required: false
+          enum:
+            - local
+            - fed
+          description: "It exports the federated group configurations when the scope is fed. Otherwise it's for exporting local group configurations."
       responses:
-        '200':
-          description: Success. Get a yaml file.
+        "200":
+          description: Success. (1) Get a yaml file when export to local. (2) Get RESTRemoteExportData payload when export to remote repository.
+          schema:
+            $ref: "#/definitions/RESTRemoteExportData"
   /v1/file/group/config:
     get:
       tags:
@@ -1543,10 +1635,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTImportTaskData'
+            $ref: "#/definitions/RESTImportTaskData"
     post:
       tags:
         - File
@@ -1556,8 +1648,8 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       consumes:
-        - 'application/json'
-        - 'text/plain; charset=utf-8'
+        - "application/json"
+        - "text/plain; charset=utf-8"
       parameters:
         - in: header
           name: X-Transaction-ID
@@ -1569,7 +1661,8 @@ paths:
           required: false
           enum:
             - local
-          description: "When set the scope to be local, it will import local group policy. If there is no query string 'scope', it will use 'local' as the default value."
+            - fed
+          description: "It imports the federated group policy when the scope is fed. Otherwise it's for importing local group policy."
         - in: body
           name: body
           description: group policy yaml file
@@ -1577,7 +1670,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/file_monitor:
     get:
@@ -1599,10 +1692,10 @@ paths:
             - local
           description: "When set to fed, returned fed file monitor list. When set to local, returned local file monitor list. If there is no query string 'scope', all file monitor list will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTFileMonitorFileData'
+            $ref: "#/definitions/RESTFileMonitorFileData"
   /v1/file_monitor/{name}:
     get:
       tags:
@@ -1620,10 +1713,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTFileMonitorFile'
+            $ref: "#/definitions/RESTFileMonitorFile"
     patch:
       tags:
         - File Monitor
@@ -1644,9 +1737,9 @@ paths:
           description: File monitor update data
           required: true
           schema:
-            $ref: '#/definitions/RESTFileMonitorConfigData'
+            $ref: "#/definitions/RESTFileMonitorConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/group:
     get:
@@ -1668,10 +1761,10 @@ paths:
             - local
           description: "When set to fed, returned fed groups. When set to local, returned local groups. If there is no query string 'scope', all groups will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTGroupsData'
+            $ref: "#/definitions/RESTGroupsData"
     post:
       tags:
         - Group
@@ -1687,14 +1780,14 @@ paths:
           description: Group data
           required: true
           schema:
-            $ref: '#/definitions/RESTGroupConfigData'
+            $ref: "#/definitions/RESTGroupConfigData"
       responses:
-        '200':
+        "200":
           description: Success
-        '400':
+        "400":
           description: Error
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
   /v1/group/{name}:
     get:
       tags:
@@ -1712,10 +1805,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTGroupData'
+            $ref: "#/definitions/RESTGroupData"
     patch:
       tags:
         - Group
@@ -1736,9 +1829,9 @@ paths:
           description: Group update data
           required: true
           schema:
-            $ref: '#/definitions/RESTGroupConfigData'
+            $ref: "#/definitions/RESTGroupConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -1754,7 +1847,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/host:
     get:
@@ -1767,10 +1860,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTHostsData'
+            $ref: "#/definitions/RESTHostsData"
   /v1/host/{id}:
     get:
       tags:
@@ -1788,10 +1881,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTHostData'
+            $ref: "#/definitions/RESTHostData"
   /v1/host/{id}/compliance:
     get:
       tags:
@@ -1809,10 +1902,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTComplianceData'
+            $ref: "#/definitions/RESTComplianceData"
   /v1/log/activity:
     get:
       tags:
@@ -1824,10 +1917,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTEventsData'
+            $ref: "#/definitions/RESTEventsData"
   /v1/log/audit:
     get:
       tags:
@@ -1839,10 +1932,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTAuditsData'
+            $ref: "#/definitions/RESTAuditsData"
   /v1/log/event:
     get:
       tags:
@@ -1854,10 +1947,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTEventsData'
+            $ref: "#/definitions/RESTEventsData"
   /v1/log/incident:
     get:
       tags:
@@ -1869,10 +1962,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTIncidentsData'
+            $ref: "#/definitions/RESTIncidentsData"
   /v1/log/threat:
     get:
       tags:
@@ -1884,10 +1977,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTThreatsData'
+            $ref: "#/definitions/RESTThreatsData"
   /v1/log/threat/{id}:
     get:
       tags:
@@ -1905,10 +1998,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTThreatData'
+            $ref: "#/definitions/RESTThreatData"
   /v1/log/violation:
     get:
       tags:
@@ -1920,10 +2013,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTPolicyViolationsData'
+            $ref: "#/definitions/RESTPolicyViolationsData"
   /v1/log/violation/workload:
     get:
       tags:
@@ -1935,10 +2028,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTPolicyViolationsWLData'
+            $ref: "#/definitions/RESTPolicyViolationsWLData"
   /v1/log/security:
     get:
       tags:
@@ -1950,10 +2043,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTSecurityData'
+            $ref: "#/definitions/RESTSecurityData"
   /v1/password_profile:
     get:
       tags:
@@ -1965,10 +2058,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTPwdProfilesData'
+            $ref: "#/definitions/RESTPwdProfilesData"
   /v1/password_profile/{name}:
     get:
       tags:
@@ -1986,10 +2079,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTPwdProfileData'
+            $ref: "#/definitions/RESTPwdProfileData"
     patch:
       tags:
         - User
@@ -2010,9 +2103,9 @@ paths:
           description: Password profile data
           required: true
           schema:
-            $ref: '#/definitions/RESTPwdProfileConfigData'
+            $ref: "#/definitions/RESTPwdProfileConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/policy/rule:
     get:
@@ -2034,10 +2127,10 @@ paths:
             - local
           description: "When set to fed, returned fed policy rules. When set to local, returned local policy rules. If there is no query string 'scope', all policy rules will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTPolicyRulesData'
+            $ref: "#/definitions/RESTPolicyRulesData"
     patch:
       tags:
         - Policy
@@ -2053,7 +2146,7 @@ paths:
           description: Policy rule action data
           required: true
           schema:
-            $ref: '#/definitions/RESTPolicyRuleActionData'
+            $ref: "#/definitions/RESTPolicyRuleActionData"
         - in: query
           name: scope
           type: string
@@ -2063,7 +2156,7 @@ paths:
             - local
           description: "When set to fed, fed policy rules get created. When set to local or no query string, local policy rules get created."
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -2082,7 +2175,7 @@ paths:
             - local
           description: "When set to fed, fed policy rules get removed. When set to local or no query string, local policy rules get removed."
       responses:
-        '200':
+        "200":
           description: Success
   /v1/policy/rule/{id}:
     get:
@@ -2102,18 +2195,18 @@ paths:
           type: integer
           format: uint32
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTPolicyRuleData'
-        '400':
+            $ref: "#/definitions/RESTPolicyRuleData"
+        "400":
           description: Error
           schema:
-            $ref: '#/definitions/RESTError'
-        '404':
+            $ref: "#/definitions/RESTError"
+        "404":
           description: Error
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
     patch:
       tags:
         - Policy
@@ -2135,9 +2228,9 @@ paths:
           description: Policy rule update data
           required: true
           schema:
-            $ref: '#/definitions/RESTPolicyRuleConfigData'
+            $ref: "#/definitions/RESTPolicyRuleConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -2154,7 +2247,7 @@ paths:
           type: integer
           format: uint32
       responses:
-        '200':
+        "200":
           description: Success
   /v1/policy/rules/promote:
     post:
@@ -2172,9 +2265,9 @@ paths:
           description: Policy promote data
           required: true
           schema:
-            $ref: '#/definitions/RESTPolicyPromoteRequestData'
+            $ref: "#/definitions/RESTPolicyPromoteRequestData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/process_profile:
     get:
@@ -2196,10 +2289,10 @@ paths:
             - local
           description: "When set to fed, returned fed process profiles. When set to local, returned local process profiles. If there is no query string 'scope', all process profiles will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTProcessProfilesData'
+            $ref: "#/definitions/RESTProcessProfilesData"
   /v1/process_profile/{name}:
     get:
       tags:
@@ -2217,10 +2310,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTProcessProfileData'
+            $ref: "#/definitions/RESTProcessProfileData"
     patch:
       tags:
         - Process
@@ -2241,9 +2334,9 @@ paths:
           description: Process profile configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTProcessProfileConfigData'
+            $ref: "#/definitions/RESTProcessProfileConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/process_rules/{uuid}:
     get:
@@ -2262,10 +2355,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTProcessRulesResp'
+            $ref: "#/definitions/RESTProcessRulesResp"
   /v1/response/rule:
     get:
       tags:
@@ -2286,10 +2379,10 @@ paths:
             - local
           description: "When set to fed, returned fed response rules. When set to local, returned local response rules. If there is no query string 'scope', all response rules will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTResponseRulesData'
+            $ref: "#/definitions/RESTResponseRulesData"
     patch:
       tags:
         - Response Rule
@@ -2305,9 +2398,9 @@ paths:
           description: Response rule action data
           required: true
           schema:
-            $ref: '#/definitions/RESTResponseRuleActionData'
+            $ref: "#/definitions/RESTResponseRuleActionData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -2326,7 +2419,7 @@ paths:
             - local
           description: "When set to fed, all fed response rules get removed. When set to local or no query string, local response rules will be removed."
       responses:
-        '200':
+        "200":
           description: Success
   /v1/response/rule/{id}:
     get:
@@ -2345,10 +2438,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTResponseRuleData'
+            $ref: "#/definitions/RESTResponseRuleData"
     patch:
       tags:
         - Response Rule
@@ -2369,9 +2462,9 @@ paths:
           description: Response rule data
           required: true
           schema:
-            $ref: '#/definitions/RESTResponseRuleConfigData'
+            $ref: "#/definitions/RESTResponseRuleConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -2387,7 +2480,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/response/workload_rules/{id}:
     get:
@@ -2406,10 +2499,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTResponseRulesData'
+            $ref: "#/definitions/RESTResponseRulesData"
   /v1/scan/scanner:
     get:
       tags:
@@ -2421,10 +2514,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScannerData'
+            $ref: "#/definitions/RESTScannerData"
   /v1/scan/config:
     get:
       tags:
@@ -2436,10 +2529,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanConfigResp'
+            $ref: "#/definitions/RESTScanConfigResp"
     patch:
       tags:
         - Scan
@@ -2455,10 +2548,32 @@ paths:
           description: Scan configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTScanConfigData'
+            $ref: "#/definitions/RESTScanConfigData"
       responses:
-        '200':
+        "200":
           description: Success
+  /v1/scan/hosts/scan_report:
+    post:
+      tags:
+        - Scan
+      summary: Get hosts scan report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Filter data
+          required: true
+          schema:
+            $ref: "#/definitions/RESTAssetsScanReportQuery"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/RESTAssetScanReportData"
   /v1/scan/host/{id}:
     get:
       tags:
@@ -2476,10 +2591,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanReportData'
+            $ref: "#/definitions/RESTScanReportData"
     post:
       tags:
         - Scan
@@ -2496,7 +2611,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/image:
     get:
@@ -2509,10 +2624,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanImageSummaryData'
+            $ref: "#/definitions/RESTScanImageSummaryData"
   /v1/scan/image/{id}:
     get:
       tags:
@@ -2530,10 +2645,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanReportData'
+            $ref: "#/definitions/RESTScanReportData"
   /v1/scan/platform:
     get:
       tags:
@@ -2545,10 +2660,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanPlatformSummaryData'
+            $ref: "#/definitions/RESTScanPlatformSummaryData"
   /v1/scan/platform/platform:
     get:
       tags:
@@ -2560,10 +2675,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanReportData'
+            $ref: "#/definitions/RESTScanReportData"
     post:
       tags:
         - Scan
@@ -2572,7 +2687,7 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/registry:
     get:
@@ -2594,10 +2709,10 @@ paths:
             - local
           description: "When set to fed, returned fed registries. When set to local, returned local-defined registries. If there is no query string 'scope', all registries will be returned."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTRegistrySummaryListData'
+            $ref: "#/definitions/RESTRegistrySummaryListData"
     post:
       tags:
         - Scan
@@ -2613,9 +2728,9 @@ paths:
           description: Registry data
           required: true
           schema:
-            $ref: '#/definitions/RESTRegistryConfigData'
+            $ref: "#/definitions/RESTRegistryConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v2/scan/registry:
     post:
@@ -2633,9 +2748,9 @@ paths:
           description: Registry data
           required: true
           schema:
-            $ref: '#/definitions/RESTRegistryConfigDataV2'
+            $ref: "#/definitions/RESTRegistryConfigDataV2"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/registry/{name}:
     get:
@@ -2654,10 +2769,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTRegistrySummaryData'
+            $ref: "#/definitions/RESTRegistrySummaryData"
     patch:
       tags:
         - Scan
@@ -2678,9 +2793,9 @@ paths:
           description: Registry data
           required: true
           schema:
-            $ref: '#/definitions/RESTRegistryConfigData'
+            $ref: "#/definitions/RESTRegistryConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -2696,7 +2811,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v2/scan/registry/{name}:
     patch:
@@ -2719,9 +2834,9 @@ paths:
           description: Registry data
           required: true
           schema:
-            $ref: '#/definitions/RESTRegistryConfigDataV2'
+            $ref: "#/definitions/RESTRegistryConfigDataV2"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/registry/{name}/images:
     get:
@@ -2740,10 +2855,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTRegistryImageSummaryData'
+            $ref: "#/definitions/RESTRegistryImageSummaryData"
   /v1/scan/registry/{name}/image/{id}:
     get:
       tags:
@@ -2766,10 +2881,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanReportData'
+            $ref: "#/definitions/RESTScanReportData"
   /v1/scan/registry/{name}/layers/{id}:
     get:
       tags:
@@ -2792,10 +2907,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanLayersReportData'
+            $ref: "#/definitions/RESTScanLayersReportData"
   /v1/scan/registry/{name}/scan:
     post:
       tags:
@@ -2811,7 +2926,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -2827,7 +2942,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/repository:
     post:
@@ -2847,12 +2962,12 @@ paths:
           description: Repository data
           required: true
           schema:
-            $ref: '#/definitions/RESTScanRepoReqData'
+            $ref: "#/definitions/RESTScanRepoReqData"
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanRepoReportData'
+            $ref: "#/definitions/RESTScanRepoReportData"
   /v1/scan/status:
     get:
       tags:
@@ -2864,10 +2979,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanStatusData'
+            $ref: "#/definitions/RESTScanStatusData"
   /v1/scan/cache_stat/{id}:
     get:
       tags:
@@ -2885,10 +3000,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanCacheStat'
+            $ref: "#/definitions/RESTScanCacheStat"
   /v1/scan/cache_data/{id}:
     get:
       tags:
@@ -2906,10 +3021,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanCacheData'
+            $ref: "#/definitions/RESTScanCacheData"
   /v1/scan/workload/{id}:
     get:
       tags:
@@ -2927,10 +3042,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScanReportData'
+            $ref: "#/definitions/RESTScanReportData"
     post:
       tags:
         - Scan
@@ -2947,8 +3062,30 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
+  /v1/scan/workloads/scan_report:
+    post:
+      tags:
+        - Scan
+      summary: Get containers scan report
+      security:
+        - ApiKeyAuth: []
+        - TokenAuth: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Filter data
+          required: true
+          schema:
+            $ref: "#/definitions/RESTAssetsScanReportQuery"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/RESTAssetScanReportData"
   /v1/scan/sigstore/root_of_trust:
     get:
       tags:
@@ -2960,10 +3097,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/REST_SigstoreRootOfTrustCollection'
+            $ref: "#/definitions/REST_SigstoreRootOfTrustCollection"
     post:
       tags:
         - Scan
@@ -2979,9 +3116,9 @@ paths:
           description: Root of Trust Data
           required: true
           schema:
-            $ref: '#/definitions/REST_SigstoreRootOfTrust_POST'
+            $ref: "#/definitions/REST_SigstoreRootOfTrust_POST"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/sigstore/root_of_trust/{root_name}:
     get:
@@ -3000,10 +3137,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/REST_SigstoreRootOfTrust_GET'
+            $ref: "#/definitions/REST_SigstoreRootOfTrust_GET"
     patch:
       tags:
         - Scan
@@ -3024,9 +3161,9 @@ paths:
           description: Root of Trust Data
           required: true
           schema:
-            $ref: '#/definitions/REST_SigstoreRootOfTrust_PATCH'
+            $ref: "#/definitions/REST_SigstoreRootOfTrust_PATCH"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -3042,7 +3179,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/sigstore/root_of_trust/{root_name}/verifier:
     get:
@@ -3061,10 +3198,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/REST_SigstoreVerifierCollection'
+            $ref: "#/definitions/REST_SigstoreVerifierCollection"
     post:
       tags:
         - Scan
@@ -3085,9 +3222,9 @@ paths:
           description: Root of Trust Data
           required: true
           schema:
-            $ref: '#/definitions/REST_SigstoreVerifier'
+            $ref: "#/definitions/REST_SigstoreVerifier"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/scan/sigstore/root_of_trust/{root_name}/verifier/{verifier_name}:
     get:
@@ -3111,10 +3248,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/REST_SigstoreVerifier'
+            $ref: "#/definitions/REST_SigstoreVerifier"
     patch:
       tags:
         - Scan
@@ -3140,9 +3277,9 @@ paths:
           description: Verifier patch data
           required: true
           schema:
-            $ref: '#/definitions/REST_SigstoreVerifier_PATCH'
+            $ref: "#/definitions/REST_SigstoreVerifier_PATCH"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -3163,7 +3300,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/server:
     get:
@@ -3176,10 +3313,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTServersData'
+            $ref: "#/definitions/RESTServersData"
     post:
       tags:
         - Server
@@ -3195,9 +3332,9 @@ paths:
           description: Server data
           required: true
           schema:
-            $ref: '#/definitions/RESTServerConfigData'
+            $ref: "#/definitions/RESTServerConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/server/{name}:
     get:
@@ -3216,10 +3353,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTServerData'
+            $ref: "#/definitions/RESTServerData"
     patch:
       tags:
         - Server
@@ -3240,9 +3377,9 @@ paths:
           description: Server data
           required: true
           schema:
-            $ref: '#/definitions/RESTServerConfigData'
+            $ref: "#/definitions/RESTServerConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -3258,7 +3395,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/server/{name}/role/{role}:
     patch:
@@ -3286,9 +3423,9 @@ paths:
           description: Server role groups update data
           required: true
           schema:
-            $ref: '#/definitions/RESTServerRoleGroupsConfigData'
+            $ref: "#/definitions/RESTServerRoleGroupsConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/server/{name}/user:
     get:
@@ -3307,10 +3444,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTUsersData'
+            $ref: "#/definitions/RESTUsersData"
   /v1/service:
     get:
       tags:
@@ -3322,10 +3459,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTServicesData'
+            $ref: "#/definitions/RESTServicesData"
     post:
       tags:
         - Service
@@ -3341,9 +3478,9 @@ paths:
           description: Service data
           required: true
           schema:
-            $ref: '#/definitions/RESTServiceConfigData'
+            $ref: "#/definitions/RESTServiceConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/service/{name}:
     get:
@@ -3362,10 +3499,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTServiceData'
+            $ref: "#/definitions/RESTServiceData"
   /v1/service/config:
     patch:
       tags:
@@ -3382,9 +3519,9 @@ paths:
           description: Service configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTServiceBatchConfigData'
+            $ref: "#/definitions/RESTServiceBatchConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/service/config/network:
     patch:
@@ -3402,9 +3539,9 @@ paths:
           description: Service configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTServiceBatchConfigData'
+            $ref: "#/definitions/RESTServiceBatchConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/service/config/profile:
     patch:
@@ -3422,9 +3559,9 @@ paths:
           description: Service configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTServiceBatchConfigData'
+            $ref: "#/definitions/RESTServiceBatchConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/sniffer:
     get:
@@ -3443,10 +3580,10 @@ paths:
           type: string
           description: Workload ID
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTSniffersData'
+            $ref: "#/definitions/RESTSniffersData"
     post:
       tags:
         - Sniffer
@@ -3467,9 +3604,9 @@ paths:
           description: Sniffer args data
           required: true
           schema:
-            $ref: '#/definitions/RESTSnifferArgsData'
+            $ref: "#/definitions/RESTSnifferArgsData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/sniffer/{id}:
     get:
@@ -3488,10 +3625,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTSnifferData'
+            $ref: "#/definitions/RESTSnifferData"
     delete:
       tags:
         - Sniffer
@@ -3506,7 +3643,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/sniffer/stop/{id}:
     patch:
@@ -3523,7 +3660,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/sniffer/{id}/pcap:
     get:
@@ -3540,7 +3677,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success. Get pcap file.
   /v1/system/summary:
     get:
@@ -3553,10 +3690,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTSystemSummaryData'
+            $ref: "#/definitions/RESTSystemSummaryData"
   /v1/system/config:
     get:
       tags:
@@ -3577,10 +3714,10 @@ paths:
             - local
           description: "When set the scope to be fed, it will return the fed system configures. When set the scope to be local, it will return the local system configures. If there is no query string 'scope', it will return all system configures."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTSystemConfigData'
+            $ref: "#/definitions/RESTSystemConfigData"
     patch:
       tags:
         - System
@@ -3596,9 +3733,9 @@ paths:
           description: System configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTSystemConfigConfigData'
+            $ref: "#/definitions/RESTSystemConfigConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v2/system/config:
     get:
@@ -3620,10 +3757,10 @@ paths:
             - local
           description: "When set the scope to be fed, it will return the fed system configures. When set the scope to be local, it will return the local system configures. If there is no query string 'scope', it will return all system configures."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTSystemConfigDataV2'
+            $ref: "#/definitions/RESTSystemConfigDataV2"
     patch:
       tags:
         - System
@@ -3639,9 +3776,9 @@ paths:
           description: System configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTSystemConfigConfigDataV2'
+            $ref: "#/definitions/RESTSystemConfigConfigDataV2"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/system/alerts:
     get:
@@ -3654,10 +3791,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTNvAlerts'
+            $ref: "#/definitions/RESTNvAlerts"
   /v1/system/config/webhook:
     post:
       tags:
@@ -3674,9 +3811,9 @@ paths:
           description: System configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTSystemWebhookConfigData'
+            $ref: "#/definitions/RESTSystemWebhookConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/system/config/webhook/{name}:
     patch:
@@ -3707,9 +3844,9 @@ paths:
           description: System configure data
           required: true
           schema:
-            $ref: '#/definitions/RESTSystemWebhookConfigData'
+            $ref: "#/definitions/RESTSystemWebhookConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -3733,7 +3870,7 @@ paths:
             - local
           description: "When set the scope to be fed, it will delete the fed level webhook. When set the scope to be local, it will delete the local webhook. If there is no query string 'scope', it will use 'local' as the default value."
       responses:
-        '200':
+        "200":
           description: Success
   /v1/system/request:
     post:
@@ -3751,9 +3888,9 @@ paths:
           description: System request data
           required: true
           schema:
-            $ref: '#/definitions/RESTSystemRequestData'
+            $ref: "#/definitions/RESTSystemRequestData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/system/score/metrics:
     get:
@@ -3766,10 +3903,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTScoreMetricsData'
+            $ref: "#/definitions/RESTScoreMetricsData"
   /v1/user:
     get:
       tags:
@@ -3781,10 +3918,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTUsersData'
+            $ref: "#/definitions/RESTUsersData"
     post:
       tags:
         - User
@@ -3800,9 +3937,9 @@ paths:
           description: User information
           required: true
           schema:
-            $ref: '#/definitions/RESTUserData'
+            $ref: "#/definitions/RESTUserData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/user/{fullname}:
     get:
@@ -3821,10 +3958,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTUserData'
+            $ref: "#/definitions/RESTUserData"
     patch:
       tags:
         - User
@@ -3845,14 +3982,14 @@ paths:
           description: User update data
           required: true
           schema:
-            $ref: '#/definitions/RESTUserConfigData'
+            $ref: "#/definitions/RESTUserConfigData"
       responses:
-        '200':
+        "200":
           description: Success
-        '403':
+        "403":
           description: Error
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
     delete:
       tags:
         - User
@@ -3867,7 +4004,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/user/{fullname}/password:
     post:
@@ -3890,9 +4027,9 @@ paths:
           description: User password configuration data
           required: true
           schema:
-            $ref: '#/definitions/RESTUserPwdConfigData'
+            $ref: "#/definitions/RESTUserPwdConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/user/{fullname}/role/{role}:
     patch:
@@ -3920,9 +4057,9 @@ paths:
           description: User role domain update data
           required: true
           schema:
-            $ref: '#/definitions/RESTUserRoleDomainsConfigData'
+            $ref: "#/definitions/RESTUserRoleDomainsConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/user_role:
     get:
@@ -3935,10 +4072,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTUserRolesData'
+            $ref: "#/definitions/RESTUserRolesData"
     post:
       tags:
         - User
@@ -3954,9 +4091,9 @@ paths:
           description: Role information
           required: true
           schema:
-            $ref: '#/definitions/RESTUserRoleConfigData'
+            $ref: "#/definitions/RESTUserRoleConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/user_role/{name}:
     get:
@@ -3975,10 +4112,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTUserRoleData'
+            $ref: "#/definitions/RESTUserRoleData"
     patch:
       tags:
         - User
@@ -3999,9 +4136,9 @@ paths:
           description: User role update data
           required: true
           schema:
-            $ref: '#/definitions/RESTUserRoleConfigData'
+            $ref: "#/definitions/RESTUserRoleConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -4017,7 +4154,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/vulnerability/profile:
     get:
@@ -4030,10 +4167,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTVulnerabilityProfilesData'
+            $ref: "#/definitions/RESTVulnerabilityProfilesData"
   /v1/vulnerability/profile/{name}:
     get:
       tags:
@@ -4051,10 +4188,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTVulnerabilityProfileData'
+            $ref: "#/definitions/RESTVulnerabilityProfileData"
     patch:
       tags:
         - Vulnerability
@@ -4075,9 +4212,9 @@ paths:
           description: Vulnerability profile config data
           required: true
           schema:
-            $ref: '#/definitions/RESTVulnerabilityProfileConfigData'
+            $ref: "#/definitions/RESTVulnerabilityProfileConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/vulnerability/profile/{name}/entry:
     post:
@@ -4098,12 +4235,12 @@ paths:
           description: Vulnerability profile entry data
           required: true
           schema:
-            $ref: '#/definitions/RESTVulnerabilityProfileEntryConfigData'
+            $ref: "#/definitions/RESTVulnerabilityProfileEntryConfigData"
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTVulnerabilityProfileEntryConfigData'
+            $ref: "#/definitions/RESTVulnerabilityProfileEntryConfigData"
   /v1/vulnerability/profile/{name}/entry/{id}:
     patch:
       tags:
@@ -4131,9 +4268,9 @@ paths:
           description: Vulnerability profile entry data
           required: true
           schema:
-            $ref: '#/definitions/RESTVulnerabilityProfileEntryConfigData'
+            $ref: "#/definitions/RESTVulnerabilityProfileEntryConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -4155,7 +4292,7 @@ paths:
           type: integer
           format: uint32
       responses:
-        '200':
+        "200":
           description: Success
   /v1/waf/sensor:
     get:
@@ -4176,10 +4313,10 @@ paths:
             - local
           description: "The default value is local which returns local waf rule list."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWafSensorsData'
+            $ref: "#/definitions/RESTWafSensorsData"
     post:
       tags:
         - WAF Rule
@@ -4195,9 +4332,9 @@ paths:
           description: Sensor data
           required: true
           schema:
-            $ref: '#/definitions/RESTDlpSensorConfigData'
+            $ref: "#/definitions/RESTDlpSensorConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/waf/sensor/{name}:
     get:
@@ -4216,10 +4353,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWafSensorData'
+            $ref: "#/definitions/RESTWafSensorData"
     patch:
       tags:
         - WAF Rule
@@ -4240,9 +4377,9 @@ paths:
           description: waf sensor data
           required: true
           schema:
-            $ref: '#/definitions/RESTWafSensorConfigData'
+            $ref: "#/definitions/RESTWafSensorConfigData"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
       tags:
@@ -4258,7 +4395,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/waf/group:
     get:
@@ -4279,10 +4416,10 @@ paths:
             - local
           description: "The default value is local. It returns local waf group list."
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWafGroupsData'
+            $ref: "#/definitions/RESTWafGroupsData"
   /v1/waf/group/{name}:
     get:
       tags:
@@ -4300,10 +4437,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWafGroupData'
+            $ref: "#/definitions/RESTWafGroupData"
     patch:
       tags:
         - WAF Rule
@@ -4324,9 +4461,9 @@ paths:
           description: waf group data
           required: true
           schema:
-            $ref: '#/definitions/RESTWafGroupConfigData'
+            $ref: "#/definitions/RESTWafGroupConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/waf/rule:
     get:
@@ -4339,10 +4476,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWafRulesData'
+            $ref: "#/definitions/RESTWafRulesData"
   /v1/waf/rule/{name}:
     get:
       tags:
@@ -4360,10 +4497,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWafRuleData'
+            $ref: "#/definitions/RESTWafRuleData"
   /v1/workload:
     get:
       tags:
@@ -4375,10 +4512,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadsData'
+            $ref: "#/definitions/RESTWorkloadsData"
   /v2/workload:
     get:
       tags:
@@ -4390,10 +4527,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadsDataV2'
+            $ref: "#/definitions/RESTWorkloadsDataV2"
     post:
       tags:
         - Container
@@ -4409,12 +4546,12 @@ paths:
           description: Container ID list
           required: true
           schema:
-            $ref: '#/definitions/RESTAssetIDList'
+            $ref: "#/definitions/RESTAssetIDList"
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadsDataV2'
+            $ref: "#/definitions/RESTWorkloadsDataV2"
   /v1/workload/{id}:
     get:
       tags:
@@ -4432,10 +4569,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadDetailData'
+            $ref: "#/definitions/RESTWorkloadDetailData"
     patch:
       tags:
         - Container
@@ -4456,9 +4593,9 @@ paths:
           description: Container update data
           required: true
           schema:
-            $ref: '#/definitions/RESTWorkloadConfigData'
+            $ref: "#/definitions/RESTWorkloadConfigData"
       responses:
-        '200':
+        "200":
           description: Success
   /v2/workload/{id}:
     get:
@@ -4477,10 +4614,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadDetailDataV2'
+            $ref: "#/definitions/RESTWorkloadDetailDataV2"
   /v1/workload/{id}/stats:
     get:
       tags:
@@ -4498,10 +4635,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadStatsData'
+            $ref: "#/definitions/RESTWorkloadStatsData"
   /v1/workload/{id}/config:
     get:
       tags:
@@ -4519,10 +4656,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTWorkloadConfigData'
+            $ref: "#/definitions/RESTWorkloadConfigData"
   /v1/workload/{id}/process:
     get:
       tags:
@@ -4540,14 +4677,14 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTProcessList'
-        '400':
+            $ref: "#/definitions/RESTProcessList"
+        "400":
           description: Container not running
           schema:
-            $ref: '#/definitions/RESTError'
+            $ref: "#/definitions/RESTError"
   /v1/workload/{id}/process_history:
     get:
       tags:
@@ -4565,10 +4702,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTProcessProfileEntry'
+            $ref: "#/definitions/RESTProcessProfileEntry"
   /v1/workload/{id}/compliance:
     get:
       tags:
@@ -4586,10 +4723,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTComplianceData'
+            $ref: "#/definitions/RESTComplianceData"
   /v1/workload/request/{id}:
     post:
       tags:
@@ -4611,9 +4748,9 @@ paths:
           description: Container request data
           required: true
           schema:
-            $ref: '#/definitions/RESTWorkloadRequestData'
+            $ref: "#/definitions/RESTWorkloadRequestData"
       responses:
-        '200':
+        "200":
           description: Success
   /v1/csp/file/support:
     post:
@@ -4624,7 +4761,7 @@ paths:
         - ApiKeyAuth: []
         - TokenAuth: []
       responses:
-        '200':
+        "200":
           description: Success. Get a tarball gz file.
   /v1/fed/healthcheck:
     get:
@@ -4632,7 +4769,7 @@ paths:
         - Federation
       summary: Health Check of Federate Primary REST server
       responses:
-        '200':
+        "200":
           description: Success
   /v1/api_key:
     get:
@@ -4645,10 +4782,10 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTApikeysData'
+            $ref: "#/definitions/RESTApikeysData"
     post:
       tags:
         - Apikey
@@ -4664,12 +4801,12 @@ paths:
           description: Apikey information
           required: true
           schema:
-            $ref: '#/definitions/RESTApikeyCreationData'
+            $ref: "#/definitions/RESTApikeyCreationData"
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTApikeyGeneratedData'
+            $ref: "#/definitions/RESTApikeyGeneratedData"
   /v1/api_key/{accesskey}:
     get:
       tags:
@@ -4687,10 +4824,10 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
           schema:
-            $ref: '#/definitions/RESTApikeyData'
+            $ref: "#/definitions/RESTApikeyData"
     delete:
       tags:
         - Apikey
@@ -4705,7 +4842,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Success
   /v1/system/config/remote_repository:
     post:
@@ -4723,9 +4860,9 @@ paths:
           description: Initial Configuration
           required: true
           schema:
-            $ref: '#/definitions/RESTRemoteRepository'
+            $ref: "#/definitions/RESTRemoteRepository"
       responses:
-        '200':
+        "200":
           description: Created the remote repository.
   /v1/system/config/remote_repository/{alias}:
     patch:
@@ -4748,9 +4885,9 @@ paths:
           description: Configuration fields to update
           required: true
           schema:
-            $ref: '#/definitions/RESTRemoteRepositoryConfigData'
+            $ref: "#/definitions/RESTRemoteRepositoryConfigData"
       responses:
-        '200':
+        "200":
           description: Updated the remote repository.
     delete:
       tags:
@@ -4768,7 +4905,7 @@ paths:
           required: true
           type: string
       responses:
-        '200':
+        "200":
           description: Deleted the remote repository.
 
 ################################################################################
@@ -5293,11 +5430,17 @@ definitions:
       message:
         type: string
         example: "dns tunneling"
+  RESTRemoteExportData:
+    type: object
+    properties:
+      file_path:
+        type: string
+        description: the destination file path when exported to remote repository
   RESTAdmCatOptions:
     type: object
     properties:
       k8s_options:
-        $ref: '#/definitions/RESTAdmRuleOptions'
+        $ref: "#/definitions/RESTAdmRuleOptions"
   RESTAdmCtrlPromoteRequest:
     type: object
     required:
@@ -5315,7 +5458,7 @@ definitions:
       - request
     properties:
       request:
-        $ref: '#/definitions/RESTAdmCtrlPromoteRequest'
+        $ref: "#/definitions/RESTAdmCtrlPromoteRequest"
   RESTAdmCtrlRulesExport:
     type: object
     properties:
@@ -5329,7 +5472,7 @@ definitions:
           format: uint32
           example: 12
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTAdmCtrlTestRuleInfo:
     type: object
     required:
@@ -5357,7 +5500,7 @@ definitions:
       mode:
         type: string
         description: per-rule mode
-        enum: ["monitor","protect",""]
+        enum: ["monitor", "protect", ""]
       rule_details:
         type: string
         example: "It matches deny rule id 1000 with criteria: (allow privilege escalation = true)"
@@ -5389,7 +5532,7 @@ definitions:
       matched_rules:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmCtrlTestRuleInfo'
+          $ref: "#/definitions/RESTAdmCtrlTestRuleInfo"
       allowed:
         type: boolean
         example: false
@@ -5403,27 +5546,27 @@ definitions:
         example: ["user", "userGroups"]
       global_mode:
         type: string
-        enum: ["monitor","protect", ""]
+        enum: ["monitor", "protect", ""]
       results:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmCtrlRulesTestResult'
+          $ref: "#/definitions/RESTAdmCtrlRulesTestResult"
   RESTAdmissionConfigData:
     type: object
     required:
       - k8s_env
     properties:
       state:
-        $ref: '#/definitions/RESTAdmissionState'
+        $ref: "#/definitions/RESTAdmissionState"
       admission_options:
-        $ref: '#/definitions/RESTAdmRuleTypeOptions'
+        $ref: "#/definitions/RESTAdmRuleTypeOptions"
       k8s_env:
         type: boolean
         example: false
       admission_custom_criteria_options:
-        $ref: '#/definitions/RESTAdminCustomCriteriaOptions'
+        $ref: "#/definitions/RESTAdminCustomCriteriaOptions"
       admission_custom_criteria_templates:
-        $ref: '#/definitions/RESTAdminCriteriaTemplate'
+        $ref: "#/definitions/RESTAdminCriteriaTemplate"
       predefined_risky_roles:
         type: array
         items:
@@ -5456,7 +5599,7 @@ definitions:
       criteria:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmRuleCriterion'
+          $ref: "#/definitions/RESTAdmRuleCriterion"
       disable:
         type: boolean
         example: false
@@ -5499,7 +5642,7 @@ definitions:
       criteria:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmRuleCriterion'
+          $ref: "#/definitions/RESTAdmRuleCriterion"
       disable:
         type: boolean
         example: true
@@ -5528,14 +5671,14 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTAdmissionRuleConfig'
+        $ref: "#/definitions/RESTAdmissionRuleConfig"
   RESTAdmissionRuleData:
     type: object
     required:
       - rule
     properties:
       rule:
-        $ref: '#/definitions/RESTAdmissionRule'
+        $ref: "#/definitions/RESTAdmissionRule"
   RESTAdmissionRulesData:
     type: object
     required:
@@ -5544,7 +5687,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmissionRule'
+          $ref: "#/definitions/RESTAdmissionRule"
   RESTAdmissionRuleOption:
     type: object
     required:
@@ -5580,7 +5723,7 @@ definitions:
             type: string
             example: criterion_name
           options:
-            $ref: '#/definitions/RESTAdmissionRuleOption'
+            $ref: "#/definitions/RESTAdmissionRuleOption"
   RESTAdmRuleCriterion:
     type: object
     required:
@@ -5600,7 +5743,7 @@ definitions:
       sub_criteria:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmRuleCriterion'
+          $ref: "#/definitions/RESTAdmRuleCriterion"
       type:
         type: string
         example: customPath
@@ -5625,7 +5768,7 @@ definitions:
             type: string
             example: criterion_name
           options:
-            $ref: '#/definitions/RESTAdmissionRuleOption'
+            $ref: "#/definitions/RESTAdmissionRuleOption"
   RESTAdmRuleTypeOptions:
     type: object
     required:
@@ -5633,13 +5776,13 @@ definitions:
       - exception_options
     properties:
       deny_options:
-        $ref: '#/definitions/RESTAdmCatOptions'
+        $ref: "#/definitions/RESTAdmCatOptions"
       exception_options:
-        $ref: '#/definitions/RESTAdmCatOptions'
+        $ref: "#/definitions/RESTAdmCatOptions"
       psp_collection:
         type: array
         items:
-          $ref: '#/definitions/RESTAdmRuleCriterion'
+          $ref: "#/definitions/RESTAdmRuleCriterion"
       pss_collections:
         type: object
         description: map key is domain(string type)
@@ -5648,13 +5791,19 @@ definitions:
           items:
             type: string
         example:
-          restricted: ["Uses illegal volume type.", "Allows running as root user."]
-          baseline: ["Sets HostNetwork, HostPID, or HostIPC to true.", "Allows privileged container(s)."]
+          restricted:
+            ["Uses illegal volume type.", "Allows running as root user."]
+          baseline:
+            [
+              "Sets HostNetwork, HostPID, or HostIPC to true.",
+              "Allows privileged container(s).",
+            ]
       sigstore_verifiers:
         type: array
         items:
           type: string
-        example: ["public/verifier1", "private1/verifier1", "private1/verifier2"]
+        example:
+          ["public/verifier1", "private1/verifier1", "private1/verifier2"]
   RESTAdmissionState:
     type: object
     properties:
@@ -5736,7 +5885,7 @@ definitions:
       - stats
     properties:
       stats:
-        $ref: '#/definitions/RESTAdmissionStats'
+        $ref: "#/definitions/RESTAdmissionStats"
   RESTAgent:
     type: object
     required:
@@ -5827,7 +5976,7 @@ definitions:
       - enforcer
     properties:
       enforcer:
-        $ref: '#/definitions/RESTAgent'
+        $ref: "#/definitions/RESTAgent"
   RESTAgentsData:
     type: object
     required:
@@ -5836,7 +5985,7 @@ definitions:
       enforcers:
         type: array
         items:
-          $ref: '#/definitions/RESTAgent'
+          $ref: "#/definitions/RESTAgent"
   RESTAgentConfig:
     type: object
     properties:
@@ -5864,7 +6013,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTAgentConfig'
+        $ref: "#/definitions/RESTAgentConfig"
   RESTAgentStatsData:
     type: object
     required:
@@ -5880,7 +6029,7 @@ definitions:
         format: date-time
         example: 2018-01-18T07:20:15Z
       stats:
-        $ref: '#/definitions/RESTStats'
+        $ref: "#/definitions/RESTStats"
   RESTAuditsData:
     type: object
     required:
@@ -5889,7 +6038,7 @@ definitions:
       audits:
         type: array
         items:
-          $ref: '#/definitions/Audit'
+          $ref: "#/definitions/Audit"
   RESTAuthData:
     type: object
     required:
@@ -5899,9 +6048,9 @@ definitions:
         type: string
         example: ""
       password:
-        $ref: '#/definitions/RESTAuthPassword'
+        $ref: "#/definitions/RESTAuthPassword"
       Token:
-        $ref: '#/definitions/RESTAuthToken'
+        $ref: "#/definitions/RESTAuthToken"
   RESTAuthPassword:
     type: object
     required:
@@ -5973,7 +6122,7 @@ definitions:
           - us-west-1
           - us-west-2
       aws_lambda_resource:
-        $ref: '#/definitions/RESTAwsLambdaRes'
+        $ref: "#/definitions/RESTAwsLambdaRes"
   RESTAwsFuncPermission:
     type: object
     required:
@@ -5992,7 +6141,11 @@ definitions:
         type: array
         items:
           type: string
-        example: ["Full Access policy  AWSLambdaFullAccess", "In policy AWSLambdaFullAccess : Full Access to dynamodb "]
+        example:
+          [
+            "Full Access policy  AWSLambdaFullAccess",
+            "In policy AWSLambdaFullAccess : Full Access to dynamodb ",
+          ]
       allowed_detail:
         type: object
         properties:
@@ -6002,7 +6155,7 @@ definitions:
           value:
             type: array
             items:
-              $ref: '#/definitions/RESTAwsResDetail'
+              $ref: "#/definitions/RESTAwsResDetail"
   RESTAwsFunction:
     type: object
     required:
@@ -6018,7 +6171,7 @@ definitions:
       report:
         type: array
         items:
-          $ref: '#/definitions/RESTScanAwsFuncReport'
+          $ref: "#/definitions/RESTScanAwsFuncReport"
   RESTAwsFuncSummary:
     type: object
     required:
@@ -6067,7 +6220,7 @@ definitions:
       func_list:
         type: array
         items:
-          $ref: '#/definitions/RESTAwsFuncSummary'
+          $ref: "#/definitions/RESTAwsFuncSummary"
   RESTAwsLambdaRes:
     type: object
     required:
@@ -6084,7 +6237,7 @@ definitions:
             type: string
             example: ""
           value:
-            $ref: '#/definitions/RESTAwsLambdaResDetail'
+            $ref: "#/definitions/RESTAwsLambdaResDetail"
   RESTAwsResDetail:
     type: object
     required:
@@ -6125,7 +6278,7 @@ definitions:
           - us-east-1
           - us-east-2
       aws_lambda_resource:
-        $ref: '#/definitions/RESTAwsLambdaRes'
+        $ref: "#/definitions/RESTAwsLambdaRes"
   RESTAwsResourceConfig:
     type: object
     required:
@@ -6242,7 +6395,7 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/RESTBenchItem'
+          $ref: "#/definitions/RESTBenchItem"
   RESTCloudResList:
     type: object
     required:
@@ -6251,7 +6404,7 @@ definitions:
       cloud_resources:
         type: array
         items:
-          $ref: '#/definitions/RESTAwsCloudRes'
+          $ref: "#/definitions/RESTAwsCloudRes"
   RESTCLUSEventCondition:
     type: object
     properties:
@@ -6291,7 +6444,7 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/RESTBenchItem'
+          $ref: "#/definitions/RESTBenchItem"
   RESTComplianceProfile:
     type: object
     required:
@@ -6308,7 +6461,7 @@ definitions:
       entries:
         type: array
         items:
-          $ref: '#/definitions/RESTComplianceProfileEntry'
+          $ref: "#/definitions/RESTComplianceProfileEntry"
       cfg_type:
         type: string
         enum: [user_created, ground]
@@ -6326,14 +6479,14 @@ definitions:
       entries:
         type: array
         items:
-          $ref: '#/definitions/RESTComplianceProfileEntry'
+          $ref: "#/definitions/RESTComplianceProfileEntry"
   RESTComplianceProfileConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTComplianceProfileConfig'
+        $ref: "#/definitions/RESTComplianceProfileConfig"
   RESTComplianceProfileEntry:
     type: object
     required:
@@ -6354,14 +6507,14 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTComplianceProfileEntry'
+        $ref: "#/definitions/RESTComplianceProfileEntry"
   RESTComplianceProfileData:
     type: object
     required:
       - profile
     properties:
       profile:
-        $ref: '#/definitions/RESTComplianceProfile'
+        $ref: "#/definitions/RESTComplianceProfile"
   RESTComplianceProfilesData:
     type: object
     required:
@@ -6370,7 +6523,7 @@ definitions:
       profiles:
         type: array
         items:
-          $ref: '#/definitions/RESTComplianceProfile'
+          $ref: "#/definitions/RESTComplianceProfile"
   RESTCompProfilesExport:
     type: object
     properties:
@@ -6380,7 +6533,7 @@ definitions:
           type: string
           example: ["default"]
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTController:
     type: object
     required:
@@ -6475,7 +6628,7 @@ definitions:
       - controller
     properties:
       controller:
-        $ref: '#/definitions/RESTController'
+        $ref: "#/definitions/RESTController"
   RESTControllerConfig:
     type: object
     properties:
@@ -6495,7 +6648,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTControllerConfig'
+        $ref: "#/definitions/RESTControllerConfig"
   RESTCriteriaEntry:
     type: object
     required:
@@ -6532,25 +6685,25 @@ definitions:
       - update
     properties:
       add:
-        $ref: '#/definitions/RESTCustomChecks'
+        $ref: "#/definitions/RESTCustomChecks"
       delete:
-        $ref: '#/definitions/RESTCustomChecks'
+        $ref: "#/definitions/RESTCustomChecks"
       update:
-        $ref: '#/definitions/RESTCustomChecks'
+        $ref: "#/definitions/RESTCustomChecks"
   RESTCustomCheckConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTCustomCheckConfig'
+        $ref: "#/definitions/RESTCustomCheckConfig"
   RESTCustomCheckData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTCustomChecks'
+        $ref: "#/definitions/RESTCustomChecks"
   RESTCustomCheckListData:
     type: object
     required:
@@ -6559,7 +6712,7 @@ definitions:
       configs:
         type: array
         items:
-          $ref: '#/definitions/RESTCustomChecks'
+          $ref: "#/definitions/RESTCustomChecks"
   RESTCustomChecks:
     type: object
     required:
@@ -6578,7 +6731,7 @@ definitions:
       scripts:
         type: array
         items:
-          $ref: '#/definitions/RESTCustomCheck'
+          $ref: "#/definitions/RESTCustomCheck"
   RESTDlpGroup:
     type: object
     required:
@@ -6595,7 +6748,7 @@ definitions:
       sensors:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpSetting'
+          $ref: "#/definitions/RESTDlpSetting"
   RESTDlpGroupConfig:
     type: object
     required:
@@ -6615,25 +6768,25 @@ definitions:
       sensors:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpSetting'
+          $ref: "#/definitions/RESTDlpSetting"
       replace:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpSetting'
+          $ref: "#/definitions/RESTDlpSetting"
   RESTDlpGroupConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTDlpGroupConfig'
+        $ref: "#/definitions/RESTDlpGroupConfig"
   RESTDlpGroupData:
     type: object
     required:
       - dlp_group
     properties:
       dlp_group:
-        $ref: '#/definitions/RESTDlpGroup'
+        $ref: "#/definitions/RESTDlpGroup"
   RESTDlpGroupsData:
     type: object
     required:
@@ -6642,7 +6795,7 @@ definitions:
       dlp_groups:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpGroup'
+          $ref: "#/definitions/RESTDlpGroup"
   RESTDlpRule:
     type: object
     required:
@@ -6661,7 +6814,7 @@ definitions:
       patterns:
         type: array
         items:
-          $ref: '#/definitions/RESTCriteriaEntry'
+          $ref: "#/definitions/RESTCriteriaEntry"
       cfg_type:
         type: string
         enum: [user_created, ground]
@@ -6671,7 +6824,7 @@ definitions:
       - rule
     properties:
       rule:
-        $ref: '#/definitions/RESTDlpRuleDetail'
+        $ref: "#/definitions/RESTDlpRuleDetail"
   RESTDlpRuleDetail:
     type: object
     required:
@@ -6688,7 +6841,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpRule'
+          $ref: "#/definitions/RESTDlpRule"
   RESTDlpRulesData:
     type: object
     required:
@@ -6697,7 +6850,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpRule'
+          $ref: "#/definitions/RESTDlpRule"
   RESTDlpSensor:
     type: object
     required:
@@ -6719,7 +6872,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpRule'
+          $ref: "#/definitions/RESTDlpRule"
       comment:
         type: string
         example: "Sensor for SSN detection"
@@ -6740,15 +6893,15 @@ definitions:
       change:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpRule'
+          $ref: "#/definitions/RESTDlpRule"
       delete:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpRule'
+          $ref: "#/definitions/RESTDlpRule"
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpRule'
+          $ref: "#/definitions/RESTDlpRule"
       comment:
         type: string
         example: "Sensor for Credit Card detection"
@@ -6758,14 +6911,14 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTDlpSensorConfig'
+        $ref: "#/definitions/RESTDlpSensorConfig"
   RESTDlpSensorData:
     type: object
     required:
       - sensor
     properties:
       sensor:
-        $ref: '#/definitions/RESTDlpSensor'
+        $ref: "#/definitions/RESTDlpSensor"
   RESTDlpSensorExport:
     type: object
     required:
@@ -6777,7 +6930,7 @@ definitions:
           type: string
         example: [""]
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTDlpSensorsData:
     type: object
     required:
@@ -6786,7 +6939,7 @@ definitions:
       sensors:
         type: array
         items:
-          $ref: '#/definitions/RESTDlpSensor'
+          $ref: "#/definitions/RESTDlpSensor"
   RESTDlpSetting:
     type: object
     required:
@@ -6852,7 +7005,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTDomainConfig'
+        $ref: "#/definitions/RESTDomainConfig"
   RESTDomainsData:
     type: object
     required:
@@ -6862,7 +7015,7 @@ definitions:
       domains:
         type: array
         items:
-          $ref: '#/definitions/RESTDomain'
+          $ref: "#/definitions/RESTDomain"
       tag_per_domain:
         type: boolean
         example: false
@@ -6885,7 +7038,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTDomainEntryConfig'
+        $ref: "#/definitions/RESTDomainEntryConfig"
   RESTError:
     type: object
     required:
@@ -6903,9 +7056,9 @@ definitions:
         type: string
         example: Invalid format
       password_profile_basic:
-        $ref: '#/definitions/RESTPwdProfileBasic'
+        $ref: "#/definitions/RESTPwdProfileBasic"
       import_task_data:
-        $ref: '#/definitions/RESTImportTaskData'
+        $ref: "#/definitions/RESTImportTaskData"
   RESTEULA:
     type: object
     required:
@@ -6919,7 +7072,7 @@ definitions:
       - eula
     properties:
       eula:
-        $ref: '#/definitions/RESTEULA'
+        $ref: "#/definitions/RESTEULA"
       bootstrap_password_command:
         type: string
         description: kubectl command for retrieving bootstrap password of default admin user
@@ -6934,36 +7087,36 @@ definitions:
       events:
         type: array
         items:
-          $ref: '#/definitions/Event'
+          $ref: "#/definitions/Event"
   RESTFedSystemConfig:
     type: object
     required:
       - webhooks
     properties:
       webhooks:
-        $ref: '#/definitions/RESTWebhook'
+        $ref: "#/definitions/RESTWebhook"
   RESTFileMonitorConfig:
     type: object
     properties:
       add_filters:
         type: array
         items:
-          $ref: '#/definitions/RESTFileMonitorFilterConfig'
+          $ref: "#/definitions/RESTFileMonitorFilterConfig"
       delete_filters:
         type: array
         items:
-          $ref: '#/definitions/RESTFileMonitorFilterConfig'
+          $ref: "#/definitions/RESTFileMonitorFilterConfig"
       update_filters:
         type: array
         items:
-          $ref: '#/definitions/RESTFileMonitorFilterConfig'
+          $ref: "#/definitions/RESTFileMonitorFilterConfig"
   RESTFileMonitorConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTFileMonitorConfig'
+        $ref: "#/definitions/RESTFileMonitorConfig"
   RESTFileMonitorFile:
     type: object
     required:
@@ -6999,7 +7152,7 @@ definitions:
       files:
         type: array
         items:
-          $ref: '#/definitions/RESTFileMonitorFile'
+          $ref: "#/definitions/RESTFileMonitorFile"
   RESTFileMonitorFilterConfig:
     type: object
     required:
@@ -7086,11 +7239,11 @@ definitions:
       criteria:
         type: array
         items:
-          $ref: '#/definitions/RESTCriteriaEntry'
+          $ref: "#/definitions/RESTCriteriaEntry"
       members:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadBrief'
+          $ref: "#/definitions/RESTWorkloadBrief"
       policy_rules:
         type: array
         items:
@@ -7200,7 +7353,7 @@ definitions:
       - group
     properties:
       group:
-        $ref: '#/definitions/RESTGroupDetail'
+        $ref: "#/definitions/RESTGroupDetail"
   RESTGroupDetail:
     type: object
     required:
@@ -7272,19 +7425,19 @@ definitions:
       criteria:
         type: array
         items:
-          $ref: '#/definitions/RESTCriteriaEntry'
+          $ref: "#/definitions/RESTCriteriaEntry"
       members:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadBrief'
+          $ref: "#/definitions/RESTWorkloadBrief"
       policy_rules:
         type: array
         items:
-          $ref: '#/definitions/RESTPolicyRule'
+          $ref: "#/definitions/RESTPolicyRule"
       response_rules:
         type: array
         items:
-          $ref: '#/definitions/RESTResponseRule'
+          $ref: "#/definitions/RESTResponseRule"
   RESTGroupsData:
     type: object
     required:
@@ -7293,7 +7446,7 @@ definitions:
       groups:
         type: array
         items:
-          $ref: '#/definitions/RESTGroup'
+          $ref: "#/definitions/RESTGroup"
   RESTGroupConfig:
     type: object
     required:
@@ -7306,7 +7459,7 @@ definitions:
       criteria:
         type: array
         items:
-          $ref: '#/definitions/RESTCriteriaEntry'
+          $ref: "#/definitions/RESTCriteriaEntry"
       cfg_type:
         type: string
         enum: [learned, user_created, ground, federal]
@@ -7316,7 +7469,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTGroupConfig'
+        $ref: "#/definitions/RESTGroupConfig"
   RESTGroupExport:
     type: object
     required:
@@ -7340,7 +7493,7 @@ definitions:
         example: Monitor
         enum: [Learn, Monitor, Protect]
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTHost:
     type: object
     required:
@@ -7411,7 +7564,7 @@ definitions:
         additionalProperties:
           type: array
           items:
-              $ref: '#/definitions/RESTIPAddr'
+            $ref: "#/definitions/RESTIPAddr"
       state:
         type: string
         example: ""
@@ -7434,7 +7587,7 @@ definitions:
         type: string
         example: Discover
       scan_summary:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
       storage_driver:
         type: string
         example: aufs
@@ -7460,14 +7613,14 @@ definitions:
       hosts:
         type: array
         items:
-          $ref: '#/definitions/RESTHost'
+          $ref: "#/definitions/RESTHost"
   RESTHostData:
     type: object
     required:
       - host
     properties:
       host:
-        $ref: '#/definitions/RESTHost'
+        $ref: "#/definitions/RESTHost"
   RESTIDName:
     type: object
     required:
@@ -7533,7 +7686,7 @@ definitions:
       - data
     properties:
       data:
-        $ref: '#/definitions/RESTImportTask'
+        $ref: "#/definitions/RESTImportTask"
   RESTIncidentsData:
     type: object
     required:
@@ -7542,7 +7695,7 @@ definitions:
       incidents:
         type: array
         items:
-          $ref: '#/definitions/Incident'
+          $ref: "#/definitions/Incident"
   RESTIPAddr:
     type: object
     required:
@@ -7717,7 +7870,7 @@ definitions:
       - request
     properties:
       request:
-        $ref: '#/definitions/RESTPolicyPromoteRequest'
+        $ref: "#/definitions/RESTPolicyPromoteRequest"
   RESTPolicyRule:
     type: object
     required:
@@ -7797,13 +7950,13 @@ definitions:
     type: object
     properties:
       move:
-        $ref: '#/definitions/RESTPolicyRuleMove'
+        $ref: "#/definitions/RESTPolicyRuleMove"
       insert:
-        $ref: '#/definitions/RESTPolicyRuleInsert'
+        $ref: "#/definitions/RESTPolicyRuleInsert"
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTPolicyRule'
+          $ref: "#/definitions/RESTPolicyRule"
       delete:
         type: array
         items:
@@ -7859,7 +8012,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTPolicyRuleConfig'
+        $ref: "#/definitions/RESTPolicyRuleConfig"
       replicate:
         type: boolean
         example: true
@@ -7869,7 +8022,7 @@ definitions:
       - rule
     properties:
       rule:
-        $ref: '#/definitions/RESTPolicyRule'
+        $ref: "#/definitions/RESTPolicyRule"
   RESTPolicyRulesData:
     type: object
     required:
@@ -7878,7 +8031,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTPolicyRule'
+          $ref: "#/definitions/RESTPolicyRule"
   RESTPolicyRuleInsert:
     type: object
     required:
@@ -7890,7 +8043,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTPolicyRule'
+          $ref: "#/definitions/RESTPolicyRule"
   RESTPolicyRuleMove:
     type: object
     required:
@@ -7911,7 +8064,7 @@ definitions:
       violations:
         type: array
         items:
-          $ref: '#/definitions/Violation'
+          $ref: "#/definitions/Violation"
   RESTPolicyViolationsWLData:
     type: object
     required:
@@ -7920,7 +8073,7 @@ definitions:
       violation_workloads:
         type: array
         items:
-          $ref: '#/definitions/RESTViolationWorkload'
+          $ref: "#/definitions/RESTViolationWorkload"
   RESTProcessInfo:
     type: object
     required:
@@ -7982,7 +8135,7 @@ definitions:
       processes:
         type: array
         items:
-          $ref: '#/definitions/RESTProcessInfo'
+          $ref: "#/definitions/RESTProcessInfo"
   RESTProcessProfileEntry:
     type: object
     required:
@@ -8049,14 +8202,14 @@ definitions:
       process_list:
         type: array
         items:
-          $ref: '#/definitions/RESTProcessProfileEntry'
+          $ref: "#/definitions/RESTProcessProfileEntry"
   RESTProcessProfileData:
     type: object
     required:
       - process_profile
     properties:
       process_profile:
-        $ref: '#/definitions/RESTProcessProfile'
+        $ref: "#/definitions/RESTProcessProfile"
   RESTProcessProfilesData:
     type: object
     required:
@@ -8065,7 +8218,7 @@ definitions:
       process_profiles:
         type: array
         items:
-          $ref: '#/definitions/RESTProcessProfile'
+          $ref: "#/definitions/RESTProcessProfile"
   RESTProcessProfileConfig:
     type: object
     required:
@@ -8083,25 +8236,25 @@ definitions:
       process_change_list:
         type: array
         items:
-          $ref: '#/definitions/RESTProcessProfileEntryConfig'
+          $ref: "#/definitions/RESTProcessProfileEntryConfig"
       process_delete_list:
         type: array
         items:
-          $ref: '#/definitions/RESTProcessProfileEntryConfig'
+          $ref: "#/definitions/RESTProcessProfileEntryConfig"
   RESTProcessProfileConfigData:
     type: object
     required:
       - process_profile_config
     properties:
       process_profile_config:
-        $ref: '#/definitions/RESTProcessProfileConfig'
+        $ref: "#/definitions/RESTProcessProfileConfig"
   RESTProcessRulesResp:
     type: object
     properties:
       process_rules:
         type: array
         items:
-          $ref: '#/definitions/RESTProcessUuidEntry'
+          $ref: "#/definitions/RESTProcessUuidEntry"
   RESTProcessUuidEntry:
     type: object
     properties:
@@ -8112,7 +8265,7 @@ definitions:
         type: string
         example: nodes
       rule:
-        $ref: '#/definitions/RESTProcessProfileEntry'
+        $ref: "#/definitions/RESTProcessProfileEntry"
   RESTAWSAccountKey:
     type: object
     required:
@@ -8197,13 +8350,13 @@ definitions:
         type: integer
         example: 1
       schedule:
-        $ref: '#/definitions/RESTScanSchedule'
+        $ref: "#/definitions/RESTScanSchedule"
       aws_key:
-        $ref: '#/definitions/RESTAWSAccountKeyConfig'
+        $ref: "#/definitions/RESTAWSAccountKeyConfig"
       jfrog_xray:
-        $ref: '#/definitions/RESTJfrogXrayConfig'
+        $ref: "#/definitions/RESTJfrogXrayConfig"
       gcr_key:
-        $ref: '#/definitions/RESTGCRKeyConfig'
+        $ref: "#/definitions/RESTGCRKeyConfig"
       jfrog_mode:
         type: string
         example: ""
@@ -8231,7 +8384,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTRegistryConfig'
+        $ref: "#/definitions/RESTRegistryConfig"
   RESTRegistryImageSummary:
     type: object
     required:
@@ -8285,7 +8438,8 @@ definitions:
         type: array
         items:
           type: string
-        example: ["PATH=/usr/local/sbin", "GOSU_VERSION=1.12", "REDIS_VERSION=6.0.2"]
+        example:
+          ["PATH=/usr/local/sbin", "GOSU_VERSION=1.12", "REDIS_VERSION=6.0.2"]
       labels:
         type: object
         description: map key is string type
@@ -8343,7 +8497,7 @@ definitions:
       images:
         type: array
         items:
-          $ref: '#/definitions/RESTRegistryImageSummary'
+          $ref: "#/definitions/RESTRegistryImageSummary"
   RESTRegistryConfigAuth:
     type: object
     properties:
@@ -8361,9 +8515,9 @@ definitions:
         type: boolean
         example: true
       aws_key:
-        $ref: '#/definitions/RESTAWSAccountKeyConfig'
+        $ref: "#/definitions/RESTAWSAccountKeyConfig"
       gcr_key:
-        $ref: '#/definitions/RESTGCRKeyConfig'
+        $ref: "#/definitions/RESTGCRKeyConfig"
   RESTRegistryConfigScan:
     type: object
     properties:
@@ -8380,7 +8534,7 @@ definitions:
         type: integer
         example: 1
       schedule:
-        $ref: '#/definitions/RESTScanSchedule'
+        $ref: "#/definitions/RESTScanSchedule"
       ignore_proxy:
         type: boolean
         example: false
@@ -8431,18 +8585,18 @@ definitions:
           type: string
           example: neuvector/*:*
       auth:
-        $ref: '#/definitions/RESTRegistryConfigAuth'
+        $ref: "#/definitions/RESTRegistryConfigAuth"
       scan:
-        $ref: '#/definitions/RESTRegistryConfigScan'
+        $ref: "#/definitions/RESTRegistryConfigScan"
       integrations:
-        $ref: '#/definitions/RESTRegistryConfigIntegrations'
+        $ref: "#/definitions/RESTRegistryConfigIntegrations"
   RESTRegistryConfigDataV2:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTRegistryConfigV2'
+        $ref: "#/definitions/RESTRegistryConfigV2"
   RESTProxy:
     type: object
     required:
@@ -8505,7 +8659,8 @@ definitions:
         type: array
         items:
           type: string
-        example: ["-----BEGIN CERTIFICATE-----...", "-----BEGIN CERTIFICATE-----..."]
+        example:
+          ["-----BEGIN CERTIFICATE-----...", "-----BEGIN CERTIFICATE-----..."]
   RESTSystemConfigAutoscaleConfig:
     type: object
     properties:
@@ -8593,13 +8748,13 @@ definitions:
         type: boolean
         example: false
       registry_http_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       registry_https_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       registry_http_proxy_cfg:
-        $ref: '#/definitions/RESTProxyConfig'
+        $ref: "#/definitions/RESTProxyConfig"
       registry_https_proxy_cfg:
-        $ref: '#/definitions/RESTProxyConfig'
+        $ref: "#/definitions/RESTProxyConfig"
   RESTSystemConfigIBMSAVCfg2:
     type: object
     properties:
@@ -8786,14 +8941,14 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTPwdProfileConfig'
+        $ref: "#/definitions/RESTPwdProfileConfig"
   RESTPwdProfileData:
     type: object
     required:
       - pwd_profile
     properties:
       pwd_profile:
-        $ref: '#/definitions/RESTPwdProfile'
+        $ref: "#/definitions/RESTPwdProfile"
 
   RESTPwdProfilesData:
     type: object
@@ -8804,7 +8959,7 @@ definitions:
       pwd_profiles:
         type: array
         items:
-          $ref: '#/definitions/RESTPwdProfile'
+          $ref: "#/definitions/RESTPwdProfile"
       active_profile_name:
         type: string
         example: default
@@ -8877,13 +9032,13 @@ definitions:
         type: integer
         example: 1
       schedule:
-        $ref: '#/definitions/RESTScanSchedule'
+        $ref: "#/definitions/RESTScanSchedule"
       aws_key:
-        $ref: '#/definitions/RESTAWSAccountKey'
+        $ref: "#/definitions/RESTAWSAccountKey"
       jfrog_xray:
-        $ref: '#/definitions/RESTJfrogXray'
+        $ref: "#/definitions/RESTJfrogXray"
       gcr_key:
-        $ref: '#/definitions/RESTGCRKey'
+        $ref: "#/definitions/RESTGCRKey"
       jfrog_mode:
         type: string
         example: ""
@@ -8944,7 +9099,7 @@ definitions:
       - summary
     properties:
       summary:
-        $ref: '#/definitions/RESTRegistrySummary'
+        $ref: "#/definitions/RESTRegistrySummary"
   RESTRegistrySummaryListData:
     type: object
     required:
@@ -8953,7 +9108,7 @@ definitions:
       summarys:
         type: array
         items:
-          $ref: '#/definitions/RESTRegistrySummary'
+          $ref: "#/definitions/RESTRegistrySummary"
   RESTResponseRule:
     type: object
     required:
@@ -8983,7 +9138,7 @@ definitions:
       conditions:
         type: array
         items:
-          $ref: '#/definitions/RESTCLUSEventCondition'
+          $ref: "#/definitions/RESTCLUSEventCondition"
       actions:
         type: array
         items:
@@ -9006,7 +9161,7 @@ definitions:
       - rule
     properties:
       rule:
-        $ref: '#/definitions/RESTResponseRule'
+        $ref: "#/definitions/RESTResponseRule"
   RESTResponseRulesData:
     type: object
     required:
@@ -9015,7 +9170,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTResponseRule'
+          $ref: "#/definitions/RESTResponseRule"
   RESTResponseRuleConfig:
     type: object
     required:
@@ -9038,7 +9193,7 @@ definitions:
       conditions:
         type: array
         items:
-          $ref: '#/definitions/RESTCLUSEventCondition'
+          $ref: "#/definitions/RESTCLUSEventCondition"
       actions:
         type: array
         items:
@@ -9061,7 +9216,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTResponseRuleConfig'
+        $ref: "#/definitions/RESTResponseRuleConfig"
   RESTResponseRuleInsert:
     type: object
     required:
@@ -9073,12 +9228,12 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTResponseRule'
+          $ref: "#/definitions/RESTResponseRule"
   RESTResponseRuleActionData:
     type: object
     properties:
       insert:
-        $ref: '#/definitions/RESTResponseRuleInsert'
+        $ref: "#/definitions/RESTResponseRuleInsert"
   RESTResponseRulesExport:
     type: object
     properties:
@@ -9089,7 +9244,7 @@ definitions:
           format: uint32
           example: 12
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTRolePermission:
     type: object
     required:
@@ -9133,9 +9288,9 @@ definitions:
       - scan_report
     properties:
       scan_brief:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
       scan_report:
-        $ref: '#/definitions/RESTScanReport'
+        $ref: "#/definitions/RESTScanReport"
   RESTScanAwsFuncReport:
     type: object
     required:
@@ -9156,7 +9311,7 @@ definitions:
         type: string
         example: "1"
       scan_result:
-        $ref: '#/definitions/RESTScanAwsFuncDetail'
+        $ref: "#/definitions/RESTScanAwsFuncDetail"
       allowed_resources:
         type: object
         properties:
@@ -9164,7 +9319,7 @@ definitions:
             type: string
             example: AWSLambdaFullAccess
           value:
-            $ref: '#/definitions/RESTAwsFuncPermission'
+            $ref: "#/definitions/RESTAwsFuncPermission"
       req_resources:
         type: object
         properties:
@@ -9172,7 +9327,7 @@ definitions:
             type: string
             example:
           value:
-            $ref: '#/definitions/RESTAwsFuncPermission'
+            $ref: "#/definitions/RESTAwsFuncPermission"
   RESTScanBrief:
     type: object
     required:
@@ -9255,14 +9410,14 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTScanConfigConfig'
+        $ref: "#/definitions/RESTScanConfigConfig"
   RESTScanConfigResp:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTScanConfig'        
+        $ref: "#/definitions/RESTScanConfig"
   RESTScanImageSummaryData:
     type: object
     required:
@@ -9271,7 +9426,7 @@ definitions:
       images:
         type: array
         items:
-          $ref: '#/definitions/RESTScanImageSummary'
+          $ref: "#/definitions/RESTScanImageSummary"
   RESTScanImageSummary:
     type: object
     required:
@@ -9346,7 +9501,7 @@ definitions:
       vulnerabilities:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerability'
+          $ref: "#/definitions/RESTVulnerability"
       size:
         type: integer
         format: int64
@@ -9359,14 +9514,14 @@ definitions:
       layers:
         type: array
         items:
-          $ref: '#/definitions/RESTScanLayer'
+          $ref: "#/definitions/RESTScanLayer"
   RESTScanLayersReportData:
     type: object
     required:
       - report
     properties:
       report:
-        $ref: '#/definitions/RESTScanLayersReport'
+        $ref: "#/definitions/RESTScanLayersReport"
   RESTScanMeta:
     type: object
     required:
@@ -9407,7 +9562,7 @@ definitions:
         example: openssl
       file:
         type: string
-        example: example.jar 
+        example: example.jar
       version:
         type: string
         example: "1.011"
@@ -9417,7 +9572,7 @@ definitions:
       cves:
         type: array
         items:
-          $ref: '#/definitions/RESTModuleCve'
+          $ref: "#/definitions/RESTModuleCve"
       cpes:
         type: array
         items:
@@ -9457,7 +9612,7 @@ definitions:
       scanners:
         type: array
         items:
-          $ref: '#/definitions/RESTScanner'
+          $ref: "#/definitions/RESTScanner"
   RESTScanPackageReqData:
     type: object
     required:
@@ -9490,7 +9645,7 @@ definitions:
       application_packages:
         type: array
         items:
-          $ref: '#/definitions/RESTScanAppPackage'
+          $ref: "#/definitions/RESTScanAppPackage"
   RESTScanPkgReport:
     type: object
     required:
@@ -9516,14 +9671,14 @@ definitions:
       vulnerabilities:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerability'
+          $ref: "#/definitions/RESTVulnerability"
   RESTScanPkgReportData:
     type: object
     required:
       - report
     properties:
       report:
-        $ref: '#/definitions/RESTScanPkgReport'
+        $ref: "#/definitions/RESTScanPkgReport"
   RESTScanPlatformSummary:
     type: object
     required:
@@ -9594,28 +9749,29 @@ definitions:
       vulnerabilities:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerability'
+          $ref: "#/definitions/RESTVulnerability"
       modules:
         type: array
         items:
-          $ref: '#/definitions/RESTScanModule'
+          $ref: "#/definitions/RESTScanModule"
       checks:
         type: array
         items:
-          $ref: '#/definitions/RESTBenchItem'
+          $ref: "#/definitions/RESTBenchItem"
       secrets:
         type: array
         items:
-          $ref: '#/definitions/RESTScanSecret'
+          $ref: "#/definitions/RESTScanSecret"
       setid_perms:
         type: array
         items:
-          $ref: '#/definitions/RESTScanSetIdPerm'
+          $ref: "#/definitions/RESTScanSetIdPerm"
       envs:
         type: array
         items:
           type: string
-        example: ["PATH=/usr/local/sbin", "GOSU_VERSION=1.12", "REDIS_VERSION=6.0.2"]
+        example:
+          ["PATH=/usr/local/sbin", "GOSU_VERSION=1.12", "REDIS_VERSION=6.0.2"]
       labels:
         type: object
         description: map key is string type
@@ -9629,13 +9785,184 @@ definitions:
         items:
           type: string
           example: ""
+  RESTScanReportCursor:
+    type: object
+    properties:
+      name:
+        type: string
+      host_name:
+        type: string
+      domain:
+        type: string
+      cve_name:
+        type: string
+      cve_package:
+        type: string
+  RESTVulScoreFilter:
+    type: object
+    required:
+      - score_version
+      - score_bottom
+      - score_top
+    properties:
+      score_version:
+        type: string
+      score_bottom:
+        type: number
+      score_top:
+        type: number
+  RESTAssetsScanReportFilter:
+    type: object
+    required:
+      - name
+      - op
+      - value
+    properties:
+      name:
+        type: string
+      op:
+        type: string
+      value:
+        type: array
+        items:
+          type: string
+  RESTAssetsScanReportQuery:
+    type: object
+    properties:
+      show_accepted:
+        type: boolean
+      max_cve_records:
+        type: integer
+      cursor:
+        $ref: "#/definitions/RESTScanReportCursor"
+      view_pod:
+        type: string
+      vul_score_filter:
+        $ref: "#/definitions/RESTVulScoreFilter"
+      filters:
+        type: array
+        items:
+          $ref: "#/definitions/RESTAssetsScanReportFilter"
+  RESTAssetScanData:
+    type: object
+    required:
+      - workload_name
+      - workload_domain
+      - workload_image
+      - workload_image_id
+      - host_name
+      - name
+      - score
+      - severity
+      - vectors
+      - description
+      - file_name
+      - package_name
+      - package_version
+      - fixed_version
+      - link
+      - score_v3
+      - vectors_v3
+      - published_timestamp
+      - last_modified_timestamp
+      - feed_rating
+      - in_base_image
+    properties:
+      workload_name:
+        type: string
+      workload_domain:
+        type: string
+      workload_host_name:
+        type: string
+      workload_image:
+        type: string
+      workload_image_id:
+        type: string
+      host_name:
+        type: string
+      name:
+        type: string
+        example: CVE-2015-8356
+      score:
+        type: number
+        format: float32
+        example: 7.2
+      severity:
+        type: string
+        example: High
+      vectors:
+        type: string
+        example: ""
+      description:
+        type: string
+        example: "The setup_env function in group.c in sshd in OpenSSH allows local users to gain privileges."
+      file_name:
+        type: string
+        example: "usr/lib/python3.9"
+      package_name:
+        type: string
+        example: openssh
+      package_version:
+        type: string
+        example: 7.2_p2-r0
+      fixed_version:
+        type: string
+        example: 1:7.2p2-3
+      link:
+        type: string
+        example: https://security-tracker.debian.org/tracker/CVE-2015-8356
+      score_v3:
+        type: number
+        format: float32
+        example: 7.3
+      vectors_v3:
+        type: string
+        example: ""
+      published_timestamp:
+        type: integer
+        format: int64
+        example: 1516561260
+      last_modified_timestamp:
+        type: integer
+        format: int64
+        example: 1516561253
+      cpes:
+        type: array
+        items:
+          type: string
+          example: ""
+      cves:
+        type: array
+        items:
+          type: string
+          example: ""
+      feed_rating:
+        type: string
+        example: ""
+      in_base_image:
+        type: boolean
+        example: true
+      tags:
+        type: array
+        items:
+          type: string
+          example: ""
+  RESTAssetScanReportData:
+    type: object
+    properties:
+      cursor:
+        $ref: "#/definitions/RESTScanReportCursor"
+      scan_data:
+        type: array
+        items:
+          $ref: "#/definitions/RESTAssetScanData"
   RESTScanReportData:
     type: object
     required:
       - report
     properties:
       report:
-        $ref: '#/definitions/RESTScanReport'
+        $ref: "#/definitions/RESTScanReport"
   RESTScanRepoReport:
     type: object
     required:
@@ -9698,20 +10025,21 @@ definitions:
       layers:
         type: array
         items:
-          $ref: '#/definitions/RESTScanLayer'
+          $ref: "#/definitions/RESTScanLayer"
       vulnerabilities:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerability'
+          $ref: "#/definitions/RESTVulnerability"
       modules:
         type: array
         items:
-          $ref: '#/definitions/RESTScanModule'
+          $ref: "#/definitions/RESTScanModule"
       envs:
         type: array
         items:
           type: string
-        example: ["PATH=/usr/local/sbin", "GOSU_VERSION=1.12", "REDIS_VERSION=6.0.2"]
+        example:
+          ["PATH=/usr/local/sbin", "GOSU_VERSION=1.12", "REDIS_VERSION=6.0.2"]
       labels:
         type: object
         description: map key is string type
@@ -9726,7 +10054,7 @@ definitions:
       - report
     properties:
       report:
-        $ref: '#/definitions/RESTScanRepoReport'
+        $ref: "#/definitions/RESTScanRepoReport"
   RESTScanRepoReq:
     type: object
     required:
@@ -9738,7 +10066,7 @@ definitions:
       - base_image
     properties:
       metadata:
-        $ref: '#/definitions/RESTScanMeta'
+        $ref: "#/definitions/RESTScanMeta"
       registry:
         type: string
         example: https://registry.hub.docker.com/
@@ -9761,13 +10089,16 @@ definitions:
       base_image:
         type: string
         example: alpine
+      ignore_proxy:
+        type: boolean
+        example: true
   RESTScanRepoReqData:
     type: object
     required:
       - request
     properties:
       request:
-        $ref: '#/definitions/RESTScanRepoReq'
+        $ref: "#/definitions/RESTScanRepoReq"
   RESTScanSchedule:
     type: object
     required:
@@ -9919,7 +10250,7 @@ definitions:
         type: string
         example: Discover
       scan_summary:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
       quarantine_reason:
         type: string
         example: violation
@@ -9967,14 +10298,14 @@ definitions:
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTScanSummary'
+          $ref: "#/definitions/RESTScanSummary"
   RESTScanStatusData:
     type: object
     required:
       - status
     properties:
       status:
-        $ref: '#/definitions/RESTScanStatus'
+        $ref: "#/definitions/RESTScanStatus"
   RESTScanCacheStat:
     type: object
     required:
@@ -10010,7 +10341,7 @@ definitions:
       cache_records:
         type: array
         items:
-          $ref: '#/definitions/RESTScanCacheRecord'
+          $ref: "#/definitions/RESTScanCacheRecord"
       record_total_size:
         type: integer
         format: uint64
@@ -10056,15 +10387,15 @@ definitions:
       threats:
         type: array
         items:
-          $ref: '#/definitions/Threat'
+          $ref: "#/definitions/Threat"
       incidents:
         type: array
         items:
-          $ref: '#/definitions/Incident'
+          $ref: "#/definitions/Incident"
       violations:
         type: array
         items:
-          $ref: '#/definitions/Violation'
+          $ref: "#/definitions/Violation"
   RESTServerLDAP:
     type: object
     required:
@@ -10131,7 +10462,7 @@ definitions:
       group_mapped_roles:
         type: array
         items:
-          $ref: '#/definitions/GroupRoleMapping'
+          $ref: "#/definitions/GroupRoleMapping"
   RESTServerOIDC:
     type: object
     required:
@@ -10194,7 +10525,7 @@ definitions:
       group_mapped_roles:
         type: array
         items:
-          $ref: '#/definitions/GroupRoleMapping'
+          $ref: "#/definitions/GroupRoleMapping"
   RESTServerOIDCConfig:
     type: object
     required:
@@ -10244,7 +10575,7 @@ definitions:
       group_mapped_roles:
         type: array
         items:
-          $ref: '#/definitions/GroupRoleMapping'
+          $ref: "#/definitions/GroupRoleMapping"
   RESTServerSAML:
     type: object
     required:
@@ -10286,11 +10617,11 @@ definitions:
       group_mapped_roles:
         type: array
         items:
-          $ref: '#/definitions/GroupRoleMapping'
+          $ref: "#/definitions/GroupRoleMapping"
       x509_certs:
         type: array
         items:
-          $ref: '#/definitions/RESTX509CertInfo'
+          $ref: "#/definitions/RESTX509CertInfo"
       slo_enabled:
         type: boolean
         example: true
@@ -10313,18 +10644,18 @@ definitions:
         type: string
         example: ldap
       ldap:
-        $ref: '#/definitions/RESTServerLDAP'
+        $ref: "#/definitions/RESTServerLDAP"
       saml:
-        $ref: '#/definitions/RESTServerSAML'
+        $ref: "#/definitions/RESTServerSAML"
       oidc:
-        $ref: '#/definitions/RESTServerOIDC'
+        $ref: "#/definitions/RESTServerOIDC"
   RESTServerData:
     type: object
     required:
       - server
     properties:
       server:
-        $ref: '#/definitions/RESTServer'
+        $ref: "#/definitions/RESTServer"
   RESTServersData:
     type: object
     required:
@@ -10333,9 +10664,9 @@ definitions:
       servers:
         type: array
         items:
-          $ref: '#/definitions/RESTServer'
+          $ref: "#/definitions/RESTServer"
       mappable_role:
-        $ref: '#/definitions/RESTMappableRoles'
+        $ref: "#/definitions/RESTMappableRoles"
   RESTServerLDAPConfig:
     type: object
     properties:
@@ -10390,7 +10721,7 @@ definitions:
       group_mapped_roles:
         type: array
         items:
-          $ref: '#/definitions/GroupRoleMapping'
+          $ref: "#/definitions/GroupRoleMapping"
   RESTServerSAMLConfig:
     type: object
     required:
@@ -10430,12 +10761,16 @@ definitions:
       group_mapped_roles:
         type: array
         items:
-          $ref: '#/definitions/GroupRoleMapping'
+          $ref: "#/definitions/GroupRoleMapping"
       x509_cert_extra:
         type: array
         items:
           type: string
-        example: ["E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF", "E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF"]
+        example:
+          [
+            "E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF",
+            "E7B0OS/N3KMVCL6KNMZ2+LOV90S7854NSD84P0BF",
+          ]
       slo_enabled:
         type: boolean
         example: true
@@ -10457,18 +10792,18 @@ definitions:
         type: string
         example: ad
       ldap:
-        $ref: '#/definitions/RESTServerLDAPConfig'
+        $ref: "#/definitions/RESTServerLDAPConfig"
       saml:
-        $ref: '#/definitions/RESTServerSAMLConfig'
+        $ref: "#/definitions/RESTServerSAMLConfig"
       oidc:
-        $ref: '#/definitions/RESTServerOIDCConfig'
+        $ref: "#/definitions/RESTServerOIDCConfig"
   RESTServerConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTServerConfig'
+        $ref: "#/definitions/RESTServerConfig"
   RESTServerRoleGroupsConfig:
     type: object
     required:
@@ -10493,7 +10828,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTServerRoleGroupsConfig'
+        $ref: "#/definitions/RESTServerRoleGroupsConfig"
   RESTService:
     type: object
     required:
@@ -10535,17 +10870,17 @@ definitions:
       members:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadBrief'
+          $ref: "#/definitions/RESTWorkloadBrief"
       policy_rules:
         type: array
         items:
-          $ref: '#/definitions/RESTPolicyRule'
+          $ref: "#/definitions/RESTPolicyRule"
       response_rules:
         type: array
         items:
-          $ref: '#/definitions/RESTResponseRule'
+          $ref: "#/definitions/RESTResponseRule"
       service_addr:
-        $ref: '#/definitions/RESTIPPort'
+        $ref: "#/definitions/RESTIPPort"
       ingress_exposure:
         type: boolean
         example: true
@@ -10567,7 +10902,7 @@ definitions:
       - service
     properties:
       service:
-        $ref: '#/definitions/RESTService'
+        $ref: "#/definitions/RESTService"
   RESTServicesData:
     type: object
     required:
@@ -10576,7 +10911,7 @@ definitions:
       services:
         type: array
         items:
-          $ref: '#/definitions/RESTService'
+          $ref: "#/definitions/RESTService"
   RESTServiceConfig:
     type: object
     required:
@@ -10608,7 +10943,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTServiceConfig'
+        $ref: "#/definitions/RESTServiceConfig"
   RESTServiceBatchConfig:
     type: object
     properties:
@@ -10632,7 +10967,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTServiceBatchConfig'
+        $ref: "#/definitions/RESTServiceBatchConfig"
   RESTSnifferArgs:
     type: object
     properties:
@@ -10653,14 +10988,14 @@ definitions:
       - sniffer
     properties:
       sniffer:
-        $ref: '#/definitions/RESTSnifferArgs'
+        $ref: "#/definitions/RESTSnifferArgs"
   RESTSnifferData:
     type: object
     required:
       - sniffer
     properties:
       sniffer:
-        $ref: '#/definitions/RESTSnifferInfo'
+        $ref: "#/definitions/RESTSnifferInfo"
   RESTSniffersData:
     type: object
     required:
@@ -10669,7 +11004,7 @@ definitions:
       sniffers:
         type: array
         items:
-          $ref: '#/definitions/RESTSnifferInfo'
+          $ref: "#/definitions/RESTSnifferInfo"
   RESTSnifferInfo:
     type: object
     required:
@@ -10728,13 +11063,13 @@ definitions:
         format: uint32
         example: 5
       total:
-        $ref: '#/definitions/RESTMetry'
+        $ref: "#/definitions/RESTMetry"
       span_1:
-        $ref: '#/definitions/RESTMetry'
+        $ref: "#/definitions/RESTMetry"
       span_12:
-        $ref: '#/definitions/RESTMetry'
+        $ref: "#/definitions/RESTMetry"
       span_60:
-        $ref: '#/definitions/RESTMetry'
+        $ref: "#/definitions/RESTMetry"
   RESTSysAtmoConfigConfig:
     type: object
     properties:
@@ -10877,7 +11212,7 @@ definitions:
       webhooks:
         type: array
         items:
-          $ref: '#/definitions/RESTWebhook'
+          $ref: "#/definitions/RESTWebhook"
       cluster_name:
         type: string
         example: cluster1
@@ -10906,9 +11241,9 @@ definitions:
         type: boolean
         example: false
       registry_http_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       registry_https_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       ibmsa_ep_enabled:
         type: boolean
         example: false
@@ -10946,7 +11281,7 @@ definitions:
         format: int64
         example: 1505755716
       scanner_autoscale:
-        $ref: '#/definitions/RESTSystemConfigAutoscale'
+        $ref: "#/definitions/RESTSystemConfigAutoscale"
       no_telemetry_report:
         type: boolean
         example: false
@@ -11112,13 +11447,13 @@ definitions:
         type: boolean
         example: false
       registry_http_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       registry_https_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       registry_http_proxy_cfg:
-        $ref: '#/definitions/RESTProxyConfig'
+        $ref: "#/definitions/RESTProxyConfig"
       registry_https_proxy_cfg:
-        $ref: '#/definitions/RESTProxyConfig'
+        $ref: "#/definitions/RESTProxyConfig"
   RESTSystemConfigSyslogV2:
     type: object
     required:
@@ -11186,43 +11521,43 @@ definitions:
       - scanner_autoscale
     properties:
       new_svc:
-        $ref: '#/definitions/RESTSystemConfigNewSvcV2'
+        $ref: "#/definitions/RESTSystemConfigNewSvcV2"
       syslog:
-        $ref: '#/definitions/RESTSystemConfigSyslogV2'
+        $ref: "#/definitions/RESTSystemConfigSyslogV2"
       auth:
-        $ref: '#/definitions/RESTSystemConfigAuthV2'
+        $ref: "#/definitions/RESTSystemConfigAuthV2"
       misc:
-        $ref: '#/definitions/RESTSystemConfigMiscV2'
+        $ref: "#/definitions/RESTSystemConfigMiscV2"
       webhooks:
         type: array
         items:
-          $ref: '#/definitions/RESTWebhook'
+          $ref: "#/definitions/RESTWebhook"
       proxy:
-        $ref: '#/definitions/RESTSystemConfigProxyV2'
+        $ref: "#/definitions/RESTSystemConfigProxyV2"
       ibmsa:
-        $ref: '#/definitions/RESTSystemConfigIBMSAV2'
+        $ref: "#/definitions/RESTSystemConfigIBMSAV2"
       net_svc:
-        $ref: '#/definitions/RESTSystemConfigNetSvcV2'
+        $ref: "#/definitions/RESTSystemConfigNetSvcV2"
       mode_auto:
-        $ref: '#/definitions/RESTSystemConfigModeAutoV2'
+        $ref: "#/definitions/RESTSystemConfigModeAutoV2"
       scanner_autoscale:
-        $ref: '#/definitions/RESTSystemConfigAutoscale'
+        $ref: "#/definitions/RESTSystemConfigAutoscale"
       tls_cfg:
-        $ref: '#/definitions/RESTSystemConfigTls'
+        $ref: "#/definitions/RESTSystemConfigTls"
   RESTSystemConfigData:
     type: object
     properties:
       config:
-        $ref: '#/definitions/RESTSystemConfig'
+        $ref: "#/definitions/RESTSystemConfig"
       fed_config:
-        $ref: '#/definitions/RESTFedSystemConfig'
+        $ref: "#/definitions/RESTFedSystemConfig"
   RESTSystemConfigDataV2:
     type: object
     properties:
       config:
-        $ref: '#/definitions/RESTSystemConfigV2'
+        $ref: "#/definitions/RESTSystemConfigV2"
       fed_config:
-        $ref: '#/definitions/RESTFedSystemConfig'
+        $ref: "#/definitions/RESTFedSystemConfig"
   RESTUpgradeInfo:
     type: object
     properties:
@@ -11239,9 +11574,9 @@ definitions:
     type: object
     properties:
       min_upgrade_version:
-        $ref: '#/definitions/RESTUpgradeInfo'
+        $ref: "#/definitions/RESTUpgradeInfo"
       max_upgrade_version:
-        $ref: '#/definitions/RESTUpgradeInfo'
+        $ref: "#/definitions/RESTUpgradeInfo"
   RESTNvAlert:
     type: object
     properties:
@@ -11260,36 +11595,40 @@ definitions:
       data:
         type: array
         items:
-          $ref: '#/definitions/RESTNvAlert'
+          $ref: "#/definitions/RESTNvAlert"
   RESTNvAcceptableAlerts:
     type: object
     properties:
       clusterrole_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
       clusterrolebinding_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
       role_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
       rolebinding_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
       neuvector_crd_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
       certificate_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
       other_alerts:
-        $ref: '#/definitions/RESTNvAlertGroup'
+        $ref: "#/definitions/RESTNvAlertGroup"
   RESTNvAlerts:
     type: object
     properties:
       neuvector_upgrade_info:
-        $ref: '#/definitions/RESTCheckUpgradeInfo'
+        $ref: "#/definitions/RESTCheckUpgradeInfo"
       acceptable_alerts:
-        $ref: '#/definitions/RESTNvAcceptableAlerts'
+        $ref: "#/definitions/RESTNvAcceptableAlerts"
       accepted_alerts:
         type: array
         items:
           type: string
-        example: ["Managed cluster cluster.local-42 is disconnected from primary cluster", "Internal CA certificate will be expired in 180 days"]
+        example:
+          [
+            "Managed cluster cluster.local-42 is disconnected from primary cluster",
+            "Internal CA certificate will be expired in 180 days",
+          ]
   RESTSystemConfigConfig:
     type: object
     properties:
@@ -11354,7 +11693,7 @@ definitions:
       webhooks:
         type: array
         items:
-          $ref: '#/definitions/RESTWebhook'
+          $ref: "#/definitions/RESTWebhook"
       cluster_name:
         type: string
         example: cluster1
@@ -11380,9 +11719,9 @@ definitions:
         type: boolean
         example: false
       registry_http_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       registry_https_proxy:
-        $ref: '#/definitions/RESTProxy'
+        $ref: "#/definitions/RESTProxy"
       ibmsa_ep_enabled:
         type: boolean
         example: false
@@ -11393,72 +11732,72 @@ definitions:
         type: boolean
         example: false
       scanner_autoscale:
-        $ref: '#/definitions/RESTSystemConfigAutoscale'
+        $ref: "#/definitions/RESTSystemConfigAutoscale"
       no_telemetry_report:
         type: boolean
         example: false
       remote_repositories:
         type: array
         items:
-          $ref: '#/definitions/RESTRemoteRepository'
+          $ref: "#/definitions/RESTRemoteRepository"
   RESTSystemConfigConfigV2:
     type: object
     properties:
       svc_cfg:
-        $ref: '#/definitions/RESTSystemConfigSvcCfgV2'
+        $ref: "#/definitions/RESTSystemConfigSvcCfgV2"
       syslog_cfg:
-        $ref: '#/definitions/RESTSystemConfigSyslogCfgV2'
+        $ref: "#/definitions/RESTSystemConfigSyslogCfgV2"
       auth_cfg:
-        $ref: '#/definitions/RESTSystemConfigAuthCfgV2'
+        $ref: "#/definitions/RESTSystemConfigAuthCfgV2"
       proxy_cfg:
-        $ref: '#/definitions/RESTSystemConfigProxyCfgV2'
+        $ref: "#/definitions/RESTSystemConfigProxyCfgV2"
       webhooks:
         type: array
         items:
-          $ref: '#/definitions/RESTWebhook'
+          $ref: "#/definitions/RESTWebhook"
       ibmsa_cfg:
-        $ref: '#/definitions/RESTSystemConfigIBMSAVCfg2'
+        $ref: "#/definitions/RESTSystemConfigIBMSAVCfg2"
       scanner_autoscale_cfg:
-        $ref: '#/definitions/RESTSystemConfigAutoscaleConfig'
+        $ref: "#/definitions/RESTSystemConfigAutoscaleConfig"
       remote_repositories:
         type: array
         items:
-          $ref: '#/definitions/RESTRemoteRepository'
+          $ref: "#/definitions/RESTRemoteRepository"
       misc_cfg:
-        $ref: '#/definitions/RESTSystemConfigMiscCfgV2'
+        $ref: "#/definitions/RESTSystemConfigMiscCfgV2"
       tls_cfg:
-        $ref: '#/definitions/RESTSystemConfigTls'
+        $ref: "#/definitions/RESTSystemConfigTls"
   RESTFedSystemConfigConfig:
     type: object
     properties:
       webhooks:
         type: array
         items:
-          $ref: '#/definitions/RESTWebhook'
+          $ref: "#/definitions/RESTWebhook"
   RESTSystemConfigConfigData:
     type: object
     description: it leverages RESTSystemConfigConfigData in apis.go
     properties:
       config:
-        $ref: '#/definitions/RESTSystemConfigConfig'
+        $ref: "#/definitions/RESTSystemConfigConfig"
       fed_config:
-        $ref: '#/definitions/RESTFedSystemConfigConfig'
+        $ref: "#/definitions/RESTFedSystemConfigConfig"
       net_config:
-        $ref: '#/definitions/RESTSysNetConfigConfig'
+        $ref: "#/definitions/RESTSysNetConfigConfig"
       atmo_config:
-        $ref: '#/definitions/RESTSysAtmoConfigConfig'
+        $ref: "#/definitions/RESTSysAtmoConfigConfig"
   RESTSystemConfigConfigDataV2:
     type: object
     description: it leverages RESTSystemConfigConfigData in apis.go
     properties:
       config_v2:
-        $ref: '#/definitions/RESTSystemConfigConfigV2'
+        $ref: "#/definitions/RESTSystemConfigConfigV2"
       fed_config:
-        $ref: '#/definitions/RESTFedSystemConfigConfig'
+        $ref: "#/definitions/RESTFedSystemConfigConfig"
       net_config:
-        $ref: '#/definitions/RESTSysNetConfigConfig'
+        $ref: "#/definitions/RESTSysNetConfigConfig"
       atmo_config:
-        $ref: '#/definitions/RESTSysAtmoConfigConfig'
+        $ref: "#/definitions/RESTSysAtmoConfigConfig"
   RESTSystemSummary:
     type: object
     required:
@@ -11536,7 +11875,7 @@ definitions:
       - summary
     properties:
       summary:
-        $ref: '#/definitions/RESTSystemSummary'
+        $ref: "#/definitions/RESTSystemSummary"
   RESTSystemRequest:
     type: object
     properties:
@@ -11547,28 +11886,28 @@ definitions:
         type: string
         example: Discover
       unquarantine:
-        $ref: '#/definitions/RESTUnquarReq'
+        $ref: "#/definitions/RESTUnquarReq"
   RESTSystemRequestData:
     type: object
     required:
       - request
     properties:
       request:
-        $ref: '#/definitions/RESTSystemRequest'
+        $ref: "#/definitions/RESTSystemRequest"
   RESTSystemWebhookConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTWebhook'
+        $ref: "#/definitions/RESTWebhook"
   RESTThreatData:
     type: object
     required:
       - threat
     properties:
       threat:
-        $ref: '#/definitions/Threat'
+        $ref: "#/definitions/Threat"
   RESTThreatsData:
     type: object
     required:
@@ -11577,7 +11916,7 @@ definitions:
       threats:
         type: array
         items:
-          $ref: '#/definitions/Threat'
+          $ref: "#/definitions/Threat"
   RESTToken:
     type: object
     required:
@@ -11622,7 +11961,7 @@ definitions:
         description: permissions on global domain. only for Rancher SSO
         type: array
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
       timeout:
         type: integer
         format: uint32
@@ -11647,23 +11986,23 @@ definitions:
         type: array
         description: permissions on namespaces. only for Rancher SSO
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
       extra_permissions:
         description: extra permissions(other than 'role') on global domain. only for Rancher SSO
         type: array
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
       extra_permissions_domains:
         type: array
         description: list of extra permissions(other than specified in 'role_domains') on namespaces. only for Rancher SSO
         items:
-          $ref: '#/definitions/RESTPermitsAssigned'
+          $ref: "#/definitions/RESTPermitsAssigned"
       remote_role_permissions:
         type: object
         description: role/permissions on managed clusters in fed. only for Rancher SSO
         properties:
           user:
-            $ref: '#/definitions/RESTRemoteRolePermits'
+            $ref: "#/definitions/RESTRemoteRolePermits"
       last_login_timestamp:
         type: integer
         format: int64
@@ -11683,7 +12022,7 @@ definitions:
       - password_hours_until_expire
     properties:
       token:
-        $ref: '#/definitions/RESTToken'
+        $ref: "#/definitions/RESTToken"
       password_days_until_expire:
         type: integer
         example:
@@ -11748,7 +12087,7 @@ definitions:
         description: extra permissions(other than 'role') extra permissions(other than 'Role') on global domain. only for Rancher SSO
         type: array
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
       timeout:
         type: integer
         format: uint32
@@ -11782,13 +12121,13 @@ definitions:
         type: array
         description: list of extra permissions(other than 'role_domains') for namespaces on managed clusters in fed. only for Rancher SSO
         items:
-          $ref: '#/definitions/RESTPermitsAssigned'
+          $ref: "#/definitions/RESTPermitsAssigned"
       remote_role_permissions:
         type: object
         description: role/permissions on managed clusters in fed. only for Rancher SSO
         properties:
           user:
-            $ref: '#/definitions/RESTRemoteRolePermits'
+            $ref: "#/definitions/RESTRemoteRolePermits"
       last_login_timestamp:
         type: integer
         format: int64
@@ -11817,7 +12156,7 @@ definitions:
         type: array
         description: array of permissions
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
       domains:
         type: array
         description: array of domains that have the same permissions
@@ -11852,19 +12191,19 @@ definitions:
         description: extra permissions(other than 'role') for global domain on managed clusters in fed. only for Rancher SSO
         type: array
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
       extra_permissions_domains:
         type: array
         description: list of extra permissions(other than 'role_domains') for namespaces on managed clusters in fed. only for Rancher SSO
         items:
-          $ref: '#/definitions/RESTPermitsAssigned'
+          $ref: "#/definitions/RESTPermitsAssigned"
   RESTUserData:
     type: object
     required:
       - user
     properties:
       user:
-        $ref: '#/definitions/RESTUser'
+        $ref: "#/definitions/RESTUser"
   RESTUserPwdConfig:
     type: object
     required:
@@ -11893,7 +12232,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTUserPwdConfig'
+        $ref: "#/definitions/RESTUserPwdConfig"
   RESTUserRole:
     type: object
     required:
@@ -11914,7 +12253,7 @@ definitions:
       permissions:
         type: array
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
   RESTUserRoleConfig:
     type: object
     required:
@@ -11931,21 +12270,21 @@ definitions:
       permissions:
         type: array
         items:
-          $ref: '#/definitions/RESTRolePermission'
+          $ref: "#/definitions/RESTRolePermission"
   RESTUserRoleConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTUserRoleConfig'
+        $ref: "#/definitions/RESTUserRoleConfig"
   RESTUserRoleData:
     type: object
     required:
       - role
     properties:
       role:
-        $ref: '#/definitions/RESTUserRole'
+        $ref: "#/definitions/RESTUserRole"
   RESTUserRolesData:
     type: object
     required:
@@ -11954,7 +12293,7 @@ definitions:
       roles:
         type: array
         items:
-          $ref: '#/definitions/RESTUserRole'
+          $ref: "#/definitions/RESTUserRole"
   RESTUsersData:
     type: object
     required:
@@ -11965,7 +12304,7 @@ definitions:
       users:
         type: array
         items:
-          $ref: '#/definitions/RESTUser'
+          $ref: "#/definitions/RESTUser"
       global_roles:
         type: array
         items:
@@ -12023,7 +12362,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTUserConfig'
+        $ref: "#/definitions/RESTUserConfig"
   RESTUserRoleDomainsConfig:
     type: object
     required:
@@ -12048,7 +12387,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTUserRoleDomainsConfig'
+        $ref: "#/definitions/RESTUserRoleDomainsConfig"
   RESTViolationWorkload:
     type: object
     required:
@@ -12056,7 +12395,7 @@ definitions:
       - count
     properties:
       workload:
-        $ref: '#/definitions/RESTWorkloadBrief'
+        $ref: "#/definitions/RESTWorkloadBrief"
       count:
         type: integer
         example: 2
@@ -12098,7 +12437,7 @@ definitions:
         example: "The setup_env function in group.c in sshd in OpenSSH allows local users to gain privileges."
       file_name:
         type: string
-        example: "usr/lib/python3.9" 
+        example: "usr/lib/python3.9"
       package_name:
         type: string
         example: openssh
@@ -12181,7 +12520,7 @@ definitions:
         additionalProperties:
           type: array
           items:
-            $ref: '#/definitions/RESTVulnPackageVersion'
+            $ref: "#/definitions/RESTVulnPackageVersion"
       package_name:
         type: string
         example: ""
@@ -12242,7 +12581,7 @@ definitions:
       entries:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerabilityProfileEntry'
+          $ref: "#/definitions/RESTVulnerabilityProfileEntry"
       cfg_type:
         type: string
         enum: [user_created, ground]
@@ -12257,28 +12596,28 @@ definitions:
       entries:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerabilityProfileEntry'
+          $ref: "#/definitions/RESTVulnerabilityProfileEntry"
   RESTVulnerabilityProfileConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTVulnerabilityProfileConfig'
+        $ref: "#/definitions/RESTVulnerabilityProfileConfig"
   RESTVulnerabilityProfileEntryConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTVulnerabilityProfileEntry'
+        $ref: "#/definitions/RESTVulnerabilityProfileEntry"
   RESTVulnerabilityProfileData:
     type: object
     required:
       - profile
     properties:
       profile:
-        $ref: '#/definitions/RESTVulnerabilityProfile'
+        $ref: "#/definitions/RESTVulnerabilityProfile"
   RESTVulnerabilityProfilesData:
     type: object
     required:
@@ -12287,7 +12626,7 @@ definitions:
       profiles:
         type: array
         items:
-          $ref: '#/definitions/RESTVulnerabilityProfile'
+          $ref: "#/definitions/RESTVulnerabilityProfile"
   RESTVulnerabilityProfileEntry:
     type: object
     required:
@@ -12331,7 +12670,7 @@ definitions:
           type: string
           example: ["default"]
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTVulnPackageVersion:
     type: object
     required:
@@ -12344,6 +12683,11 @@ definitions:
       fixed_version:
         type: string
         example: ""
+  RESTFedConfigExport:
+    type: object
+    properties:
+      remote_export_options:
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTWafConfig:
     type: object
     required:
@@ -12397,18 +12741,18 @@ definitions:
       sensors:
         type: array
         items:
-          $ref: '#/definitions/RESTWafConfig'
+          $ref: "#/definitions/RESTWafConfig"
       replace:
         type: array
         items:
-          $ref: '#/definitions/RESTWafConfig'
+          $ref: "#/definitions/RESTWafConfig"
   RESTWafGroupConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTWafGroupConfig'
+        $ref: "#/definitions/RESTWafGroupConfig"
   RESTWafGroup:
     type: object
     required:
@@ -12426,7 +12770,7 @@ definitions:
       sensors:
         type: array
         items:
-          $ref: '#/definitions/RESTWafSetting'
+          $ref: "#/definitions/RESTWafSetting"
       cfg_type:
         type: string
         enum: [user_created, ground]
@@ -12436,7 +12780,7 @@ definitions:
       - waf_group
     properties:
       waf_group:
-        $ref: '#/definitions/RESTWafGroup'
+        $ref: "#/definitions/RESTWafGroup"
   RESTWafGroupsData:
     type: object
     required:
@@ -12445,7 +12789,7 @@ definitions:
       waf_groups:
         type: array
         items:
-          $ref: '#/definitions/RESTWafGroup'
+          $ref: "#/definitions/RESTWafGroup"
   RESTWafRule:
     type: object
     required:
@@ -12464,7 +12808,7 @@ definitions:
       patterns:
         type: array
         items:
-          $ref: '#/definitions/RESTWafCriteriaEntry'
+          $ref: "#/definitions/RESTWafCriteriaEntry"
       cfg_type:
         type: string
         enum: [user_created, ground]
@@ -12474,7 +12818,7 @@ definitions:
       - rule
     properties:
       rule:
-        $ref: '#/definitions/RESTWafRuleDetail'
+        $ref: "#/definitions/RESTWafRuleDetail"
   RESTWafRuleDetail:
     type: object
     required:
@@ -12489,7 +12833,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTWafRule'
+          $ref: "#/definitions/RESTWafRule"
   RESTWafRulesData:
     type: object
     required:
@@ -12498,7 +12842,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTWafRule'
+          $ref: "#/definitions/RESTWafRule"
   RESTWafSensor:
     type: object
     required:
@@ -12520,7 +12864,7 @@ definitions:
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTWafRule'
+          $ref: "#/definitions/RESTWafRule"
       comment:
         type: string
         example: ""
@@ -12541,15 +12885,15 @@ definitions:
       change:
         type: array
         items:
-          $ref: '#/definitions/RESTWafRule'
+          $ref: "#/definitions/RESTWafRule"
       delete:
         type: array
         items:
-          $ref: '#/definitions/RESTWafRule'
+          $ref: "#/definitions/RESTWafRule"
       rules:
         type: array
         items:
-          $ref: '#/definitions/RESTWafRule'
+          $ref: "#/definitions/RESTWafRule"
       comment:
         type: string
         example: ""
@@ -12559,14 +12903,14 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTWafSensorConfig'
+        $ref: "#/definitions/RESTWafSensorConfig"
   RESTWafSensorData:
     type: object
     required:
       - sensor
     properties:
       sensor:
-        $ref: '#/definitions/RESTWafSensor'
+        $ref: "#/definitions/RESTWafSensor"
   RESTWafSensorExport:
     type: object
     required:
@@ -12578,7 +12922,7 @@ definitions:
           type: string
           example: test4321546242574254672462572452615362453
       remote_export_options:
-        $ref: '#/definitions/RESTRemoteExportOptions'
+        $ref: "#/definitions/RESTRemoteExportOptions"
   RESTWafSensorsData:
     type: object
     required:
@@ -12587,7 +12931,7 @@ definitions:
       sensors:
         type: array
         items:
-          $ref: '#/definitions/RESTWafSensor'
+          $ref: "#/definitions/RESTWafSensor"
   RESTWafSetting:
     type: object
     required:
@@ -12734,7 +13078,7 @@ definitions:
         type: string
         example: Discover
       scan_summary:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
       quarantine_reason:
         type: string
         example: ""
@@ -12793,11 +13137,11 @@ definitions:
         additionalProperties:
           type: array
           items:
-              $ref: '#/definitions/RESTIPAddr'
+            $ref: "#/definitions/RESTIPAddr"
       ports:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadPorts'
+          $ref: "#/definitions/RESTWorkloadPorts"
       labels:
         type: object
         description: map key is string type
@@ -12823,7 +13167,7 @@ definitions:
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkload'
+          $ref: "#/definitions/RESTWorkload"
   RESTWorkloadV2:
     type: object
     required:
@@ -12842,15 +13186,15 @@ definitions:
       - exit_code
     properties:
       brief:
-        $ref: '#/definitions/RESTWorkloadBriefV2'
+        $ref: "#/definitions/RESTWorkloadBriefV2"
       security:
-        $ref: '#/definitions/RESTWorkloadSecurityV2'
+        $ref: "#/definitions/RESTWorkloadSecurityV2"
       rt_attributes:
-        $ref: '#/definitions/RESTWorkloadRtAttribesV2'
+        $ref: "#/definitions/RESTWorkloadRtAttribesV2"
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadV2'
+          $ref: "#/definitions/RESTWorkloadV2"
       enforcer_id:
         type: string
         example: 002a4f71d9dbdb40db81c31484ac25564fe80574dfbe
@@ -12890,7 +13234,7 @@ definitions:
       workloads:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkload'
+          $ref: "#/definitions/RESTWorkload"
   RESTWorkloadsDataV2:
     type: object
     required:
@@ -12899,7 +13243,7 @@ definitions:
       workloads:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadV2'
+          $ref: "#/definitions/RESTWorkloadV2"
   RESTWorkloadRtAttribesV2:
     type: object
     required:
@@ -12953,11 +13297,11 @@ definitions:
         additionalProperties:
           type: array
           items:
-              $ref: '#/definitions/RESTIPAddr'
+            $ref: "#/definitions/RESTIPAddr"
       ports:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadPorts'
+          $ref: "#/definitions/RESTWorkloadPorts"
       applications:
         type: array
         items:
@@ -13004,7 +13348,7 @@ definitions:
         type: string
         example: violation
       scan_summary:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
   RESTWorkloadBrief:
     type: object
     required:
@@ -13096,11 +13440,11 @@ definitions:
         type: string
         example: Discover
       scan_summary:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadBrief'
+          $ref: "#/definitions/RESTWorkloadBrief"
       quarantine_reason:
         type: string
         example: violation
@@ -13199,7 +13543,7 @@ definitions:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTWorkloadConfig'
+        $ref: "#/definitions/RESTWorkloadConfig"
   RESTWorkloadDetail:
     type: object
     required:
@@ -13265,7 +13609,7 @@ definitions:
         type: string
         example: Discover
       scan_summary:
-        $ref: '#/definitions/RESTScanBrief'
+        $ref: "#/definitions/RESTScanBrief"
       host_name:
         type: string
         example: ubuntu1604-k8worker1-calico
@@ -13315,11 +13659,11 @@ definitions:
         additionalProperties:
           type: array
           items:
-              $ref: '#/definitions/RESTIPAddr'
+            $ref: "#/definitions/RESTIPAddr"
       ports:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadPorts'
+          $ref: "#/definitions/RESTWorkloadPorts"
       labels:
         type: object
         description: map key is string type
@@ -13354,7 +13698,7 @@ definitions:
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadDetail'
+          $ref: "#/definitions/RESTWorkloadDetail"
   RESTWorkloadDetailV2:
     type: object
     required:
@@ -13374,15 +13718,15 @@ definitions:
       - misc
     properties:
       brief:
-        $ref: '#/definitions/RESTWorkloadBriefV2'
+        $ref: "#/definitions/RESTWorkloadBriefV2"
       security:
-        $ref: '#/definitions/RESTWorkloadSecurityV2'
+        $ref: "#/definitions/RESTWorkloadSecurityV2"
       rt_attributes:
-        $ref: '#/definitions/RESTWorkloadRtAttribesV2'
+        $ref: "#/definitions/RESTWorkloadRtAttribesV2"
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadV2'
+          $ref: "#/definitions/RESTWorkloadV2"
       enforcer_id:
         type: string
         example: 002a4f71d9dbdb40db81c31484ac25564fe80574dfbe
@@ -13415,21 +13759,21 @@ definitions:
         type: integer
         example: 0
       misc:
-        $ref: '#/definitions/RESTWorkloadDetailMiscV2'
+        $ref: "#/definitions/RESTWorkloadDetailMiscV2"
   RESTWorkloadDetailData:
     type: object
     required:
       - workload
     properties:
       workload:
-        $ref: '#/definitions/RESTWorkloadDetail'
+        $ref: "#/definitions/RESTWorkloadDetail"
   RESTWorkloadDetailDataV2:
     type: object
     required:
       - workload
     properties:
       workload:
-        $ref: '#/definitions/RESTWorkloadDetailV2'
+        $ref: "#/definitions/RESTWorkloadDetailV2"
   RESTWorkloadDetailMiscV2:
     type: object
     required:
@@ -13452,7 +13796,7 @@ definitions:
       children:
         type: array
         items:
-          $ref: '#/definitions/RESTWorkloadDetailV2'
+          $ref: "#/definitions/RESTWorkloadDetailV2"
   RESTWorkloadPorts:
     type: object
     required:
@@ -13488,7 +13832,7 @@ definitions:
       - request
     properties:
       request:
-        $ref: '#/definitions/RESTWorkloadRequest'
+        $ref: "#/definitions/RESTWorkloadRequest"
   RESTWorkloadStatsData:
     type: object
     required:
@@ -13504,7 +13848,7 @@ definitions:
         format: date-time
         example: 2018-01-21T06:25:15Z
       stats:
-        $ref: '#/definitions/RESTStats'
+        $ref: "#/definitions/RESTStats"
   Threat:
     type: object
     required:
@@ -13818,7 +14162,7 @@ definitions:
         type: array
         items:
           type: string
-        example: ["exist","notExist"]
+        example: ["exist", "notExist"]
       values:
         type: array
         items:
@@ -13838,7 +14182,7 @@ definitions:
         example: podTemplate
       rawjson:
         type: string
-        example: "{\"key\": \"value\"}"
+        example: '{"key": "value"}'
   RESTX509CertInfo:
     type: object
     properties:
@@ -13906,7 +14250,7 @@ definitions:
       - apikey
     properties:
       apikey:
-        $ref: '#/definitions/RESTApikey'
+        $ref: "#/definitions/RESTApikey"
   RESTApikeysData:
     type: object
     required:
@@ -13917,7 +14261,7 @@ definitions:
       apikeys:
         type: array
         items:
-          $ref: '#/definitions/RESTApikey'
+          $ref: "#/definitions/RESTApikey"
       global_roles:
         type: array
         items:
@@ -13934,7 +14278,7 @@ definitions:
       - apikey
     properties:
       apikey:
-        $ref: '#/definitions/RESTApikeyCreation'
+        $ref: "#/definitions/RESTApikeyCreation"
   RESTApikeyCreation:
     type: object
     required:
@@ -13972,7 +14316,7 @@ definitions:
       - apikey
     properties:
       apikey:
-        $ref: '#/definitions/RESTApikeyGenerated'
+        $ref: "#/definitions/RESTApikeyGenerated"
   RESTApikeyGenerated:
     type: object
     required:
@@ -13988,7 +14332,7 @@ definitions:
   REST_SigstoreRootOfTrustCollection:
     type: array
     items:
-      $ref: '#/definitions/REST_SigstoreRootOfTrust_GET'
+      $ref: "#/definitions/REST_SigstoreRootOfTrust_GET"
   REST_SigstoreRootOfTrust_GET:
     type: object
     properties:
@@ -14014,7 +14358,7 @@ definitions:
       verifiers:
         type: array
         items:
-          $ref: '#/definitions/REST_SigstoreVerifier'
+          $ref: "#/definitions/REST_SigstoreVerifier"
       cfg_type:
         type: string
         enum: [user_created, ground, federal]
@@ -14024,7 +14368,7 @@ definitions:
   REST_SigstoreRootOfTrust_POST:
     type: object
     required:
-    - name
+      - name
     properties:
       name:
         type: string
@@ -14066,12 +14410,12 @@ definitions:
   REST_SigstoreVerifierCollection:
     type: array
     items:
-      $ref: '#/definitions/REST_SigstoreVerifier'
+      $ref: "#/definitions/REST_SigstoreVerifier"
   REST_SigstoreVerifier:
     type: object
     required:
-    - name
-    - verifier_type
+      - name
+      - verifier_type
     properties:
       name:
         type: string
@@ -14157,7 +14501,7 @@ definitions:
         type: boolean
         example: true
       github_configuration:
-        $ref: '#/definitions/RESTRemoteRepo_GitHubConfig'
+        $ref: "#/definitions/RESTRemoteRepo_GitHubConfig"
   RESTRemoteRepository_GitHubConfigConfig:
     type: object
     properties:
@@ -14193,14 +14537,14 @@ definitions:
         type: boolean
         example: true
       github_configuration:
-        $ref: '#/definitions/RESTRemoteRepository_GitHubConfigConfig'
+        $ref: "#/definitions/RESTRemoteRepository_GitHubConfigConfig"
   RESTRemoteRepositoryConfigData:
     type: object
     required:
       - config
     properties:
       config:
-        $ref: '#/definitions/RESTRemoteRepositoryConfig'
+        $ref: "#/definitions/RESTRemoteRepositoryConfig"
   RESTRemoteExportOptions:
     type: object
     required:
@@ -14309,11 +14653,11 @@ definitions:
       hosts:
         type: integer
       workloads:
-        $ref: '#/definitions/RESTRiskScoreMetricsWL'
+        $ref: "#/definitions/RESTRiskScoreMetricsWL"
       groups:
-        $ref: '#/definitions/RESTRiskScoreMetricsGroup'
+        $ref: "#/definitions/RESTRiskScoreMetricsGroup"
       cves:
-        $ref: '#/definitions/RESTRiskScoreMetricsCVE'
+        $ref: "#/definitions/RESTRiskScoreMetricsCVE"
   RESTExposedEndpoint:
     type: object
     properties:
@@ -14354,7 +14698,7 @@ definitions:
       entries:
         type: array
         items:
-          $ref: '#/definitions/RESTConversationReportEntry'
+          $ref: "#/definitions/RESTConversationReportEntry"
   RESTConversationReportEntry:
     type: object
     properties:
@@ -14410,14 +14754,14 @@ definitions:
       metrics:
         type: array
         items:
-          $ref: '#/definitions/RESTComplianceProfileConfig'
+          $ref: "#/definitions/RESTComplianceProfileConfig"
       ingress:
         type: array
         items:
-          $ref: '#/definitions/RESTExposedEndpoint'
+          $ref: "#/definitions/RESTExposedEndpoint"
       egress:
         type: array
         items:
-          $ref: '#/definitions/RESTExposedEndpoint'
+          $ref: "#/definitions/RESTExposedEndpoint"
       security_scores:
-        $ref: '#/definitions/RESTSecurityScores'
+        $ref: "#/definitions/RESTSecurityScores"

@@ -97,6 +97,7 @@ const QueryDuration string = "token_duration"
 const OPeq string = "eq"
 const OPneq string = "neq"
 const OPin string = "in"
+const OPnotin string = "notin"
 const OPgt string = "gt"
 const OPgte string = "gte"
 const OPlt string = "lt"
@@ -122,6 +123,10 @@ const UserRoleFedReader string = "fedReader"
 const LearnedGroupPrefix string = "nv."
 const LearnedSvcGroupPrefix string = "nv.ip."
 const FederalGroupPrefix string = "fed."
+const FedAllHostGroup string = "fed.nodes"
+const FedAllContainerGroup string = "fed.containers"
+const FedExternalGroup string = "fed.external"
+
 const LearnedExternal string = "external"
 const AllHostGroup string = "nodes"
 const AllContainerGroup string = "containers"
@@ -553,6 +558,10 @@ type RESTAdmCtrlRulesExport struct {
 
 type RESTResponseRulesExport struct {
 	IDs                 []uint32                 `json:"ids"`
+	RemoteExportOptions *RESTRemoteExportOptions `json:"remote_export_options,omitempty"`
+}
+
+type RESTFedConfigExport struct {
 	RemoteExportOptions *RESTRemoteExportOptions `json:"remote_export_options,omitempty"`
 }
 
@@ -2351,6 +2360,7 @@ type RESTScanBrief struct {
 	BaseOS           string `json:"base_os"`
 	CVEDBVersion     string `json:"scanner_version"`
 	CVEDBCreateTime  string `json:"cvedb_create_time"`
+	OSScanStatus     string `json:"os_scan_status,omitempty"`
 }
 
 func (sb *RESTScanBrief) CVECount() int {
@@ -2525,7 +2535,55 @@ type RESTScanReportData struct {
 	Report *RESTScanReport `json:"report"`
 }
 
+type RESTAssetsScanReportFilter struct {
+	Name  string   `json:"name"`
+	Op    string   `json:"op"`
+	Value []string `json:"value"`
+}
+
+type RESTVulScoreFilter struct {
+	ScoreVersion string  `json:"score_version"`
+	ScoreBottom  float32 `json:"score_bottom"`
+	ScoreTop     float32 `json:"score_top"`
+}
+
+type RESTScanReportCursor struct {
+	Name       string `json:"name"`
+	HostName   string `json:"host_name"`
+	Domain     string `json:"domain"`
+	CVEName    string `json:"cve_name"`
+	CVEPackage string `json:"cve_package"`
+}
+
+func (a *RESTScanReportCursor) String() string {
+	return a.HostName + "###" + a.Domain + "###" + a.Name + "###" + a.CVEName + "###" + a.CVEPackage
+}
+
+type RESTAssetsScanReportQuery struct {
+	ShowAccepted   bool                         `json:"show_accepted"`
+	MaxCveRecords  int                          `json:"max_cve_records"`    // one cve per-record
+	Cursor         RESTScanReportCursor         `json:"cursor"`             // last query stopped
+	ViewPod        *string                      `json:"view_pod,omitempty"` // for workloads only
+	VulScoreFilter *RESTVulScoreFilter          `json:"vul_score_filter,omitempty"`
+	Filters        []RESTAssetsScanReportFilter `json:"filters,omitempty"`
+}
+
+type RESTAssetScanData struct {
+	HostName        string `json:"host_name"`
+	WorkloadName    string `json:"workload_name"`
+	WorkloadDomain  string `json:"workload_domain"`
+	WorkloadImage   string `json:"workload_image"`
+	WorkloadImageID string `json:"workload_image_id"`
+	RESTVulnerability
+}
+
+type RESTAssetScanReportData struct {
+	Cursor   RESTScanReportCursor `json:"cursor"`
+	ScanData []*RESTAssetScanData `json:"scan_data"` // each cve for each asset has an entry
+}
+
 type RESTScanReport struct {
+	OSScanStatus  string                 `json:"os_scan_status,omitempty"`
 	Vuls          []*RESTVulnerability   `json:"vulnerabilities"`
 	Modules       []*RESTScanModule      `json:"modules,omitempty"`
 	Checks        []*RESTBenchItem       `json:"checks,omitempty"`
@@ -2593,14 +2651,15 @@ type RESTScanMeta struct {
 }
 
 type RESTScanRepoReq struct {
-	Metadata   RESTScanMeta `json:"metadata"`
-	Registry   string       `json:"registry"`
-	Username   string       `json:"username,omitempty"`
-	Password   string       `json:"password,omitempty"`
-	Repository string       `json:"repository"`
-	Tag        string       `json:"tag"`
-	ScanLayers bool         `json:"scan_layers"`
-	BaseImage  string       `json:"base_image"`
+	Metadata    RESTScanMeta `json:"metadata"`
+	Registry    string       `json:"registry"`
+	Username    string       `json:"username,omitempty"`
+	Password    string       `json:"password,omitempty"`
+	Repository  string       `json:"repository"`
+	Tag         string       `json:"tag"`
+	ScanLayers  bool         `json:"scan_layers"`
+	BaseImage   string       `json:"base_image"`
+	IgnoreProxy *bool        `json:"ignore_proxy,omitempty"`
 }
 
 type RESTScanRepoReqData struct {
@@ -3064,6 +3123,19 @@ type RESTProcessProfileConfig struct {
 
 type RESTProcessProfileConfigData struct {
 	Config *RESTProcessProfileConfig `json:"process_profile_config"`
+}
+
+type RESTCrdFedWebHook struct {
+	Name     string `json:"name"`
+	Url      string `json:"url"`
+	Enable   bool   `json:"enable"`
+	UseProxy bool   `json:"use_proxy"`
+	Type     string `json:"type"`
+}
+
+type RESTCrdFedConfig struct {
+	Name     string              `json:"name"`
+	Webhooks []RESTCrdFedWebHook `json:"webhooks"`
 }
 
 const MinDlpRuleID = 20000
@@ -3625,14 +3697,14 @@ type RESTAdmissionConfigData struct {
 }
 
 type RESTAdmRuleCriterion struct { // same type CLUSAdmRuleCriterion
-	Name        string                  `json:"name"`
-	Op          string                  `json:"op"`
-	Value       string                  `json:"value"`
-	SubCriteria []*RESTAdmRuleCriterion `json:"sub_criteria,omitempty"`
-	Type        string                  `json:"type,omitempty"`
-	Kind        string                  `json:"template_kind,omitempty"`
-	Path        string                  `json:"path,omitempty"`
-	ValueType   string                  `json:"value_type,omitempty"`
+	Name        string                  `json:"name" yaml:"name"`
+	Op          string                  `json:"op" yaml:"op"`
+	Value       string                  `json:"value" yaml:"value"`
+	SubCriteria []*RESTAdmRuleCriterion `json:"sub_criteria,omitempty" yaml:"sub_criteria,omitempty"`
+	Type        string                  `json:"type,omitempty" yaml:"type,omitempty"`
+	Kind        string                  `json:"template_kind,omitempty" yaml:"template_kind,omitempty"`
+	Path        string                  `json:"path,omitempty" yaml:"path,omitempty"`
+	ValueType   string                  `json:"value_type,omitempty" yaml:"value_type,omitempty"`
 }
 
 const (
@@ -3642,24 +3714,24 @@ const (
 )
 
 type RESTAdmissionRule struct { // see type CLUSAdmissionRule
-	ID         uint32                  `json:"id"`
-	Category   string                  `json:"category"`
-	Comment    string                  `json:"comment"`
-	Criteria   []*RESTAdmRuleCriterion `json:"criteria"`
-	Disable    bool                    `json:"disable"`
-	Critical   bool                    `json:"critical"`
-	CfgType    string                  `json:"cfg_type"`   // CfgTypeLearned / CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal (see above)
-	RuleType   string                  `json:"rule_type"`  // ValidatingExceptRuleType / ValidatingDenyRuleType (see above)
-	RuleMode   string                  `json:"rule_mode"`  // "" / share.AdmCtrlModeMonitor / share.AdmCtrlModeProtect
-	Containers []string                `json:"containers"` // empty for all containers, "containers" / "init_containers" / "ephemeral_containers"
+	ID         uint32                  `json:"id" yaml:"id"`
+	Category   string                  `json:"category" yaml:"category"`
+	Comment    string                  `json:"comment" yaml:"comment"`
+	Criteria   []*RESTAdmRuleCriterion `json:"criteria" yaml:"criteria"`
+	Disable    bool                    `json:"disable" yaml:"disable"`
+	Critical   bool                    `json:"critical" yaml:"critical"`
+	CfgType    string                  `json:"cfg_type" yaml:"cfg_type"`     // CfgTypeLearned / CfgTypeUserCreated / CfgTypeGround / CfgTypeFederal (see above)
+	RuleType   string                  `json:"rule_type" yaml:"rule_type"`   // ValidatingExceptRuleType / ValidatingDenyRuleType (see above)
+	RuleMode   string                  `json:"rule_mode" yaml:"rule_mode"`   // "" / share.AdmCtrlModeMonitor / share.AdmCtrlModeProtect
+	Containers []string                `json:"containers" yaml:"containers"` // empty for all containers, "containers" / "init_containers" / "ephemeral_containers"
 }
 
 type RESTAdmissionRuleData struct {
-	Rule *RESTAdmissionRule `json:"rule"`
+	Rule *RESTAdmissionRule `json:"rule" yaml:"rule"`
 }
 
 type RESTAdmissionRulesData struct {
-	Rules []*RESTAdmissionRule `json:"rules"`
+	Rules []*RESTAdmissionRule `json:"rules" yaml:"rules"`
 }
 
 // Passed from manager to controller. Omit fields indicate that it's not modified.
@@ -4101,6 +4173,10 @@ type RESTRemoteExportOptions struct {
 	Comment                  string `json:"comment"`
 }
 
+type RESTRemoteExportData struct {
+	FilePath string `json:"file_path"`
+}
+
 func (config *RESTRemoteExportOptions) IsValid() bool {
 	return config.RemoteRepositoryNickname != ""
 }
@@ -4230,19 +4306,20 @@ type RESTImageAssetView struct {
 }
 
 type RESTImageAssetViewV2 struct {
-	ID        string `json:"image_id"`
-	Name      string `json:"repository"`
-	Critical  int    `json:"critical,omitempty"`
-	High      int    `json:"high"`
-	Medium    int    `json:"medium"`
-	CreatedAt string `json:"created_at"`
-	ScannedAt string `json:"scanned_at"`
-	Digest    string `json:"digest"`
-	BaseOS    string `json:"base_os"`
-	RegName   string `json:"reg_name"`
-	Registry  string `json:"repo_url"`
-	Size      int    `json:"size"`
-	Tag       string `json:"tag"`
+	ID           string `json:"image_id"`
+	Name         string `json:"repository"`
+	Critical     int    `json:"critical,omitempty"`
+	High         int    `json:"high"`
+	Medium       int    `json:"medium"`
+	CreatedAt    string `json:"created_at"`
+	ScannedAt    string `json:"scanned_at"`
+	Digest       string `json:"digest"`
+	BaseOS       string `json:"base_os"`
+	OSScanStatus string `json:"os_scan_status,omitempty"`
+	RegName      string `json:"reg_name"`
+	Registry     string `json:"repo_url"`
+	Size         int    `json:"size"`
+	Tag          string `json:"tag"`
 }
 
 type RESTVulQueryStats struct {
@@ -4294,4 +4371,48 @@ type AssetCVECount struct {
 
 type RESTAssetIDList struct {
 	IDs []string `json:"ids"`
+}
+
+type AssetScanReportInterface interface {
+	GetID() string
+	GetCursor() RESTScanReportCursor
+	GetScanData() RESTAssetScanData
+}
+
+func (a *RESTWorkload) GetID() string {
+	return a.ID
+}
+
+func (a *RESTWorkload) GetCursor() RESTScanReportCursor {
+	return RESTScanReportCursor{
+		Name:     a.Name,
+		Domain:   a.Domain,
+		HostName: a.HostName,
+	}
+}
+
+func (a *RESTWorkload) GetScanData() RESTAssetScanData {
+	return RESTAssetScanData{
+		HostName:        a.HostName,
+		WorkloadName:    a.Name,
+		WorkloadDomain:  a.Domain,
+		WorkloadImage:   a.Image,
+		WorkloadImageID: a.ImageID,
+	}
+}
+
+func (h *RESTHost) GetID() string {
+	return h.ID
+}
+
+func (h *RESTHost) GetCursor() RESTScanReportCursor {
+	return RESTScanReportCursor{
+		Name: h.Name,
+	}
+}
+
+func (h *RESTHost) GetScanData() RESTAssetScanData {
+	return RESTAssetScanData{
+		HostName: h.Name,
+	}
 }
