@@ -1,6 +1,6 @@
 #
 # Builder image
-FROM registry.suse.com/bci/golang:1.25 AS builder
+FROM registry.suse.com/bci/golang:1.26.2 AS builder
 ARG VERSION
 
 ENV GOPATH=/go
