@@ -6,7 +6,7 @@ replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
 require (
 	github.com/neuvector/neuvector v0.0.0-20260402011127-8c425a9eb845
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.79.3
 	gopkg.in/yaml.v2 v2.4.0
