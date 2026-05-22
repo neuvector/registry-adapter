@@ -21,7 +21,7 @@
       "matchPackageNames": [
         "github.com/neuvector/neuvector"
       ], 
-      "enable": true,
+      "enabled": true,
       "ignoreUnstable": false
     }
   ],
