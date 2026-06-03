@@ -36,7 +36,7 @@ jobs:
         TARGET=${{ github.ref_name }}
         echo "TAG=${TARGET#v}" >> $GITHUB_ENV
     - name: Publish neuvector manifest
-      uses: rancher/ecm-distro-tools/actions/publish-image@eb9f1b8024d407105b1f2d90e2ceca27a950f921 # v0.67.4
+      uses: rancher/ecm-distro-tools/actions/publish-image@57efae19ae57d43912001846ffb7f5613706fead # v0.69.2
       with:
         push-to-public: true
         push-to-prime: false
@@ -49,7 +49,7 @@ jobs:
         public-username: ${{ env.DOCKER_USERNAME }}
         public-password: ${{ env.DOCKER_PASSWORD }}
     - name: Publish rancher manifest
-      uses: rancher/ecm-distro-tools/actions/publish-image@eb9f1b8024d407105b1f2d90e2ceca27a950f921 # v0.67.4
+      uses: rancher/ecm-distro-tools/actions/publish-image@57efae19ae57d43912001846ffb7f5613706fead # v0.69.2
       env:
         IMAGE_PREFIX: neuvector-
       with:
