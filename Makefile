@@ -53,7 +53,7 @@ copy_adpt: build
 	cp adapter ${STAGE_DIR}/usr/local/bin/
 
 build:
-	go build -ldflags='-s -w' -buildvcs=false -o adapter
+	go build -ldflags='-s -w' -o adapter
 
 buildx-machine:
 	docker buildx ls
