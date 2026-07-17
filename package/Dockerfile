@@ -9,6 +9,7 @@ ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 COPY config/ /src/config
 COPY server/ /src/server
 COPY vendor/ /src/vendor
+COPY .git/ /src/.git
 COPY go.mod go.sum adapter.go version.go Makefile /src
 WORKDIR /src
 RUN sed -i -e 's/interim.*xxxx/'"$VERSION"'/g' ./version.go
