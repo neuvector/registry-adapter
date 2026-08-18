@@ -1,6 +1,6 @@
 module github.com/neuvector/registry-adapter
 
-go 1.26.5
+go 1.26.6
 
 replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 
