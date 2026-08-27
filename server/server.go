@@ -166,9 +166,8 @@ func InitializeServer(config *config.ServerConfig) {
 			}
 
 			tlsconfig := &tls.Config{
-				MinVersion:               tls.VersionTLS11,
-				PreferServerCipherSuites: true,
-				CipherSuites:             utils.GetSupportedTLSCipherSuites(),
+				MinVersion:   tls.VersionTLS11,
+				CipherSuites: utils.GetSupportedTLSCipherSuites(),
 			}
 			server := &http.Server{
 				Addr:      fmt.Sprintf(":%s", adapterHttpsPort),
