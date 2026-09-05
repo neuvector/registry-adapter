@@ -7,7 +7,7 @@ replace k8s.io/cri-api => k8s.io/cri-api v0.25.16
 require (
 	github.com/neuvector/neuvector v0.0.0-20260713022751-c0958d13f7c7
 	github.com/sirupsen/logrus v1.9.4
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.1
 	google.golang.org/grpc v1.83.1
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -100,7 +100,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
