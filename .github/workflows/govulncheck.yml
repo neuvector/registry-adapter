@@ -22,6 +22,9 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true # Always check for the latest patch release
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt install -y libpcre3-dev
       - name: Run govulncheck
         env:
           GOVULNCHECK_VERSION: d1f380186385b4f64e00313f31743df8e4b89a77 # v1.1.4
