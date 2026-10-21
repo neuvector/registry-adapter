@@ -19,6 +19,7 @@ const EnvHarborServerProto = "HARBOR_SERVER_PROTO"
 const EnvHarborAuthUsername = "HARBOR_BASIC_AUTH_USERNAME"
 const EnvHarborAuthPassword = "HARBOR_BASIC_AUTH_PASSWORD"
 const EnvUseFeedBasedSeverity = "USE_FEED_BASED_SEVERITY"
+const EnvScanLayers = "SCAN_LAYERS"
 
 type ServerConfig struct {
 	Auth                 Authorization `yaml:"Authorization"`
@@ -27,6 +28,12 @@ type ServerConfig struct {
 	ControllerPort       uint16
 	LogLevel             logrus.Level
 	UseFeedBasedSeverity bool `yaml:"UseFeedBasedSeverity"`
+	// ScanLayers requests per-layer vulnerability results from the controller.
+	// It defaults to false (matching NeuVector's other scan paths); the adapter
+	// only consumes the flat Vuls list, so enabling it only adds payload that is
+	// discarded, unless the per-layer breakdown is wanted in NeuVector's own
+	// stored repo-scan report.
+	ScanLayers bool `yaml:"ScanLayers"`
 }
 
 type Authorization struct {
@@ -72,6 +79,13 @@ func (serverConfig *ServerConfig) LoadEnvironementVariables() error {
 			return err
 		}
 		serverConfig.UseFeedBasedSeverity = b
+	}
+	if v, ok := os.LookupEnv(EnvScanLayers); ok {
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			return err
+		}
+		serverConfig.ScanLayers = b
 	}
 	return nil
 }

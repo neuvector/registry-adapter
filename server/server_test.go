@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -148,31 +149,69 @@ func TestConvertVulns_FeedBasedDisabled(t *testing.T) {
 }
 
 func TestConvertRPCReportToScanReport(t *testing.T) {
-	orig := serverConfig.UseFeedBasedSeverity
-	serverConfig.UseFeedBasedSeverity = true
-	defer func() { serverConfig.UseFeedBasedSeverity = orig }()
-	scanResult := &share.ScanResult{
-		Vuls: []*share.ScanVulnerability{
-			{
-				Name:           "CVE-2021-1234",
-				PackageName:    "test-pkg",
-				PackageVersion: "1.0.0",
-				FixedVersion:   "1.0.1",
-				Severity:       "High",
-				Description:    "Test description",
-				Link:           "http://example.com",
-				Score:          5.5,
-				ScoreV3:        7.2,
-				Vectors:        "AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-				VectorsV3:      "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
-			},
+	vuls := []*share.ScanVulnerability{
+		{
+			Name:           "CVE-2021-1234",
+			PackageName:    "test-pkg",
+			PackageVersion: "1.0.0",
+			FixedVersion:   "1.0.1",
+			Severity:       "High",
+			Description:    "Test description",
+			Link:           "http://example.com",
+			Score:          5.5,
+			ScoreV3:        7.2,
+			Vectors:        "AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+			VectorsV3:      "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
 		},
 	}
 
-	report := convertRPCReportToScanReport(scanResult)
-	require.Equal(t, 200, report.Status, "status mismatch")
-	require.Equal(t, "High", report.Severity, "overall severity mismatch")
-	require.Len(t, report.Vulnerabilities, 1, "expected 1 vulnerability")
+	cases := []struct {
+		name             string
+		scanResult       *share.ScanResult
+		expectedStatus   int
+		expectedSeverity string
+		expectedVulns    int
+	}{
+		{
+			name:             "success with vulnerabilities",
+			scanResult:       &share.ScanResult{Error: share.ScanErrorCode_ScanErrNone, Vuls: vuls},
+			expectedStatus:   200,
+			expectedSeverity: "High",
+			expectedVulns:    1,
+		},
+		{
+			name:             "clean scan with no vulnerabilities",
+			scanResult:       &share.ScanResult{Error: share.ScanErrorCode_ScanErrNone},
+			expectedStatus:   200,
+			expectedSeverity: "Unknown", // computeOverallSeverity over an empty list
+			expectedVulns:    0,
+		},
+		{
+			name:           "size over limit reported as failure",
+			scanResult:     &share.ScanResult{Error: share.ScanErrorCode_ScanErrSizeOverLimit, Vuls: vuls},
+			expectedStatus: http.StatusInternalServerError,
+			expectedVulns:  0,
+		},
+		{
+			name:           "timeout reported as failure",
+			scanResult:     &share.ScanResult{Error: share.ScanErrorCode_ScanErrTimeout},
+			expectedStatus: http.StatusInternalServerError,
+			expectedVulns:  0,
+		},
+	}
+
+	orig := serverConfig.UseFeedBasedSeverity
+	serverConfig.UseFeedBasedSeverity = true
+	defer func() { serverConfig.UseFeedBasedSeverity = orig }()
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			report := convertRPCReportToScanReport(c.scanResult)
+			require.Equal(t, c.expectedStatus, report.Status, "status mismatch")
+			require.Equal(t, c.expectedSeverity, report.Severity, "overall severity mismatch")
+			require.Len(t, report.Vulnerabilities, c.expectedVulns, "vulnerability count mismatch")
+		})
+	}
 }
 
 func TestGenerateExpirationTime(t *testing.T) {
