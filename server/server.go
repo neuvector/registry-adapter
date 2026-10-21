@@ -21,6 +21,8 @@ import (
 	"github.com/neuvector/neuvector/share/utils"
 	"github.com/neuvector/registry-adapter/config"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -374,7 +376,7 @@ func processScanTask(scanRequest ScanRequest) {
 		Repository: repo,
 		Tag:        tag,
 		Token:      scanRequest.Registry.Authorization,
-		ScanLayers: true,
+		ScanLayers: serverConfig.ScanLayers,
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), rpcTimeout)
 	defer cancel()
@@ -387,7 +389,12 @@ func processScanTask(scanRequest ScanRequest) {
 		report.Status = http.StatusInternalServerError
 		reportCache.ScanReports[scanRequest.WorkloadID] = report
 		reportCache.Unlock()
-		log.WithFields(log.Fields{"error": err}).Error("Error sending scan request")
+		if status.Code(err) == codes.ResourceExhausted {
+			log.WithFields(log.Fields{"error": err}).Error(
+				"Scan report exceeds the gRPC message size limit; raise CLUSTER_GRPC_MAX_MSG_SIZE_MB on the controller and registry-adapter, or set SCAN_LAYERS=false to reduce the report size")
+		} else {
+			log.WithFields(log.Fields{"error": err}).Error("Error sending scan request")
+		}
 		concurrentJobs.Decrement()
 		return
 	}
@@ -400,9 +407,24 @@ func processScanTask(scanRequest ScanRequest) {
 // convertRPCReportToScanReport converts the rpc results from the controller into a Harbor readable format.
 func convertRPCReportToScanReport(scanResult *share.ScanResult) ScanReport {
 	var result ScanReport
-	result.Status = http.StatusOK
 	result.GeneratedAt = time.Now().UTC()
 	result.Scanner = nvScanner
+
+	// A non-zero error code means the scan failed (e.g. ScanErrSizeOverLimit,
+	// ScanErrTimeout). Surface it as a server error so Harbor shows a failed scan
+	// instead of a successful report with zero vulnerabilities.
+	if scanResult.Error != share.ScanErrorCode_ScanErrNone {
+		log.WithFields(log.Fields{
+			"error":      scanResult.Error.String(),
+			"registry":   scanResult.Registry,
+			"repository": scanResult.Repository,
+			"tag":        scanResult.Tag,
+		}).Error("Controller returned a scan error; reporting failure to Harbor")
+		result.Status = http.StatusInternalServerError
+		return result
+	}
+
+	result.Status = http.StatusOK
 	result.Vulnerabilities = convertVulns(scanResult.Vuls)
 	if serverConfig.UseFeedBasedSeverity {
 		result.Severity = computeOverallSeverity(result.Vulnerabilities)
