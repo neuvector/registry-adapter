@@ -1,10 +1,18 @@
+FROM registry.suse.com/rancher/appco-go:1.27.4 AS golang
+
 #
 # Builder image
-FROM registry.suse.com/bci/golang:1.27.3 AS builder
+FROM registry.suse.com/bci/bci-base:15.7 AS builder
 ARG VERSION
 
 ENV GOPATH=/go
 ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+
+COPY --from=golang /usr/local/go /usr/local/go
+ENV GOROOT=/usr/local/go
+ENV GOTOOLCHAIN=local
+
+RUN zypper install -y gcc make git
 
 COPY config/ /src/config
 COPY server/ /src/server
