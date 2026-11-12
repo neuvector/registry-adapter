@@ -78,8 +78,8 @@ github.com/fxamacker/cbor/v2 v2.9.0 h1:NpKPmjDBgUfBms6tr6JZkTHtfFGcMKsw3eGcmD/sa
 github.com/fxamacker/cbor/v2 v2.9.0/go.mod h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=
 github.com/glebarez/go-sqlite v1.23.0 h1:FyhIq4jqmgphQAUlY79zPldYGwISEZikaDfhiGWkkaI=
 github.com/glebarez/go-sqlite v1.23.0/go.mod h1:IIYrOH3L0rHY3jb4IXOHoWdklNajSGUN2eJcvK8WrnI=
-github.com/go-jose/go-jose/v4 v4.1.6 h1:sNRkftxFJxwsILiQukqp5z83QBSmntVwmgRY7AqBDO4=
-github.com/go-jose/go-jose/v4 v4.1.6/go.mod h1:x4oUasVrzR7071A4TnHLGSPpNOm2a21K9Kf04k1rs08=
+github.com/go-jose/go-jose/v4 v4.1.8 h1:k38WifTutpGuqt6Imq9xW1OgCvnWFri0Nz7FnfiACM8=
+github.com/go-jose/go-jose/v4 v4.1.8/go.mod h1:x4oUasVrzR7071A4TnHLGSPpNOm2a21K9Kf04k1rs08=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/logr v1.4.4 h1:tG4xh9yMsRCAiodLVTxyrkzSZ9+o0L1Kg/+cPVcbP/8=
 github.com/go-logr/logr v1.4.4/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
@@ -201,8 +201,8 @@ github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/ncruces/go-strftime v1.0.0 h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOFAw7w=
 github.com/ncruces/go-strftime v1.0.0/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
-github.com/neuvector/neuvector v0.0.0-20261111032419-b814459cf882 h1:SBF4xhK9Bjye8ljOINQNTo3mM4iyiUiZMa9uZbsDR/0=
-github.com/neuvector/neuvector v0.0.0-20261111032419-b814459cf882/go.mod h1:XEdVyfL+A/WQ9Wx5clrWaIk0bB6J2Sfzo6zGt+nfleY=
+github.com/neuvector/neuvector v0.0.0-20261111182209-230e5ebe26e2 h1:L9oy1OFv/fSgreb1Yg73KaRg2v9nV9VEU2bymL+Of/Q=
+github.com/neuvector/neuvector v0.0.0-20261111182209-230e5ebe26e2/go.mod h1:Hi4wB/R7uV9RL2nxHY98MXazvYnWQgQnmRhUWw2nPA0=
 github.com/neuvector/neuvector/controller/k8sapi v1.0.1-0.20260713022751-c0958d13f7c7 h1:fPE60mYtEBavKea2FxAFhawzm8VGpPk2NMbZr5bX/C8=
 github.com/neuvector/neuvector/controller/k8sapi v1.0.1-0.20260713022751-c0958d13f7c7/go.mod h1:McwcXqmrfjN41Y5ETg3Bjfe8DfCp8KHrZjF5DhVLRuk=
 github.com/onsi/ginkgo/v2 v2.21.0 h1:7rg/4f3rB88pb5obDgNZrNHrQ4e6WpjonchcpuBRnZM=
