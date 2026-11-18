@@ -166,11 +166,13 @@ func (m *AdapterScanImageRequest) GetAdapterVersion() string {
 }
 
 type GetScannersResponse struct {
-	Scanners       uint32 `protobuf:"varint,1,opt,name=Scanners" json:"Scanners,omitempty"`
-	MaxScanners    uint32 `protobuf:"varint,2,opt,name=MaxScanners" json:"MaxScanners,omitempty"`
-	IdleScanners   uint32 `protobuf:"varint,3,opt,name=IdleScanners" json:"IdleScanners,omitempty"`
-	ScannerVersion string `protobuf:"bytes,4,opt,name=ScannerVersion" json:"ScannerVersion,omitempty"`
-	ScannerDBTime  string `protobuf:"bytes,5,opt,name=ScannerDBTime" json:"ScannerDBTime,omitempty"`
+	Scanners             uint32 `protobuf:"varint,1,opt,name=Scanners" json:"Scanners,omitempty"`
+	MaxScanners          uint32 `protobuf:"varint,2,opt,name=MaxScanners" json:"MaxScanners,omitempty"`
+	IdleScanners         uint32 `protobuf:"varint,3,opt,name=IdleScanners" json:"IdleScanners,omitempty"`
+	ScannerVersion       string `protobuf:"bytes,4,opt,name=ScannerVersion" json:"ScannerVersion,omitempty"`
+	ScannerDBTime        string `protobuf:"bytes,5,opt,name=ScannerDBTime" json:"ScannerDBTime,omitempty"`
+	AvailableScanCredits uint32 `protobuf:"varint,6,opt,name=AvailableScanCredits" json:"AvailableScanCredits,omitempty"`
+	MaxScanCredits       uint32 `protobuf:"varint,7,opt,name=MaxScanCredits" json:"MaxScanCredits,omitempty"`
 }
 
 func (m *GetScannersResponse) Reset()                    { *m = GetScannersResponse{} }
@@ -211,6 +213,20 @@ func (m *GetScannersResponse) GetScannerDBTime() string {
 		return m.ScannerDBTime
 	}
 	return ""
+}
+
+func (m *GetScannersResponse) GetAvailableScanCredits() uint32 {
+	if m != nil {
+		return m.AvailableScanCredits
+	}
+	return 0
+}
+
+func (m *GetScannersResponse) GetMaxScanCredits() uint32 {
+	if m != nil {
+		return m.MaxScanCredits
+	}
+	return 0
 }
 
 type ScannerRegisterData struct {
