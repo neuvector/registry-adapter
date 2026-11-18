@@ -34,14 +34,12 @@ const (
 	certFile         = "/etc/neuvector/certs/ssl-cert.pem"
 	keyFile          = "/etc/neuvector/certs/ssl-cert.key"
 
-	reportSuffixURL   = "/report"
-	dataCheckInterval = 1.0
+	reportSuffixURL = "/report"
 
-	rpcTimeout              = time.Minute * 20
-	expirationTime          = time.Minute * 25
-	pruneTime               = time.Minute * 60
-	reportCheckTime         = "10"
-	concurrentJobLimitDelay = time.Second * 5
+	rpcTimeout      = time.Minute * 20
+	expirationTime  = time.Minute * 25
+	pruneTime       = time.Minute * 60
+	reportCheckTime = "10"
 )
 
 var (
@@ -306,7 +304,7 @@ func scan(w http.ResponseWriter, req *http.Request) {
 // processQueue goes through the queue in first-in-first-out order if concurrent jobs are less than the maximum allowed jobs.
 func processQueue() {
 	for {
-		time.Sleep(time.Second * time.Duration(dataCheckInterval))
+		time.Sleep(time.Duration(serverConfig.DequeueInterval * float64(time.Second)))
 
 		scanRequestQueue.Lock()
 		if scanRequestQueue.Length() > 0 {
@@ -326,7 +324,7 @@ func processQueue() {
 			} else {
 				scanRequestQueue.Unlock()
 				log.Debug("Concurrent job limit reached, waiting to resume")
-				time.Sleep(concurrentJobLimitDelay)
+				time.Sleep(serverConfig.GateRetryDelay)
 			}
 			concurrentJobs.Unlock()
 		} else {
@@ -478,7 +476,9 @@ func convertVulns(controllerVulns []*share.ScanVulnerability) []Vuln {
 	return translatedVulns
 }
 
-// pollMaxConcurrent finds the max amount of available scanners by polling the controller.
+// pollMaxConcurrent returns the number of scan slots currently available across all scanners.
+// Prefers AvailableScanCredits (aggregate free slots, respects --max_scanner_tasks).
+// Falls back to MaxScanners for older controllers that never set AvailableScanCredits.
 func pollMaxConcurrent() (uint32, error) {
 	client, err := GetControllerServiceClient(serverConfig.ControllerIP, serverConfig.ControllerPort)
 	if err != nil {
@@ -492,7 +492,17 @@ func pollMaxConcurrent() (uint32, error) {
 		return 0, err
 	}
 	nvScanner.Version = scanners.ScannerVersion
-	log.WithFields(log.Fields{"scanners": scanners.Scanners, "idle scanners": scanners.IdleScanners, "max scanners available": scanners.MaxScanners, "scanner version": nvScanner.Version}).Debug("Scanners reported")
+	log.WithFields(log.Fields{
+		"scanners":          scanners.Scanners,
+		"idle scanners":     scanners.IdleScanners,
+		"max scanners":      scanners.MaxScanners,
+		"available_credits": scanners.AvailableScanCredits,
+		"scanner version":   nvScanner.Version,
+	}).Debug("Scanners reported")
+
+	if scanners.AvailableScanCredits > 0 {
+		return scanners.AvailableScanCredits, nil
+	}
 	return scanners.MaxScanners, nil
 }
 

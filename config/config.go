@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/neuvector/neuvector/share/cluster"
 	"github.com/sirupsen/logrus"
@@ -20,6 +22,8 @@ const EnvHarborAuthUsername = "HARBOR_BASIC_AUTH_USERNAME"
 const EnvHarborAuthPassword = "HARBOR_BASIC_AUTH_PASSWORD"
 const EnvUseFeedBasedSeverity = "USE_FEED_BASED_SEVERITY"
 const EnvScanLayers = "SCAN_LAYERS"
+const EnvDequeueInterval = "SCAN_DEQUEUE_INTERVAL"
+const EnvGateRetryDelay = "SCAN_GATE_RETRY_DELAY"
 
 type ServerConfig struct {
 	Auth                 Authorization `yaml:"Authorization"`
@@ -33,7 +37,9 @@ type ServerConfig struct {
 	// only consumes the flat Vuls list, so enabling it only adds payload that is
 	// discarded, unless the per-layer breakdown is wanted in NeuVector's own
 	// stored repo-scan report.
-	ScanLayers bool `yaml:"ScanLayers"`
+	ScanLayers      bool `yaml:"ScanLayers"`
+	DequeueInterval float64
+	GateRetryDelay  time.Duration
 }
 
 type Authorization struct {
@@ -87,5 +93,24 @@ func (serverConfig *ServerConfig) LoadEnvironementVariables() error {
 		}
 		serverConfig.ScanLayers = b
 	}
+
+	serverConfig.DequeueInterval = 1.0
+	if v, ok := os.LookupEnv(EnvDequeueInterval); ok {
+		f, err := strconv.ParseFloat(v, 64)
+		if err != nil || f <= 0 {
+			return fmt.Errorf("invalid %s: %s", EnvDequeueInterval, v)
+		}
+		serverConfig.DequeueInterval = f
+	}
+
+	serverConfig.GateRetryDelay = 5 * time.Second
+	if v, ok := os.LookupEnv(EnvGateRetryDelay); ok {
+		secs, err := strconv.ParseFloat(v, 64)
+		if err != nil || secs <= 0 {
+			return fmt.Errorf("invalid %s: %s", EnvGateRetryDelay, v)
+		}
+		serverConfig.GateRetryDelay = time.Duration(secs * float64(time.Second))
+	}
+
 	return nil
 }
